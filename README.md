@@ -1,8 +1,6 @@
 # SH14 Main
 
-
-
-## Getting started
+hisda;jflksadjfl/
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
