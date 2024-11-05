@@ -1,2 +1,4 @@
 # Python files
 *.pyc
+.DS_Store
+target/
