@@ -1,6 +1,0 @@
-# Python files
-*.pyc
-# macOS system files
-.DS_Store
-# Maven build directory
-target/
