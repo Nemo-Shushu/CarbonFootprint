@@ -16,7 +16,7 @@ function TableComponent() {
 
     useEffect(() => {
         // http://localhost:8080/api/users/reports should return a json in format above with all available data to the user
-        fetch("http://localhost:8080/api/users/reports")
+        fetch("http://localhost:8000/api/users/reports")
           .then((response) => response.json())
           .then((json) => setData(json))
           .catch((error) => console.error("Error fetching data:", error));

@@ -10,6 +10,8 @@ services:
       - 8000:8000
     env_file:
       - ./.env.dev
+    networks:
+      - my-network
 
   db:
     image: postgres:15
@@ -19,6 +21,25 @@ services:
       - POSTGRES_USER=carbon_foot
       - POSTGRES_PASSWORD=carbon_foot
       - POSTGRES_DB=carbon_foot_dev
+    networks:
+      - my-network
+
+  react-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    ports:
+    - "3000:3000"
+    networks:
+      - my-network
 
 volumes:
   postgres_data:
+
+networks:
+  my-network:
