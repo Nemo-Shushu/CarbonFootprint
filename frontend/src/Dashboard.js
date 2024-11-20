@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/dashboard.css";
+import Sidebar from './Sidebar';
+import "./static/Sidebar.css";
 
 function TableComponent() {
     const data = [
@@ -54,12 +56,15 @@ function TableComponent() {
 };
 
 function Dashboard() {
-    return (     
-        <main class="ms-sm-auto px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
-            </div>
-        </main>
+    return (    
+        <div style={{ display: "flex", height: "100vh" }}> 
+            <Sidebar style={{ flex: "0 0 16%", backgroundColor: "#385A4F" }} />
+            <main class="ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                </div>
+            </main>
+        </div>    
     )
 }
 
