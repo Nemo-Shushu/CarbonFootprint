@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 async function loginUser(credentials) {
-    return fetch('http://localhost:8080/api/users/login', {
+    return fetch('/api/signin/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
