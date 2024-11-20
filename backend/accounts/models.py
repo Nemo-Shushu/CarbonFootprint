@@ -8,9 +8,8 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     email = models.EmailField( max_length=35, unique=True, error_messages={'unique': "A user with this email already exists."})
-    forename = models.CharField(max_length=20, blank=False, null=False)
-    surname = models.CharField(max_length=20, blank=False, null=False)
     institute = models.CharField(max_length=50, blank=True, null=True)
+    research_field = models.CharField(max_length=100, blank=True, null=True)
     
     is_admin = models.BooleanField (default = False)
     is_researcher=models.BooleanField(default=False)
@@ -230,7 +229,7 @@ class TravelEmission(models.Model):
 
 
 class WaterConsumption(models.Model):
-    space_type = models.ForeignKey(SpaceType, on_delete=models.CASCADE)
+    space_type = models.ForeignKey(SpaceTypeEntry, on_delete=models.CASCADE)
     total_area = models.FloatField()
     proportion_of_research_group = models.FloatField()
     benchmark_water_consumption = models.FloatField()
@@ -253,7 +252,7 @@ class WaterConsumption(models.Model):
 
 
 class GasConsumption(models.Model):
-    space_type = models.ForeignKey(SpaceType, on_delete=models.CASCADE)  # Linking to SpaceType
+    space_type = models.ForeignKey(SpaceTypeEntry, on_delete=models.CASCADE)  # Linking to SpaceType
     total_area = models.FloatField()  # Total area in m²
     proportion_of_research_group = models.FloatField()  # Proportion ppl
     benchmark_gas_consumption = models.FloatField(blank=True, null=True)  # fetched from BenchmarkData
@@ -288,7 +287,7 @@ class GasConsumption(models.Model):
 
 
 class ElectricityConsumption(models.Model):
-    space_type = models.ForeignKey(SpaceType, on_delete=models.CASCADE)
+    space_type = models.ForeignKey(SpaceTypeEntry, on_delete=models.CASCADE)
     total_area = models.FloatField()
     proportion_of_research_group = models.FloatField()
     benchmark_electricity_consumption = models.FloatField(blank=True, null=True)  # fetched from BenchmarkData
