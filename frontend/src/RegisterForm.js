@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 async function createUser(user) {
-  return fetch('http://localhost:8000/api/accounts/', {
+  return fetch('http://localhost:8000/api/accounts/register/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
