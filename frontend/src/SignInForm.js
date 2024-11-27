@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
@@ -78,9 +79,11 @@ function SignInForm() {
             <button className="btn btn-success w-100 py-2" type="submit">
                 Sign in
             </button>
-            <button className="btn btn-outline-success w-100 py-2 mt-2" type="button">
-                Don't have an account? Go to register
-            </button>
+            <Link to="/register">
+                <button className="btn btn-outline-success w-100 py-2 mt-2" type="button">
+                    Don't have an account? Go to register
+                </button>
+            </Link>
             <button className="btn btn-outline-success w-100 py-2 mt-2" type="button">
                 Fogot your password?
             </button>
