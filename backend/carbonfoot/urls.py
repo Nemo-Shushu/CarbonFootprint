@@ -19,11 +19,9 @@ from django.urls import path, include
 from rest_framework import routers
 from accounts import views
 
-router = routers.DefaultRouter()
-router.register(r'accounts', views.UserView, 'accounts')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('accounts/', include("django.contrib.auth.urls")),
-    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/accounts/',include('accounts.urls')),
 ]

@@ -10,6 +10,8 @@ import { Dashboard, TableComponent } from './Dashboard';
 import Frontpage from './Frontpage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Tab } from 'bootstrap';
+import RequestAdmin from './ RequestAdmin';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,7 +24,8 @@ root.render(
             <Route index element={<Frontpage />}/>
             <Route path="sign-in" element={<SignInForm />}/>
             <Route path="register" element={<RegisterForm />}/>
-            <Route path="dashboard" element={<TableComponent />}/>
+            <Route path="dashboard" element={<Dashboard />}/>
+            <Route path="request-admin" element={<RequestAdmin />}/>
           </Route>
       </Routes>
   </BrowserRouter>

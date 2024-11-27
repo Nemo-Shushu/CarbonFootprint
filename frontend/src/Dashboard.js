@@ -57,15 +57,16 @@ function TableComponent() {
 
 function Dashboard() {
     return (    
-        <div style={{ display: "flex", height: "100vh" }}> 
-            <Sidebar style={{ flex: "0 0 16%", backgroundColor: "#385A4F" }} />
-            <main class="ms-sm-auto px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
+        <div style={{ display: "flex", height: "100vh" }}>
+            <Sidebar style={{ flex: "0 0 20%", backgroundColor: "#385A4F" }} />
+            <main style={{ flex: "1", padding: "1rem", maxWidth: "80%" }}>
+                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 className="h2">Dashboard</h1>
                 </div>
+                <TableComponent />
             </main>
-        </div>    
-    )
+        </div>
+    );
 }
 
 export { Dashboard, TableComponent };

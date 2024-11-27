@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
@@ -17,7 +17,7 @@ async function createUser(user) {
 }
 
 function RegisterForm() {
-  const [user, setUser] = useState({ username: '', first_name: '', last_name: '', password: '', password2: '', email: '', institution: '', field: ''});
+  const [user, setUser] = useState({ username: '', first_name: '', last_name: '', password: '', password2: '', email: '', institute: '', research_field: ''});
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -85,7 +85,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             list="institutions"
-            name="institution"
+            name="institute"
             className="form-control"
             id="floatingInput"
             onChange={handleChange}
@@ -100,7 +100,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             list="research fields"
-            name="field"
+            name="research_field"
             className="form-control"
             id="floatingInput"
             onChange={handleChange}
