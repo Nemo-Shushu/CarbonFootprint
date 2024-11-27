@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
@@ -18,10 +18,12 @@ async function createUser(user) {
 
 function RegisterForm() {
   const [user, setUser] = useState({ username: '', first_name: '', last_name: '', password: '', password2: '', email: '', institution: '', field: ''});
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
     createUser(user)
+    navigate('/dashboard')
   };
 
   const handleChange = (event) => {

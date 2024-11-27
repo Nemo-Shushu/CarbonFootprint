@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
@@ -19,10 +19,12 @@ async function loginUser(credentials) {
 function SignInForm() {
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
         loginUser({ username, password });
+        navigate('/dashboard')
     };
 
     const handleChange = (event) => {

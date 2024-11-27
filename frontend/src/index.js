@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './static/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import RegisterForm from './RegisterForm';
 import SignInForm from './SignInForm';
-import { Dashboard, TableComponent} from './Dashboard';
+import { Dashboard, TableComponent } from './Dashboard';
 import Frontpage from './Frontpage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Tab } from 'bootstrap';
@@ -22,7 +22,7 @@ root.render(
             <Route index element={<Frontpage />}/>
             <Route path="sign-in" element={<SignInForm />}/>
             <Route path="register" element={<RegisterForm />}/>
-            <Route path="dashboard" element={<Dashboard />}/>
+            <Route path="dashboard" element={<TableComponent />}/>
           </Route>
       </Routes>
   </BrowserRouter>
