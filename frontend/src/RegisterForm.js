@@ -17,7 +17,7 @@ async function createUser(user) {
 }
 
 function RegisterForm() {
-  const [user, setUser] = useState({ username: '', firstname: '', lastname: '', password: '', password2: '', email: '', institution: '', field: ''});
+  const [user, setUser] = useState({ username: '', first_name: '', last_name: '', password: '', password2: '', email: '', institute: '', research_field: ''});
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -61,7 +61,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             type="text"
-            name="firstname"
+            name="first_name"
             className="form-control"
             id="floatingInput"
             placeholder="First Name"
@@ -72,7 +72,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             type="text"
-            name="lastname"
+            name="last_name"
             className="form-control"
             id="floatingInput"
             placeholder="Last Name"
@@ -83,7 +83,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             list="institutions"
-            name="institution"
+            name="institute"
             className="form-control"
             id="floatingInput"
             onChange={handleChange}
@@ -98,7 +98,7 @@ function RegisterForm() {
         <div className="form-floating">
             <input
             list="research fields"
-            name="field"
+            name="research_field"
             className="form-control"
             id="floatingInput"
             onChange={handleChange}
