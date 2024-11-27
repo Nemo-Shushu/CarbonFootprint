@@ -17,7 +17,7 @@ async function createUser(user) {
 }
 
 function RegisterForm() {
-  const [user, setUser] = useState({ username: '', password: '', email: '' , institution: '', field: ''});
+  const [user, setUser] = useState({ username: '', firstname: '', lastname: '', password: '', password2: '', email: '', institution: '', field: ''});
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -38,6 +38,17 @@ function RegisterForm() {
 
         <div className="form-floating">
             <input
+            type="email"
+            name="email"
+            className="form-control"
+            id="floatingInput"
+            placeholder="Email"
+            onChange={handleChange}
+            />
+            <label htmlFor="floatingInput">Email</label>
+        </div>
+        <div className="form-floating">
+            <input
             type="text"
             name="username"
             className="form-control"
@@ -49,14 +60,25 @@ function RegisterForm() {
         </div>
         <div className="form-floating">
             <input
-            type="email"
-            name="email"
+            type="text"
+            name="firstname"
             className="form-control"
             id="floatingInput"
-            placeholder="Email"
+            placeholder="First Name"
             onChange={handleChange}
             />
-            <label htmlFor="floatingInput">Email</label>
+            <label htmlFor="floatingInput">First Name</label>
+        </div>
+        <div className="form-floating">
+            <input
+            type="text"
+            name="lastname"
+            className="form-control"
+            id="floatingInput"
+            placeholder="Last Name"
+            onChange={handleChange}
+            />
+            <label htmlFor="floatingInput">Last Name</label>
         </div>
         <div className="form-floating">
             <input
@@ -98,6 +120,17 @@ function RegisterForm() {
             onChange={handleChange}
             />
             <label htmlFor="floatingPassword">Password</label>
+        </div>
+        <div className="form-floating">
+            <input
+            type="password"
+            name="password2"
+            className="form-control"
+            id="floatingPassword"
+            placeholder="Confirm Password"
+            onChange={handleChange}
+            />
+            <label htmlFor="floatingPassword">Confirm Password</label>
         </div>
         <button className="btn btn-success w-100 py-2" type="submit">
             Register
