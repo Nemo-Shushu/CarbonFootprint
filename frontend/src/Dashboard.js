@@ -69,4 +69,4 @@ function Dashboard() {
     );
 }
 
-export {Dashboard, TableComponent};
+export { Dashboard, TableComponent };
