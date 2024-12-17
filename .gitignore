@@ -1,8 +1,2 @@
 # Python files
 *.pyc
-.DS_Store
-target/
-env/
-.env.prod
-.env.prod.db
-*sqlite3
