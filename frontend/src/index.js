@@ -11,6 +11,7 @@ import Frontpage from './Frontpage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Tab } from 'bootstrap';
 import RequestAdmin from './ RequestAdmin';
+import { Calculator } from './calculator';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,6 +27,7 @@ root.render(
             <Route path="register" element={<RegisterForm />}/>
             <Route path="dashboard" element={<Dashboard />}/>
             <Route path="request-admin" element={<RequestAdmin />}/>
+            <Route path="calculator/*" element={<Calculator />}/>
           </Route>
       </Routes>
   </BrowserRouter>

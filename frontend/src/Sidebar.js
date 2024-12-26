@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./static/Sidebar.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -42,7 +42,9 @@ const Sidebar = () => {
         />
       </div>
         <p className="email">2134567@student.gla.ac.uk</p>
-        <button className="new-report-btn">+ New Report</button>
+        <Link to="/calculator">
+          <button className="new-report-btn">+ New Report</button>
+        </Link>
       </div>
       <nav className="menu">
       <ul>
