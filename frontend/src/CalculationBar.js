@@ -1,48 +1,74 @@
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./static/CalculationBar.css";
 
 const CalculationBar = () => {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [currentSubStep, setCurrentSubStep] = useState("Utilities");
-  
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const showBar = location.pathname !== "/calculator";
+
     const steps = [
-      { id: 1, label: "Step 1: General Data Entry" },
-      { id: 2, label: "Step 2: Procurement" },
-      { id: 3, label: "Step 3: Results" },
+        { label: "Step 1: General Data Entry", path: "/calculator/general-data-entry" },
+        { label: "Step 2: Procurement", path: "/calculator/procurement" },
+        { label: "Step 3: Results", path: "/calculator/results" },
     ];
-  
-    const subSteps = ["Utilities", "Travel", "Waste"];
-  
+
+    const subSteps = [
+        { label: "Utilities", path: "/calculator/utilities" },
+        { label: "Travel", path: "/calculator/travel" },
+        { label: "Waste", path: "/calculator/waste" },
+    ];
+
+    const isStep1 =
+        location.pathname.startsWith("/calculator/general-data-entry") ||
+        location.pathname.startsWith("/calculator/utilities") ||
+        location.pathname.startsWith("/calculator/travel") ||
+        location.pathname.startsWith("/calculator/waste");
+
+    const handleNavigate = (path) => {
+        if (path === "/calculator/general-data-entry") {
+            navigate("/calculator/utilities");
+        } else {
+            navigate(path);
+        }
+    };
+
+    if (!showBar) {
+        return null;
+    }
+
     return (
-      <div>
-        
-        <div className="nav-container">
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className={`nav-item ${currentStep === step.id ? "active" : ""}`}
-              onClick={() => setCurrentStep(step.id)}
-            >
-              {step.label}
+        <div>
+            <div className="nav-container">
+                {steps.map((step) => (
+                    <div
+                        key={step.path}
+                        className={`nav-item ${location.pathname.startsWith(step.path) ? "active" : ""
+                            }`}
+                        onClick={() => handleNavigate(step.path)}
+                    >
+                        {step.label}
+                    </div>
+                ))}
             </div>
-          ))}
+
+            {isStep1 && (
+                <div className="sub-nav-container">
+                    {subSteps.map((subStep) => (
+                        <div
+                            key={subStep.path}
+                            className={`sub-nav-item ${location.pathname === subStep.path ? "active" : ""
+                                }`}
+                            onClick={() => navigate(subStep.path)}
+                        >
+                            {subStep.label}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-  
-        {currentStep === 1 && (
-          <div className="sub-nav-container">
-            {subSteps.map((subStep, index) => (
-              <div
-                key={index}
-                className={`sub-nav-item ${currentSubStep === subStep ? "active" : ""}`}
-                onClick={() => setCurrentSubStep(subStep)}
-              >
-                {subStep}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     );
-  };
-  
-  export default CalculationBar;
+};
+
+export default CalculationBar;

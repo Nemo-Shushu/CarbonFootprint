@@ -4,6 +4,7 @@ import "./static/dashboard.css";
 import Sidebar from './Sidebar';
 import "./static/Sidebar.css";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import CalculationBar from './CalculationBar';
 
 let aggregate = 0;
 //a const variable "report" will be here instead of aggregate. This variable will collect the data inputted by the user:
@@ -44,8 +45,6 @@ function Utilities() {
 
     return (
         <main class="ms-sm-auto px-md-4">
-            <h2>Utilities</h2>
-
             <form className="needs-validation" noValidate>
                 <div className="row g-2">
                     <div className="mt-5">
@@ -64,7 +63,7 @@ function Utilities() {
                         </div>
                     </div>
 
-                    <div className="col-sm-4">
+                    <div className="col-sm-5">
                         <label htmlFor="firstName" className="form-label"><strong>Total number of FTE research group members</strong></label>
                         <input type="number" className="form-control" id="FTE-members" placeholder="Enter number of people" required />
                         <div className="invalid-feedback">
@@ -267,9 +266,7 @@ function Calculator() {
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 20%", backgroundColor: "#385A4F" }} />
             <main style={{ flex: "1", padding: "1rem", maxWidth: "80%" }}>
-                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 className="h2">Calculator</h1>
-                </div>
+                <CalculationBar />
                 <Routes>
                     <Route path="/" element={<Instructions />} />
                     <Route path="utilities" element={<Utilities />} />
