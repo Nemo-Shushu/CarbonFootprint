@@ -47,7 +47,7 @@ function Utilities() {
         <main class="ms-sm-auto px-md-4">
             <form className="needs-validation" noValidate>
                 <div className="row g-2">
-                    <div className="mt-5">
+                    <div className="mt-4 fst-italic">
                         <strong>
                             Personnel:
                         </strong>
@@ -71,7 +71,7 @@ function Utilities() {
                         </div>
                     </div>
                     
-                    <div className="mt-5">
+                    <div className="mt-4 fst-italic">
                         <strong>
                             Type of space (for calculation of electricity and gas consumption):
                         </strong>
@@ -103,7 +103,7 @@ function Utilities() {
                         </div>
                     </div>
 
-                    <div className="mt-5">
+                    <div className="mt-4 fst-italic">
                         <strong>
                             Type of space (for calculation of water consumption):
                         </strong>
@@ -169,8 +169,168 @@ function Travel() {
 
     return (
         <main class="ms-sm-auto px-md-4">
-            <h2>Travel</h2>
-            <h6>{ aggregate }</h6>
+
+            <form className="needs-validation" noValidate>
+                <div className="row g-2">
+
+                    <div className="mt-4 fst-italic">
+                        <strong>
+                            Air travel
+                        </strong>
+                    </div>
+                    <hr/>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy short-haul, to/from UK</strong></label>
+                            <input type="number" className="form-control" id="air-eco-short" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Business short-haul, to/from UK</strong></label>
+                            <input type="number" className="form-control" id="air-business-short" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy long-haul, to/from UK</strong></label>
+                            <input type="number" className="form-control" id="air-eco-long" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Business long-haul, to/from UK</strong></label>
+                            <input type="number" className="form-control" id="air-business-long" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy international, to/from non-UK</strong></label>
+                            <input type="number" className="form-control" id="air-eco-inter" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-5">
+                            <label htmlFor="firstName" className="form-label"><strong>Air - Business international, to/from non-UK</strong></label>
+                            <input type="number" className="form-control" id="air-business-inter" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 fst-italic">
+                        <strong>
+                            Sea travel
+                        </strong>
+                    </div>
+                    <hr/>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Sea - Ferry</strong></label>
+                            <input type="number" className="form-control" id="sea-ferry" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 fst-italic">
+                        <strong>
+                            Land travel
+                        </strong>
+                    </div>
+                    <hr/>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Car</strong></label>
+                            <input type="number" className="form-control" id="land-car" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Motorbike</strong></label>
+                            <input type="number" className="form-control" id="land-motor" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Taxis</strong></label>
+                            <input type="number" className="form-control" id="land-taxis" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Local Bus</strong></label>
+                            <input type="number" className="form-control" id="land-bus" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Coach</strong></label>
+                            <input type="number" className="form-control" id="land-coach" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row mb-2">
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - National rail</strong></label>
+                            <input type="number" className="form-control" id="land-national-rail" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - International rail</strong></label>
+                            <input type="number" className="form-control" id="land-inter-rail" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Land - Light rail and tram</strong></label>
+                            <input type="number" className="form-control" id="land-light-rail" placeholder="Enter number of distance(km)" required />
+                            <div className="invalid-feedback">
+                            Valid number is required.
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </form>
             
             <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                 <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
