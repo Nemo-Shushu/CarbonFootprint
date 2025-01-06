@@ -181,16 +181,16 @@ function Travel() {
                     <hr/>
 
                     <div className="row mb-2">
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy short-haul, to/from UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Economy short-haul, to/from UK</strong></label>
                             <input type="number" className="form-control" id="air-eco-short" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
                             </div>
                         </div>
 
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Business short-haul, to/from UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Business short-haul, to/from UK</strong></label>
                             <input type="number" className="form-control" id="air-business-short" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -199,16 +199,16 @@ function Travel() {
                     </div>
 
                     <div className="row mb-2">
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy long-haul, to/from UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Economy long-haul, to/from UK</strong></label>
                             <input type="number" className="form-control" id="air-eco-long" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
                             </div>
                         </div>
 
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Business long-haul, to/from UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Business long-haul, to/from UK</strong></label>
                             <input type="number" className="form-control" id="air-business-long" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -217,16 +217,16 @@ function Travel() {
                     </div>
 
                     <div className="row mb-2">
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Economy international, to/from non-UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Economy international, to/from non-UK</strong></label>
                             <input type="number" className="form-control" id="air-eco-inter" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
                             </div>
                         </div>
 
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Air - Business international, to/from non-UK</strong></label>
+                        <div className="col-sm-4">
+                            <label htmlFor="firstName" className="form-label"><strong>Business international, to/from non-UK</strong></label>
                             <input type="number" className="form-control" id="air-business-inter" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -243,7 +243,7 @@ function Travel() {
 
                     <div className="row mb-2">
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Sea - Ferry</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Ferry</strong></label>
                             <input type="number" className="form-control" id="sea-ferry" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -260,7 +260,7 @@ function Travel() {
 
                     <div className="row mb-2">
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Car</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Car</strong></label>
                             <input type="number" className="form-control" id="land-car" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -268,7 +268,7 @@ function Travel() {
                         </div>
 
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Motorbike</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Motorbike</strong></label>
                             <input type="number" className="form-control" id="land-motor" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -276,7 +276,7 @@ function Travel() {
                         </div>
 
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Taxis</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Taxis</strong></label>
                             <input type="number" className="form-control" id="land-taxis" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -286,7 +286,7 @@ function Travel() {
 
                     <div className="row mb-2">
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Local Bus</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Local Bus</strong></label>
                             <input type="number" className="form-control" id="land-bus" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -294,7 +294,7 @@ function Travel() {
                         </div>
 
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Coach</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Coach</strong></label>
                             <input type="number" className="form-control" id="land-coach" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -304,7 +304,7 @@ function Travel() {
 
                     <div className="row mb-2">
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - National rail</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>National rail</strong></label>
                             <input type="number" className="form-control" id="land-national-rail" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -312,7 +312,7 @@ function Travel() {
                         </div>
 
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - International rail</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>International rail</strong></label>
                             <input type="number" className="form-control" id="land-inter-rail" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -320,7 +320,7 @@ function Travel() {
                         </div>
 
                         <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Land - Light rail and tram</strong></label>
+                            <label htmlFor="firstName" className="form-label"><strong>Light rail and tram</strong></label>
                             <input type="number" className="form-control" id="land-light-rail" placeholder="Enter number of distance(km)" required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -356,8 +356,73 @@ function Waste() {
 
     return (
         <main class="ms-sm-auto px-md-4">
-            <h2>Waste</h2>
-            <h6>{ aggregate }</h6>
+            <form className="needs-validation" noValidate>
+                <div className="row g-2">
+
+                    <div className="mt-4 fst-italic">
+                        <strong>
+                            Recycling
+                        </strong>
+                    </div>
+                    <hr/>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>Mixed recycling</strong></label>
+                        <input type="number" className="form-control" id="mixed-recycle" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>WEEE mixed recycling</strong></label>
+                        <input type="number" className="form-control" id="WEEEmixed-recycle" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                    <div className="mt-4 fst-italic">
+                        <strong>
+                            Waste
+                        </strong>
+                    </div>
+                    <hr/>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>General waste</strong></label>
+                        <input type="number" className="form-control" id="general-waste" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>Clinical waste</strong></label>
+                        <input type="number" className="form-control" id="clinical-waste" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>Chemical waste</strong></label>
+                        <input type="number" className="form-control" id="chemical-waste" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                    <div className="col-sm-3">
+                        <label htmlFor="firstName" className="form-label"><strong>Biological waste</strong></label>
+                        <input type="number" className="form-control" id="bio-waste" placeholder="Enter waste in tonne" required />
+                        <div className="invalid-feedback">
+                        Valid number is required.
+                        </div>
+                    </div>
+
+                </div>
+            </form>
             
             <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                 <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
