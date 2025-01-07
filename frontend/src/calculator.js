@@ -10,6 +10,11 @@ function Calculator() {
 
     const [report, setReport] = useState({});
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setReport(prevReport => ({ ...prevReport, [name]: value }));
+    };
+
     function Instructions() {
 
         const navigate = useNavigate();
@@ -37,11 +42,6 @@ function Calculator() {
 
         const handleRoute = () => {
             navigate("/calculator/travel")
-        };
-
-        const handleChange = (event) => {
-            const { name, value } = event.target;
-            setReport(prevReport => ({ ...prevReport, [name]: value }));
         };
 
         return (
@@ -164,11 +164,6 @@ function Calculator() {
 
         const handleRoute = () => {
             navigate("/calculator/waste")
-        };
-
-        const handleChange = (event) => {
-            const { name, value } = event.target;
-            setReport(prevReport => ({ ...prevReport, [name]: value }));
         };
 
         return (
@@ -356,11 +351,6 @@ function Calculator() {
             navigate("/calculator/procurement")
         };
 
-        const handleChange = (event) => {
-            const { name, value } = event.target;
-            setReport(prevReport => ({ ...prevReport, [name]: value }));
-        };
-
         return (
             <main class="ms-sm-auto px-md-4">
                 <form className="needs-validation" noValidate>
@@ -443,25 +433,36 @@ function Calculator() {
 
         const navigate = useNavigate();
 
-        const [category, setCategory] = useState(null);
+        const [category, setCategory] = useState('');
         const [visible, setVisible] = useState("invisible col-sm-3");
+        const [placeholderValue, setPlaceholderValue] = useState('');
+        const [procurementReport, setProcurementReport] = useState({});
 
         const handleCategoryChange = (event) => {
-            setCategory(event.target.value);
-            setVisible("visible col-sm-3")
-        };
-
-        const handleChange = (event) => {
-            const { name, value } = event.target;
-            setReport(prevReport => ({ ...prevReport, [name]: value }));
+            let eventValue = event.target.value;
+            setCategory(eventValue);
+            setVisible("visible col-sm-3");
+            let val = '';
+            if (procurementReport[eventValue] !== undefined && procurementReport[eventValue] !== null) {
+                val = procurementReport[eventValue];
+            }
+            setPlaceholderValue(val);
         };
 
         const handleBack = () => {
-            navigate("/calculator/waste")
+            navigate("/calculator/waste");
         };
 
         const handleRoute = () => {
-            navigate("/calculator/results")
+            setReport(prevReport => ({ ...prevReport, ["procurement"]: procurementReport }));
+            navigate("/calculator/results");
+        };
+
+        const handleProcurementChange = (event) => {
+            event.preventDefault()
+            const { name, value } = event.target;
+            setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
+            setPlaceholderValue(value);
         };
 
         return (
@@ -876,7 +877,7 @@ function Calculator() {
 
                         <div className={visible}>
                             <label htmlFor="firstName" className="form-label"><strong>{category}</strong></label>
-                            <input type="number" className="form-control" id={category} placeholder="Enter waste in tonne" onChange={handleChange} required />
+                            <input type="number" className="form-control" id={category} placeholder="Enter waste in tonne" value={placeholderValue} onChange={handleProcurementChange} required />
                             <div className="invalid-feedback">
                             Valid number is required.
                             </div>
