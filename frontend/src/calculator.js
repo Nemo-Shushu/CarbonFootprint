@@ -11,19 +11,31 @@ function Calculator() {
 
     const [report, setReport] = useState({});
 
+    async function submitReport(report) {
+        return fetch('http://localhost:8000/api/calculator/createreport/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(report),
+        })
+        .then(response => response.json())
+        .then(data => console.log('Report submitted:', data))
+        .catch(error => console.error('Error submitting report:', error));
+    }
+
     function Instructions() {
 
         const navigate = useNavigate();
 
         const handleRoute = () => {
-            //reset the report variable to start again
             navigate("/calculator/utilities")
         };
 
         return (
             <main class="ms-sm-auto px-md-4">
                 <h2>Instructions</h2>
-                <h5>Use Calculator like that.</h5>
+                <h5>Use Calculator like that. Click "Next" to save your inputs.</h5>
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-success" onClick={handleRoute}>Start</button>
@@ -62,22 +74,23 @@ function Calculator() {
                                 Personnel:
                             </strong>
                         </div>
-
                         <hr/>
-
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Number of FTE staff working on project</strong></label>
-                            <input type="number" className="form-control" name="FTE-staff" placeholder="Enter number of people" value={utilitiesReport["FTE-staff"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                        
+                        <div className="row mb-2">
+                            <div className="col-sm-4">
+                                <label htmlFor="firstName" className="form-label"><strong>Number of FTE staff working on project</strong></label>
+                                <input type="number" className="form-control" name="FTE-staff" placeholder="Enter number of people" value={utilitiesReport["FTE-staff"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-5">
-                            <label htmlFor="firstName" className="form-label"><strong>Total number of FTE research group members</strong></label>
-                            <input type="number" className="form-control" name="FTE-members" placeholder="Enter number of people" value={utilitiesReport["FTE-members"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-5">
+                                <label htmlFor="firstName" className="form-label"><strong>Total number of FTE research group members</strong></label>
+                                <input type="number" className="form-control" name="FTE-members" placeholder="Enter number of people" value={utilitiesReport["FTE-members"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
                         </div>
                         
@@ -86,30 +99,31 @@ function Calculator() {
                                 Type of space (for calculation of electricity and gas consumption):
                             </strong>
                         </div>
-
                         <hr/>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Academic laboratory</strong></label>
-                            <input type="number" className="form-control" name="academic-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["academic-laboratory-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                        <div className="row mb-2">
+                            <div className="col-sm-4">
+                                <label htmlFor="firstName" className="form-label"><strong>Academic laboratory</strong></label>
+                                <input type="number" className="form-control" name="academic-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["academic-laboratory-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Admin office</strong></label>
-                            <input type="number" className="form-control" name="admin-office-area" placeholder="Enter area in sq. ft." value={utilitiesReport["admin-office-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-4">
+                                <label htmlFor="firstName" className="form-label"><strong>Admin office</strong></label>
+                                <input type="number" className="form-control" name="admin-office-area" placeholder="Enter area in sq. ft." value={utilitiesReport["admin-office-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Academic office</strong></label>
-                            <input type="number" className="form-control" name="academic-office-area" placeholder="Enter area in sq. ft." value={utilitiesReport["academic-office-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-4">
+                                <label htmlFor="firstName" className="form-label"><strong>Academic office</strong></label>
+                                <input type="number" className="form-control" name="academic-office-area" placeholder="Enter area in sq. ft." value={utilitiesReport["academic-office-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
                         </div>
 
@@ -118,38 +132,39 @@ function Calculator() {
                                 Type of space (for calculation of water consumption):
                             </strong>
                         </div>
-
                         <hr/>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Physical sciences laboratory</strong></label>
-                            <input type="number" className="form-control" name="physical-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["physical-laboratory-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                        <div className="row mb-2">
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Physical sciences laboratory</strong></label>
+                                <input type="number" className="form-control" name="physical-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["physical-laboratory-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Engineering laboratory</strong></label>
-                            <input type="number" className="form-control" name="engineering-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["engineering-laboratory-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Engineering laboratory</strong></label>
+                                <input type="number" className="form-control" name="engineering-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["engineering-laboratory-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Medical/Life sciences laboratory</strong></label>
-                            <input type="number" className="form-control" name="medical-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["medical-laboratory-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Medical/Life sciences laboratory</strong></label>
+                                <input type="number" className="form-control" name="medical-laboratory-area" placeholder="Enter area in sq. ft." value={utilitiesReport["medical-laboratory-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="col-sm-4">
-                            <label htmlFor="firstName" className="form-label"><strong>Office/Admin space</strong></label>
-                            <input type="number" className="form-control" name="admin-space-area" placeholder="Enter area in sq. ft." value={utilitiesReport["admin-space-area"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Office/Admin space</strong></label>
+                                <input type="number" className="form-control" name="admin-space-area" placeholder="Enter area in sq. ft." value={utilitiesReport["admin-space-area"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
                         </div>
 
@@ -397,19 +412,22 @@ function Calculator() {
                         </div>
                         <hr/>
 
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>Mixed recycling</strong></label>
-                            <input type="number" className="form-control" name="mixed-recycle" placeholder="Enter waste in tonne" value={wasteReport["mixed-recycle"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                        <div className="row mb-2">
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Mixed recycling</strong></label>
+                                <input type="number" className="form-control" name="mixed-recycle" placeholder="Enter waste in tonne" value={wasteReport["mixed-recycle"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
-                        </div>
+                        
 
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>WEEE mixed recycling</strong></label>
-                            <input type="number" className="form-control" name="WEEEmixed-recycle" placeholder="Enter waste in tonne" value={wasteReport["WEEEmixed-recycle"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>WEEE mixed recycling</strong></label>
+                                <input type="number" className="form-control" name="WEEEmixed-recycle" placeholder="Enter waste in tonne" value={wasteReport["WEEEmixed-recycle"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
                         </div>
 
@@ -420,38 +438,39 @@ function Calculator() {
                         </div>
                         <hr/>
 
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>General waste</strong></label>
-                            <input type="number" className="form-control" name="general-waste" placeholder="Enter waste in tonne" value={wasteReport["general-waste"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
+                        <div className="row mb-2">
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>General waste</strong></label>
+                                <input type="number" className="form-control" name="general-waste" placeholder="Enter waste in tonne" value={wasteReport["general-waste"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
+                            </div>
+
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Clinical waste</strong></label>
+                                <input type="number" className="form-control" name="clinical-waste" placeholder="Enter waste in tonne" value={wasteReport["clinical-waste"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
+                            </div>
+
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Chemical waste</strong></label>
+                                <input type="number" className="form-control" name="chemical-waste" placeholder="Enter waste in tonne" value={wasteReport["chemical-waste"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
+                            </div>
+
+                            <div className="col-sm-3">
+                                <label htmlFor="firstName" className="form-label"><strong>Biological waste</strong></label>
+                                <input type="number" className="form-control" name="bio-waste" placeholder="Enter waste in tonne" value={wasteReport["bio-waste"]} onChange={handleChange} required />
+                                <div className="invalid-feedback">
+                                Valid number is required.
+                                </div>
                             </div>
                         </div>
-
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>Clinical waste</strong></label>
-                            <input type="number" className="form-control" name="clinical-waste" placeholder="Enter waste in tonne" value={wasteReport["clinical-waste"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
-                            </div>
-                        </div>
-
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>Chemical waste</strong></label>
-                            <input type="number" className="form-control" name="chemical-waste" placeholder="Enter waste in tonne" value={wasteReport["chemical-waste"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
-                            </div>
-                        </div>
-
-                        <div className="col-sm-3">
-                            <label htmlFor="firstName" className="form-label"><strong>Biological waste</strong></label>
-                            <input type="number" className="form-control" name="bio-waste" placeholder="Enter waste in tonne" value={wasteReport["bio-waste"]} onChange={handleChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
-                            </div>
-                        </div>
-
                     </div>
                 </form>
                 
@@ -511,8 +530,8 @@ function Calculator() {
                     <div className="row g-2">
 
                         <div className={visible}>
-                            <label htmlFor="firstName" className="form-label"><strong>{procurementCategories.find(categories => categories.code === category)?.name}</strong></label>
-                            <input type="number" className="form-control" name={category} placeholder="Enter waste in tonne" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
+                            <label htmlFor="firstName" className="form-label"><strong>{category + " - " + procurementCategories.find(categories => categories.code === category)?.name}</strong></label>
+                            <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
                             <div className="invalid-feedback">
                             Valid number is required.
                             </div>
@@ -538,7 +557,7 @@ function Calculator() {
             navigate("/calculator/procurement")
         };
 
-        const handleSubmit = () => {
+        const handleRoute = () => {
             navigate("/dashboard")
         };
 
@@ -548,7 +567,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleSubmit}>Submit</button>
+                    <button type="button" class="btn btn-success" onClick={handleRoute}>Submit</button>
                 </div>
             </main>
         );
