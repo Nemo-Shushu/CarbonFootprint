@@ -1,0 +1,106 @@
+
+### 测试 Water Consumption 的计算
+POST http://localhost:8000/api/accounts/calculate_water/
+Content-Type: application/json
+
+{
+  "proportion": 0.5,
+  "spaces": [
+    {
+      "type": "Physical sciences laboratory",
+      "total_area": 10
+    },
+    {
+      "type": "Medical/Life sciences laboratory",
+      "total_area": 10
+    },
+    {
+      "type": "Engineering laboratory",
+      "total_area": 10
+    },
+    {
+      "type": "Office/Admin space",
+      "total_area": 10
+    }
+  ]
+}
+
+### 测试 Gas Consumption 的计算
+POST http://localhost:8000/api/accounts/calculate_emissions/
+Content-Type: application/json
+
+{
+  "proportion": 0.5,
+  "spaces": [
+    {
+      "type": "Academic laboratory",
+      "total_area": 10
+    },
+    {
+      "type": "Academic office",
+      "total_area": 10
+    },
+    {
+      "type": "Admin office",
+      "total_area": 10
+    }
+  ]
+}
+
+### 测试 Travel Emissions 的计算
+POST http://localhost:8000/api/accounts/calculate_travel_emissions/
+Content-Type: application/json
+
+{
+  "travel_modes": [
+    {
+      "mode": "Air - Economy short-haul, to/from UK",
+      "distance": 10
+    },
+    {
+      "mode": "Air - Business short-haul, to/from UK",
+      "distance": 10
+    },
+    {
+      "mode": "Land - Car",
+      "distance": 10
+    },
+    {
+      "mode": "Land - Local Bus",
+      "distance": 10
+    }
+  ]
+}
+
+### 测试 Waste Emissions 的计算
+POST http://localhost:8000/api/accounts/calculate_waste_emissions/
+Content-Type: application/json
+
+{
+  "waste_data": [
+    {
+      "type": "Mixed recycling",
+      "amount": 10
+    },
+    {
+      "type": "General waste",
+      "amount": 10
+    },
+    {
+      "type": "Clinical waste",
+      "amount": 10
+    },
+    {
+      "type": "Chemical waste",
+      "amount": 10
+    },
+    {
+      "type": "Biological waste",
+      "amount": 10
+    },
+    {
+      "type": "WEEE mixed recycling",
+      "amount": 10
+    }
+  ]
+}
