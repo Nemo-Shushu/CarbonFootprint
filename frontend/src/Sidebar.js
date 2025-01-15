@@ -7,6 +7,8 @@ import { useLocation } from "react-router-dom";
 const Sidebar = () => {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [csrf, setCsrf] = useState();
   const navigate = useNavigate(); 
   const location = useLocation();
 
@@ -16,10 +18,65 @@ const Sidebar = () => {
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
     }
+    getSession();
   }, [location.pathname]); 
+
+  function getCSRF() {
+    fetch("http://localhost:8000/api2/csrf/", {
+      credentials: "include",
+    })
+    .then((res) => {
+      let csrfToken = res.headers.get("X-CSRFToken");
+      setCsrf(csrfToken);
+      console.log(csrfToken);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+  function getSession() {
+    fetch("http://localhost:8000/api2/session/", {
+        credentials: "include",
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        console.log(data);
+        if (data.isAuthenticated) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        getCSRF();
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}
 
     const handleLogout = () => {
       localStorage.removeItem("userToken"); 
+      fetch("http://localhost:8000/api2/logout/", {
+        credentials: "include",
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      navigate("/sign-in");
+    };
+
+    const getName = () => {
+      localStorage.removeItem("userToken"); 
+      fetch("http://localhost:8000/api2/whoami/", {
+        credentials: "include",
+      })
+      .then((res) => {
+
+      }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
       navigate("/sign-in");
     };
 
