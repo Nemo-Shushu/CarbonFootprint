@@ -115,8 +115,11 @@ function SignInForm() {
         .catch((err) => {
             console.log(err);
             setError("Wrong username or password");
-            console.log(error)
         });
+        console.log(isAuthenticated);
+        if (isAuthenticated===true) {
+            navigate('/dashboard');
+        }
     }
 
     function logout() {
@@ -150,7 +153,8 @@ function SignInForm() {
         }
     };
 
-    return (
+    if (!isAuthenticated) { 
+        return (
         <div>
         {/* Main Form */}
         <main className="form-signin w-100 m-auto">
@@ -206,6 +210,9 @@ function SignInForm() {
         </main>
         </div>
     );
+    } else {
+        navigate('/dashboard');
+    }
 };
 
 export default SignInForm;
