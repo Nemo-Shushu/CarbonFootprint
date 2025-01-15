@@ -1,7 +1,5 @@
 from django.urls import path
-from accounts.views import RegisterView, CsrfTokenView, LogoutView,LoginView,UserDetailView, ProportionCalculationView,ConsumptionAndEmissionsView,WaterConsumptionView,TravelEmissionsView,WasteEmissionsView
-from . import views
-
+from accounts.views import RegisterView, CsrfTokenView, LogoutView,LoginView,UserDetailView, ReportcalculateView
 app_name = "accounts"
 
 urlpatterns = [
@@ -10,9 +8,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('user/me/', UserDetailView.as_view(), name='user-detail'),
-    path('calculate_proportion/', ProportionCalculationView.as_view(), name='calculate_proportion'),
-    path('calculate_emissions/', ConsumptionAndEmissionsView.as_view(), name='calculate_emissions'),
-    path('calculate_water/', WaterConsumptionView.as_view(), name='calculate_water'),
-    path('calculate_travel_emissions/', TravelEmissionsView.as_view(), name='calculate_travel_emissions'),
-    path('calculate_waste_emissions/', WasteEmissionsView.as_view(), name='calculate_waste_emissions'),
+    path('ReportcalculateView/', ReportcalculateView.as_view(), name='calculate_proportion'),
 ]

@@ -104,3 +104,27 @@ Content-Type: application/json
     }
   ]
 }
+
+### Test CombinedUtilitiesView
+POST http://localhost:8000/api/accounts/ReportcalculateView/
+Content-Type: application/json
+
+{
+  "spaces": [
+    { "type": "Academic laboratory", "total_area": 100 },
+    { "type": "Academic office", "total_area": 200 },
+    { "type": "Admin office", "total_area": 300 },
+    { "type": "Physical sciences laboratory", "total_area": 50 },
+    { "type": "Medical/Life sciences laboratory", "total_area": 60 }
+  ],
+  "proportion": 0.5,
+  "travel_modes": [
+    { "mode": "Air - Economy short-haul, to/from UK", "distance": 500 },
+    { "mode": "Land - Car", "distance": 200 }
+  ],
+  "waste_data": [
+    { "type": "General waste", "amount": 2 },
+    { "type": "Mixed recycling", "amount": 5 },
+    { "type": "Chemical waste", "amount": 3 }
+  ]
+}
