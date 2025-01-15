@@ -112,10 +112,10 @@ function SignInForm() {
             setPassword("");
             setError("");
         })
-        .then(navigate('/dashboard'))
         .catch((err) => {
             console.log(err);
-            setError("Wrong username or password.");
+            setError("Wrong username or password");
+            console.log(error)
         });
     }
 
@@ -179,7 +179,7 @@ function SignInForm() {
                 />
                 <label htmlFor="floatingPassword">Password</label>
             </div>
-
+            <p className="warning">{error}</p>
             <div className="form-check text-start my-3">
                 <input
                 className="form-check-input"
