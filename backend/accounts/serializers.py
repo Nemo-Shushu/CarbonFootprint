@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueValidator
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '_all_'
+        fields = '__all__'
 
 
 class RegisterSerializer(serializers.ModelSerializer):

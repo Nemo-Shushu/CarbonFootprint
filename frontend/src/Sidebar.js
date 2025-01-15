@@ -9,16 +9,18 @@ const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [csrf, setCsrf] = useState();
+  const [username, setUserName] = useState();
   const navigate = useNavigate(); 
   const location = useLocation();
 
   useEffect(() => {
     if (location.pathname === "/dashboard") {
-      setActiveItem("Dashboard");
+      setActiveItem("DashboardgetName()");
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
     }
     getSession();
+    getName();
   }, [location.pathname]); 
 
   function getCSRF() {
@@ -70,14 +72,14 @@ const Sidebar = () => {
       fetch("http://localhost:8000/api2/whoami/", {
         credentials: "include",
       })
-      .then((res) => {
-
-      }
-      )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUserName(data.username);
+      })
       .catch((err) => {
         console.log(err);
       });
-      navigate("/sign-in");
     };
 
     const handleDashboard = () => {
@@ -92,7 +94,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="user-info">
       <div className="user-name">
-        <span>JOHN</span>
+        <span>{username}</span>
         <img src="/images/logout.png" alt="Logout Icon" className="icon logout" 
           onClick={handleLogout}
           style={{ cursor: "pointer" }}
