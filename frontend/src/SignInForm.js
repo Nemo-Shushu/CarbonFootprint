@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 async function loginUser(credentials) {
-    return fetch('http://localhost:8000/api/signin/', {
+    return fetch('http://localhost:8000/api/accounts/signin/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -17,9 +17,122 @@ async function loginUser(credentials) {
 }
 
 function SignInForm() {
+    const [csrf, setCsrf] = useState();
+    const [error, setError] = useState();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getSession();
+    }, []);
+
+    function getCSRF() {
+        fetch("http://localhost:8000/api2/csrf/", {
+          credentials: "include",
+        })
+        .then((res) => {
+          let csrfToken = res.headers.get("X-CSRFToken");
+          setCsrf(csrfToken);
+          console.log(csrfToken);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    
+    function getSession() {
+        fetch("http://localhost:8000/api2/session/", {
+            credentials: "include",
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log(data);
+            if (data.isAuthenticated) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
+            getCSRF();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+    
+    function whoami() {
+        fetch("http://localhost:8000/api2/whoami/", {
+            headers: {
+            "Content-Type": "application/json",
+            },
+            credentials: "include",
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("You are logged in as: " + data.username);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    function handlePasswordChange(event) {
+        setPassword(event.target.value)
+    }
+
+    function handleUserNameChange(event) {
+        setUserName(event.target.value)
+    }
+
+    function isResponseOk(response) {
+        if (response.status >= 200 && response.status <= 299) {
+            return response.json();
+        } else {
+            throw Error(response.statusText);
+        }
+    }
+    
+    function login(event) {
+        event.preventDefault();
+        fetch("http://localhost:8000/api2/login/", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrf,
+            },
+            credentials: "include",
+            body: JSON.stringify({username: username, password: password}),
+        })
+        .then(isResponseOk)
+        .then((data) => {
+            console.log(data);
+            setIsAuthenticated(true);
+            setUserName("");
+            setPassword("");
+            setError("");
+        })
+        .then(navigate('/dashboard'))
+        .catch((err) => {
+            console.log(err);
+            setError("Wrong username or password.");
+        });
+    }
+
+    function logout() {
+        fetch("http://localhost:8000/api2/logout", {
+            credentials: "include",
+        })
+        .then(isResponseOk)
+        .then((data) => {
+            console.log(data);
+            setIsAuthenticated(false);
+            getCSRF();
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -41,7 +154,7 @@ function SignInForm() {
         <div>
         {/* Main Form */}
         <main className="form-signin w-100 m-auto">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={login}>
             <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
             <div className="form-floating">
@@ -51,7 +164,7 @@ function SignInForm() {
                 className="form-control"
                 id="floatingInput"
                 placeholder="Username"
-                onChange={handleChange}
+                onChange={handleUserNameChange}
                 />
                 <label htmlFor="floatingInput">Username</label>
             </div>
@@ -62,7 +175,7 @@ function SignInForm() {
                 className="form-control"
                 id="floatingPassword"
                 placeholder="Password"
-                onChange={handleChange}
+                onChange={handlePasswordChange}
                 />
                 <label htmlFor="floatingPassword">Password</label>
             </div>
