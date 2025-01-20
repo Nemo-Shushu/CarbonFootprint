@@ -10,6 +10,9 @@ const Sidebar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [csrf, setCsrf] = useState();
   const [username, setUserName] = useState();
+  const [firstName, setFirstName] = useState();
+  const [email, setEmail] = useState();
+
   const navigate = useNavigate(); 
   const location = useLocation();
 
@@ -76,6 +79,8 @@ const Sidebar = () => {
       .then((data) => {
         console.log(data);
         setUserName(data.username);
+        setFirstName(data.forename);
+        setEmail(data.email);
       })
       .catch((err) => {
         console.log(err);
@@ -94,13 +99,13 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="user-info">
       <div className="user-name">
-        <span>{username}</span>
+        <span>{firstName}</span>
         <img src="/images/logout.png" alt="Logout Icon" className="icon logout" 
           onClick={handleLogout}
           style={{ cursor: "pointer" }}
         />
       </div>
-        <p className="email">2134567@student.gla.ac.uk</p>
+        <p className="email">{email}</p>
         <Link to="/calculator">
           <button className="new-report-btn">+ New Report</button>
         </Link>

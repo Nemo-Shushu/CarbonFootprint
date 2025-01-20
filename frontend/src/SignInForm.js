@@ -22,6 +22,7 @@ function SignInForm() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -44,7 +45,7 @@ function SignInForm() {
     
     function getSession() {
         fetch("http://localhost:8000/api2/session/", {
-            credentials: "include",
+            credecntials: "include",
         })
         .then((res) => res.json())
         .then((data) => {
