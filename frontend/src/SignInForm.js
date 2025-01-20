@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
@@ -25,6 +26,10 @@ function SignInForm() {
 
     const navigate = useNavigate();
 
+    const handleProtect = () => {
+        navigate("/dashboard")
+    };
+
     useEffect(() => {
         getSession();
     }, []);
@@ -45,7 +50,7 @@ function SignInForm() {
     
     function getSession() {
         fetch("http://localhost:8000/api2/session/", {
-            credecntials: "include",
+            credentials: "include",
         })
         .then((res) => res.json())
         .then((data) => {
@@ -154,8 +159,7 @@ function SignInForm() {
         }
     };
 
-    if (!isAuthenticated) { 
-        return (
+    return !useAuth() ? (
         <div>
         {/* Main Form */}
         <main className="form-signin w-100 m-auto">
@@ -210,10 +214,9 @@ function SignInForm() {
             </form>
         </main>
         </div>
+    ) : (
+        handleProtect()
     );
-    } else {
-        navigate('/dashboard');
-    }
 };
 
 export default SignInForm;

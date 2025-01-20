@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
@@ -31,7 +32,11 @@ function RegisterForm() {
     setUser(prevUser => ({ ...prevUser, [name]: value }));
   };
 
-  return (
+  const handleProtect = () => {
+    navigate("/sign-in")
+  };
+
+  return !useAuth() ? (
     <div>
     {/* Main Form */}
     <main className="form-signin w-100 m-auto">
@@ -145,6 +150,8 @@ function RegisterForm() {
         </form>
     </main>
     </div>
+  ) : (
+    handleProtect()
   );
 }
 
