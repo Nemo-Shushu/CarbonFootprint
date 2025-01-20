@@ -193,15 +193,15 @@ class ReportcalculateView(APIView):
                     },
                     'water': {
                         'results': water_results,
-                        'total_emissions': round(total_water_emissions, 2)
+                        'total_water_emissions': round(total_water_emissions, 2)
                     },
                     'travel': {
                         'results': travel_results,
-                        'total_emissions': round(total_travel_emissions, 2)
+                        'total_travel_emissions': round(total_travel_emissions, 2)
                     },
                     'waste': {
                         'results': waste_results,
-                        'total_emissions': round(total_waste_emissions, 2)
+                        'total_waste_emissions': round(total_waste_emissions, 2)
                     }
                 },
                 status=status.HTTP_200_OK

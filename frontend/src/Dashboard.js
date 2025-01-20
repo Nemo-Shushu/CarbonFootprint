@@ -18,13 +18,7 @@ function TableComponent() {
 
     useEffect(() => {
         // http://localhost:8080/api/users/reports should return a json in format above with all available data to the user
-        fetch("http://localhost:8000/api/user/me", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-            },
-        })
-//change
+        fetch("http://localhost:8000/api/users/reports")
           .then((response) => response.json())
           .then((json) => setData(json))
           .catch((error) => console.error("Error fetching data:", error));
@@ -45,21 +39,16 @@ function TableComponent() {
                     </tr>
                 </thead>
                 <tbody>
-                    {data_api.map((row, index) => (
-                        <tr key={index} className="align-middle">
-                            <th scope="row">{row.id || "N/A"}</th>
-                            <td>{row.institute || "N/A"}</td>
-                            <td>{row.research_field || "N/A"}</td>
-                            <td>{row.emissions || "N/A"}</td>
-                            <td>
-                                <button className="btn btn-outline-secondary w-30" type="button">
-                                    View & Edit
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                {data.map((row, index) => (
+                    <tr key={index} className="align-middle">
+                    <th scope="row">{row.id}</th>
+                    <td>{row.institution}</td>
+                    <td>{row.field}</td>
+                    <td>{row.emissions}</td>
+                    <td><button className="btn btn-outline-secondary w-30" type="button">View & Edit</button></td>
+                    </tr>
+                ))}
                 </tbody>
-//change
                 </table>
             </div>
         </main>
