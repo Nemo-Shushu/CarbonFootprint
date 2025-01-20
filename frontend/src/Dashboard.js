@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from './useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/dashboard.css";
 import Sidebar from './Sidebar';
@@ -56,7 +58,13 @@ function TableComponent() {
 };
 
 function Dashboard() {
-    return (    
+    const navigate = useNavigate();
+
+    const handleProtect = () => {
+        navigate("/sign-in")
+    };
+
+    return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 20%", backgroundColor: "#385A4F" }} />
             <main style={{ flex: "1", padding: "1rem", maxWidth: "80%" }}>
@@ -66,6 +74,8 @@ function Dashboard() {
                 <TableComponent />
             </main>
         </div>
+    ) : (
+        handleProtect()
     );
 }
 

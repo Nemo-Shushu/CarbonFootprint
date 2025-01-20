@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./useAuth";
 import Sidebar from "./Sidebar";
 import "./static/RequestAdmin.css";
 
@@ -14,7 +15,11 @@ const RequestAdmin = () => {
         navigate("/dashboard"); 
     };
 
-    return (
+    const handleProtect = () => {
+        navigate("/sign-in")
+    };
+
+    return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
   
             <Sidebar style={{ flex: "0 0 15%", backgroundColor: "#385A4F" }} />
@@ -41,6 +46,8 @@ const RequestAdmin = () => {
                 </div>
             </main>
         </div>
+    ) : (
+        handleProtect()
     );
 };
 
