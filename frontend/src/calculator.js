@@ -500,20 +500,12 @@ function Calculator() {
         }, [report["procurement"]]);
 
         const [category, setCategory] = useState('');
-<<<<<<< HEAD
         const [visibleField, setVisibleField] = useState("invisible col-sm-3");
-=======
-        const [visible, setVisible] = useState("invisible col-sm-3");
->>>>>>> ZhuofanbackendCalculate
 
         const handleCategoryChange = (event) => {
             let eventValue = event.target.value;
             setCategory(eventValue);
-<<<<<<< HEAD
             setVisibleField("visible col-sm-3");
-=======
-            setVisible("visible col-sm-3");
->>>>>>> ZhuofanbackendCalculate
         };
 
         const handleBack = () => {
@@ -528,10 +520,7 @@ function Calculator() {
         const handleProcurementChange = (event) => {
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
-<<<<<<< HEAD
             document.getElementById(name).className = "d-block align-middle";
-=======
->>>>>>> ZhuofanbackendCalculate
         };
 
         return (
@@ -548,11 +537,7 @@ function Calculator() {
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
-<<<<<<< HEAD
                         <div className={visibleField}>
-=======
-                        <div className={visible}>
->>>>>>> ZhuofanbackendCalculate
                             <label htmlFor="firstName" className="form-label"><strong>{category + " - " + procurementCategories.find(categories => categories.code === category)?.name}</strong></label>
                             <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
                             <div className="invalid-feedback">
@@ -563,7 +548,6 @@ function Calculator() {
                     </div>
                 </form>
 
-<<<<<<< HEAD
                 <div class="table-responsive small">
                     <table class="table table-striped table-sm">
                     <thead>
@@ -586,8 +570,6 @@ function Calculator() {
                     </tbody>
                     </table>
                 </div>
-=======
->>>>>>> ZhuofanbackendCalculate
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
@@ -622,11 +604,7 @@ function Calculator() {
     };
 
 
-<<<<<<< HEAD
     return useAuth() ? (    
-=======
-    return (    
->>>>>>> ZhuofanbackendCalculate
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 20%", backgroundColor: "#385A4F" }} />
             <main style={{ flex: "1", padding: "1rem", maxWidth: "80%" }}>

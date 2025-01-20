@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import ReportcalculateView
 
+app_name = "calculator"
 urlpatterns = [
-    path('ReportcalculateView/', ReportcalculateView.as_view(), name='report_calculate'),
+    path('createreport/', ReportcalculateView.as_view(), name='report_calculate'),
 ]
