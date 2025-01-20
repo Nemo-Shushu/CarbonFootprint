@@ -500,12 +500,12 @@ function Calculator() {
         }, [report["procurement"]]);
 
         const [category, setCategory] = useState('');
-        const [visible, setVisible] = useState("invisible col-sm-3");
+        const [visibleField, setVisibleField] = useState("invisible col-sm-3");
 
         const handleCategoryChange = (event) => {
             let eventValue = event.target.value;
             setCategory(eventValue);
-            setVisible("visible col-sm-3");
+            setVisibleField("visible col-sm-3");
         };
 
         const handleBack = () => {
@@ -520,6 +520,7 @@ function Calculator() {
         const handleProcurementChange = (event) => {
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
+            document.getElementById(name).className = "d-block align-middle";
         };
 
         return (
@@ -536,7 +537,7 @@ function Calculator() {
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
-                        <div className={visible}>
+                        <div className={visibleField}>
                             <label htmlFor="firstName" className="form-label"><strong>{category + " - " + procurementCategories.find(categories => categories.code === category)?.name}</strong></label>
                             <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
                             <div className="invalid-feedback">
@@ -547,6 +548,28 @@ function Calculator() {
                     </div>
                 </form>
 
+                <div class="table-responsive small">
+                    <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                        <th scope="col">code</th>
+                        <th scope="col">category</th>
+                        <th scope="col">value</th>
+                        <th scope="col">button</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {procurementCategories.map((category) => (
+                        <tr key={category.code} className="d-none align-middle" id={category.code}>
+                        <th scope="row">{category.code}</th>
+                        <td>{category.name}</td>
+                        <td>{procurementReport[category.code]}</td>
+                        <td><button className="btn btn-outline-secondary w-30" type="button">View & Edit</button></td>
+                        </tr>
+                    ))}
+                    </tbody>
+                    </table>
+                </div>
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
