@@ -1,0 +1,32 @@
+### 测试 CombinedUtilitiesView
+POST http://localhost:8000/api/calculator/ReportcalculateView/
+Content-Type: application/json
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "academic-laboratory-area": "100",
+    "academic-office-area": "200",
+    "admin-office-area": "300",
+    "admin-space-area": "150",
+    "medical-laboratory-area": "250",
+    "engineering-laboratory-area": "350",
+    "physical-laboratory-area": "400"
+  },
+  "travel": {
+    "air-eco-short": "1000",
+    "air-business-short": "500",
+    "air-eco-long": "800",
+    "air-business-long": "300",
+    "land-car": "1200",
+    "land-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  }
+}

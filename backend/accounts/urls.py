@@ -1,7 +1,5 @@
 from django.urls import path
 from accounts.views import RegisterView, CsrfTokenView, LogoutView,LoginView
-from . import views
-
 app_name = "accounts"
 
 urlpatterns = [
