@@ -1,13 +1,19 @@
   .sidebar {
-    width: 15rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 15rem; 
     max-width: 20rem;
+    height: 100vh; 
+    border-radius: 8px;
     background-color: #385A4F;
     color: white;
     display: flex;
     flex-direction: column;
-    padding-top: 1rem;
     align-items: center;
-    border-radius: 8px;
+    padding-top: 1rem;
+    overflow-y: auto; 
+    z-index: 1000;
   }
   
   .user-info {
@@ -22,12 +28,22 @@
     font-weight: bold; 
     color: white; 
     margin-bottom: 6px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 170px;
+    display: inline-block; 
   }
 
   .email {
-    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 200px; 
+    display: inline-block; 
+    font-size: 1rem; 
+    color: #8dc8bb; 
     align-items: center;
-    color: #8dc8bb;
   }
   
   .new-report-btn {
@@ -86,6 +102,7 @@
     width: 25px; 
     width: 25px; 
     object-fit: contain; 
+    margin-left: 10px;
   }
   
   .menu-item:hover {
