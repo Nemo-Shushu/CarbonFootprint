@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './static/index.css';
+import { BrowserRouter, Routes, Route, Redirect } from "react-router-dom";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import RegisterForm from './RegisterForm';

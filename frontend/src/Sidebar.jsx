@@ -20,9 +20,11 @@ const Sidebar = () => {
 
   useEffect(() => {
     if (location.pathname === "/dashboard") {
-      setActiveItem("DashboardgetName()");
+      setActiveItem("Dashboard");
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
+    } else if (location.pathname === "/calculator*") {
+      setActiveItem("");
     }
     getSession();
     getName();
@@ -93,38 +95,31 @@ const Sidebar = () => {
       navigate("/dashboard")
     };
 
+    const handleCalculator = () => {
+      navigate("/calculator")
+    };
+
     const handleRequestAdmin = () => {
       navigate("/request-admin")
     };
 
   return (
-    <div className="sidebar">
-      <div className="user-info">
-      <div className="user-name">
+    <div className="bg-success text-white d-flex flex-column pt-3 align-items-center" style={{width: 15 + 'rem', maxWidth: 20 + 'rem'}}>
+      <div className="m-2">
+      <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
         <span>{firstName}</span>
-        <img src="/images/logout.png" alt="Logout Icon" className="icon logout" 
-          onClick={handleLogout}
-          style={{ cursor: "pointer" }}
-        />
+        <img src="/images/logout.png" alt="Logout Icon" onClick={handleLogout} style={{width: 25 + 'px', objectFit: 'contain', cursor: "pointer"}}/>
       </div>
-        <p className="email">{email}</p>
-        <Link to="/calculator">
-          <button className="new-report-btn">+ New Report</button>
-        </Link>
+        <p className="fs-6 align-items-center text-white-50" style={{overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 + 'px'}}>{email}</p>
+        <button className="btn btn-light text-success text-align-center fs-6 fw-bold border-0 p-2 rounded m-2" style={{width: 90 + '%'}} onClick={handleCalculator}>+ New Report</button>
       </div>
-      <nav className="menu">
+      <nav className="w-100">
       <ul>
-          <li
-            className={`menu-item ${activeItem === "Dashboard" ? "active" : ""}`}
-            onClick={handleDashboard}
-          >
-            <span className="icon"><img src="/images/Dashboard.png" alt="Dashboard Icon" /></span> Dashboard
+          <li className={`btn btn-success d-flex align-items-center p-2 text-white fs-6 mb-3 ${activeItem === "Dashboard" ? "active" : ""}`} onClick={handleDashboard} style={{cursor: "pointer", width: 175 + 'px'}}>
+            <img src="/images/Dashboard.png" alt="Dashboard Icon" style={{width: 20 + 'px', objectFit: 'contain', marginRight: 10 + 'px'}}/> Dashboard
           </li>
-          <li
-            className={`menu-item ${activeItem === "Request Admin" ? "active" : ""}`}
-            onClick={handleRequestAdmin}
-          >
-            <span className="icon request-admin"><img src="/images/RequestAdmin.png" alt="Request Admin Icon" /></span> Request Admin
+          <li className={`btn btn-success d-flex align-items-center p-2 text-white fs-6 mb-3 ${activeItem === "Request Admin" ? "active" : ""}`} onClick={handleRequestAdmin} style={{cursor: "pointer", width: 175 + 'px'}}>
+            <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px'}}/> Request Admin
           </li>
         </ul>
       </nav>
