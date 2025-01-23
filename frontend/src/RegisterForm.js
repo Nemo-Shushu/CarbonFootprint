@@ -4,8 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
+let backendUrl = "http://localhost:8000/";
+backendUrl = "https://sh14main-django2-1.onrender.com/";
+
 async function createUser(user) {
-  return fetch('http://localhost:8000/api/accounts/register/', {
+  return fetch(backendUrl.concat('/api/accounts/register/'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
