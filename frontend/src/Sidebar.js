@@ -4,6 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+let backendUrl = "http://localhost:8000/";
+backendUrl = "https://sh14main-django2-1.onrender.com/";
+
 const Sidebar = () => {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
@@ -27,7 +30,7 @@ const Sidebar = () => {
   }, [location.pathname]); 
 
   function getCSRF() {
-    fetch("http://localhost:8000/api2/csrf/", {
+    fetch(backendUrl.concat("api2/csrf/"), {
       credentials: "include",
     })
     .then((res) => {
@@ -41,7 +44,7 @@ const Sidebar = () => {
 }
 
   function getSession() {
-    fetch("http://localhost:8000/api2/session/", {
+    fetch(backendUrl.concat("api2/session/"), {
         credentials: "include",
     })
     .then((res) => res.json())
@@ -61,7 +64,7 @@ const Sidebar = () => {
 
     const handleLogout = () => {
       localStorage.removeItem("userToken"); 
-      fetch("http://localhost:8000/api2/logout/", {
+      fetch(backendUrl.concat("api2/logout"), {
         credentials: "include",
       })
       .catch((err) => {
@@ -72,7 +75,7 @@ const Sidebar = () => {
 
     const getName = () => {
       localStorage.removeItem("userToken"); 
-      fetch("http://localhost:8000/api2/whoami/", {
+      fetch(backendUrl.concat("api2/whoami/"), {
         credentials: "include",
       })
       .then((res) => res.json())

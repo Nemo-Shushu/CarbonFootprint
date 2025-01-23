@@ -12,6 +12,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 
+let backendUrl = "http://localhost:8000/";
+backendUrl = "https://sh14main-django2-1.onrender.com/";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
