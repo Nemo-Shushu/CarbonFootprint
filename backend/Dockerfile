@@ -57,8 +57,12 @@ RUN pip install --no-cache-dir -r requirements.txt
  
 # Copy the Django project to the container
 COPY . /app/
-COPY .venv/lib/python3.13/site-packages/django/middleware/csrf.py /usr/local/lib/python3.11/site-packages/django/middleware/
- 
+
+# The following are used to make changes to default python packages to let Django use the partition attribute
+COPY modified_libraries/middleware.py /usr/local/lib/python3.11/site-packages/django/contrib/sessions/
+COPY modified_libraries/cookies.py /usr/local/lib/python3.11/http/
+COPY modified_libraries/response.py /usr/local/lib/python3.11/site-packages/django/http/
+
 # Expose the Django port
 EXPOSE 8000
  
