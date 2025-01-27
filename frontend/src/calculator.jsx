@@ -73,7 +73,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(utilitiesReport, null, 2)}
+                {/* {JSON.stringify(utilitiesReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
                         <div className="mt-4 fst-italic">
@@ -211,7 +211,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(travelReport, null, 2)}
+                {/* {JSON.stringify(travelReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
@@ -408,7 +408,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(wasteReport, null, 2)}
+                {/* {JSON.stringify(wasteReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
@@ -542,7 +542,7 @@ function Calculator() {
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {JSON.stringify(procurementReport, null, 2)}
+                {/* {JSON.stringify(procurementReport, null, 2)} */}
                 <h2>Procurement</h2>
                 <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
                     <option selected disabled="disabled">Select a procurement category</option>
@@ -623,9 +623,9 @@ function Calculator() {
     return useAuth() ? (    
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 17%",}} />
-            <main style={{marginLeft: "17%", flex: "1", padding: "1rem", overflowY: "auto",}}>
+            <main style={{flex: "1", padding: "1rem", overflowY: "auto",}}>
                 <CalculationBar />
-                {JSON.stringify(report, null, 2)}
+                {/* {JSON.stringify(report, null, 2)} */}
                 <Routes>
                     <Route path="/" element={<Instructions />} />
                     <Route path="utilities" element={<Utilities />} />

@@ -24,7 +24,7 @@ const RequestAdmin = () => {
   
             <Sidebar style={{ flex: "0 0 17%", }} />
             
-            <main style={{marginLeft: "17%", flex: "1", padding: "1rem", overflowY: "auto",}} className="request-admin-container">
+            <main style={{flex: "1", padding: "1rem", overflowY: "auto",}} className="request-admin-container">
                 <h1>Request Admin</h1>
                 <textarea
                     className="request-textarea"
