@@ -68,10 +68,16 @@ const Sidebar = () => {
       fetch(backendUrl.concat("api2/logout"), {
         credentials: "include",
       })
+      .then(isResponseOk)
+      .then((data) => {
+          console.log(data);
+          setIsAuthenticated(false);
+          getCSRF();
+          navigate("/sign-in");
+      })
       .catch((err) => {
-        console.log(err);
+          console.log(err);
       });
-      navigate("/sign-in");
     };
 
     const getName = () => {
