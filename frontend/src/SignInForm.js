@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 let backendUrl = "http://localhost:8000/";
-backendUrl = "https://sh14main-django2-1.onrender.com/";
+// backendUrl = "https://sh14main-django2-1.onrender.com/";
 
 async function loginUser(credentials) {
     return fetch(backendUrl.concat('/api/accounts/signin/'), {
@@ -120,15 +120,13 @@ function SignInForm() {
             setUserName("");
             setPassword("");
             setError("");
+            navigate('/dashboard');
         })
         .catch((err) => {
             console.log(err);
             setError("Wrong username or password");
         });
         console.log(isAuthenticated);
-        if (isAuthenticated===true) {
-            navigate('/dashboard');
-        }
     }
 
     function logout() {

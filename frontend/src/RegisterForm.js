@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 let backendUrl = "http://localhost:8000/";
-backendUrl = "https://sh14main-django2-1.onrender.com/";
+// backendUrl = "https://sh14main-django2-1.onrender.com/";
 
 async function createUser(user) {
   return fetch(backendUrl.concat('/api/accounts/register/'), {

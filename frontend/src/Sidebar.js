@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 let backendUrl = "http://localhost:8000/";
-backendUrl = "https://sh14main-django2-1.onrender.com/";
+// backendUrl = "https://sh14main-django2-1.onrender.com/";
 
 const Sidebar = () => {
 
