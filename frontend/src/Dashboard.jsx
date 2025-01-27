@@ -6,6 +6,7 @@ import "./static/dashboard.css";
 import Sidebar from './Sidebar';
 import "./static/Sidebar.css";
 import "./static/RequestAdmin.css"
+import Profile from './Profile';
 
 function TableComponent() {
     const data = [
@@ -29,6 +30,7 @@ function TableComponent() {
 
     return (
         <main class="ms-sm-auto px-md-4">
+
             <h2>Available Reports</h2>
             <div class="table-responsive small">
                 <table class="table table-striped table-sm">
@@ -60,17 +62,25 @@ function TableComponent() {
 
 function Dashboard() {
     const navigate = useNavigate();
+    const [showProfile, setShowProfile] = useState(false);
 
     const handleProtect = () => {
         navigate("/sign-in")
     };
 
+    const toggleProfile = () => {
+        setShowProfile((prev) => !prev);
+    }
+
     return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
-            <Sidebar style={{ flex: "0 0 17%",}} />
-            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}}>
-                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 className="h2">Dashboard</h1>
+            <Sidebar style={{ flex: "0 0 17%",}} onNameClick={toggleProfile}/>
+            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} onClick={() => setShowProfile(false)}>
+                <div className="d-flex flex-column">
+                    {showProfile && <Profile />}
+                    <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h1 className="h2">Dashboard</h1>
+                    </div>
                 </div>
                 <TableComponent />
             </main>

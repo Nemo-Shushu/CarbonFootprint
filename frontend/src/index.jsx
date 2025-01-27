@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import CalculationBar from './CalculationBar';
+import Profile from './Profile';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +28,7 @@ root.render(
             <Route path="request-admin" element={<RequestAdmin />}/>
             <Route path="calculator/*" element={<Calculator />}/>
             <Route path="calculationBar" element={<CalculationBar />}/>
+            <Route path="profile" element={<Profile />}/>
           </Route>
       </Routes>
   </BrowserRouter>

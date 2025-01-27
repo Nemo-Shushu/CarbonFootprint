@@ -52,5 +52,12 @@ def whoami_view(request):
         return JsonResponse({'isAuthenticated': False})
 
     print(type(request.user))
-    return JsonResponse({'username': request.user.username, 'forename': request.user.first_name,
-                         'email': request.user.email})
+    user = request.user
+    return JsonResponse({
+        'isAuthenticated': True,
+        'username': user.username,
+        'forename': user.first_name,
+        'email': user.email,
+        'institute': user.institute,
+        'research_field': getattr(user, 'research_field', None),  
+    })

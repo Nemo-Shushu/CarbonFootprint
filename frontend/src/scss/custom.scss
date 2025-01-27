@@ -5,7 +5,8 @@
 @import "./node_modules/bootstrap/scss/variables";
 
 $custom-colors: (
-  "moss": #385a4f
+  "moss": #385a4f,
+  "grey": #7d7d7d77,
 );
 
 $theme-colors: map-merge($theme-colors, $custom-colors);
