@@ -5,7 +5,7 @@ services:
     build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend/:/usr/src/backend
+      - ./backend/:/app
     ports:
       - 8000:8000
     env_file:
@@ -32,6 +32,8 @@ services:
       dockerfile: Dockerfile
     environment:
       WATCHPACK_POLLING: "true"
+    env_file:
+      - ./.env.dev
     volumes:
       - /app/node_modules
       - ./frontend:/app

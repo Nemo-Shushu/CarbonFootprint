@@ -1,7 +1,10 @@
 # Build stage
-FROM node:18 AS build
+FROM node:18-alpine
 
 WORKDIR /app
+
+# Set the environment variables
+ENV VITE_BACKEND_URL http://localhost:8000/
 
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
@@ -12,11 +15,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Build the React app
-RUN npm run build
-
-# Expose port 80
+# Expose port 3000
 EXPOSE 3000
 
-# Start Nginx
-CMD ["npm", "start"]
+# Start Serve
+CMD [ "npm", "run", "dev" ]
