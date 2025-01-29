@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 async function createUser(user) {
-  return fetch('http://localhost:8000/api/accounts/register/', {
+  return fetch(backendUrl.concat('api/accounts/register/'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -31,7 +34,11 @@ function RegisterForm() {
     setUser(prevUser => ({ ...prevUser, [name]: value }));
   };
 
-  return (
+  const handleProtect = () => {
+    navigate("/sign-in")
+  };
+
+  return !useAuth() ? (
     <div>
     {/* Main Form */}
     <main className="form-signin w-100 m-auto">
@@ -145,6 +152,8 @@ function RegisterForm() {
         </form>
     </main>
     </div>
+  ) : (
+    handleProtect()
   );
 }
 
