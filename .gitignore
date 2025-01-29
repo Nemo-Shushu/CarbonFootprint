@@ -6,3 +6,4 @@ env/
 .env.prod
 .env.prod.db
 *sqlite3
+frontend/dist
