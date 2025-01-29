@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 async function loginUser(credentials) {
-    return fetch('http://localhost:8000/api/accounts/signin/', {
+    return fetch(backendUrl.concat('/api/accounts/signin/'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -35,7 +37,7 @@ function SignInForm() {
     }, []);
 
     function getCSRF() {
-        fetch("http://localhost:8000/api2/csrf/", {
+        fetch(backendUrl.concat("api2/csrf/"), {
           credentials: "include",
         })
         .then((res) => {
@@ -49,7 +51,7 @@ function SignInForm() {
     }
     
     function getSession() {
-        fetch("http://localhost:8000/api2/session/", {
+        fetch(backendUrl.concat("api2/session/"), {
             credentials: "include",
         })
         .then((res) => res.json())
@@ -68,7 +70,7 @@ function SignInForm() {
     }
     
     function whoami() {
-        fetch("http://localhost:8000/api2/whoami/", {
+        fetch(backendUrl.concat("api2/whoami/"), {
             headers: {
             "Content-Type": "application/json",
             },
@@ -101,7 +103,7 @@ function SignInForm() {
     
     function login(event) {
         event.preventDefault();
-        fetch("http://localhost:8000/api2/login/", {
+        fetch(backendUrl.concat('api2/login/'), {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
@@ -117,19 +119,17 @@ function SignInForm() {
             setUserName("");
             setPassword("");
             setError("");
+            navigate('/dashboard');
         })
         .catch((err) => {
             console.log(err);
             setError("Wrong username or password");
         });
         console.log(isAuthenticated);
-        if (isAuthenticated===true) {
-            navigate('/dashboard');
-        }
     }
 
     function logout() {
-        fetch("http://localhost:8000/api2/logout", {
+        fetch(backendUrl.concat("api2/logout"), {
             credentials: "include",
         })
         .then(isResponseOk)

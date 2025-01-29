@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './static/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -12,7 +12,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import CalculationBar from './CalculationBar';
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
