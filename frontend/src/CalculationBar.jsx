@@ -41,16 +41,19 @@ const CalculationBar = () => {
     return (
         <div>
             <div className="nav-container">
-                {steps.map((step) => (
+                {steps.map((step) => {
+                    const isStep1Active = step.path === "/calculator/general-data-entry" && isStep1;
+
+                    return(
                     <div
                         key={step.path}
-                        className={`nav-item ${location.pathname.startsWith(step.path) ? "active" : ""
-                            }`}
+                        className={`nav-item ${location.pathname.startsWith(step.path) || isStep1Active ? "active" : "" }`}
                         onClick={() => handleNavigate(step.path)}
                     >
                         {step.label}
                     </div>
-                ))}
+                    );
+                })}
             </div>
 
             {isStep1 && (
