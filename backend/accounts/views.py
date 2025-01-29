@@ -42,6 +42,7 @@ class CsrfTokenView(APIView):
 class LoginView(APIView):
     permission_classes = (AllowAny,)
     
+    
     def post(self, request, format=None):
         username = request.data.get('username')
         password = request.data.get('password')
