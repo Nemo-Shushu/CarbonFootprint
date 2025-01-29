@@ -6,18 +6,32 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 
 
-class User(AbstractUser):
-    email = models.EmailField( max_length=35, unique=True, error_messages={'unique': "A user with this email already exists."})
-    institute = models.CharField(max_length=50, blank=True, null=True)
-    research_field = models.CharField(max_length=100, blank=True, null=True)
-    
-    is_admin = models.BooleanField (default = False)
-    is_researcher=models.BooleanField(default=False)
+class University(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
+
+
+class ResearchField(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class User(AbstractUser):
+    email = models.EmailField(max_length=35, unique=True, error_messages={'unique': "A user with this email already exists."})
+    institute = models.ForeignKey('University', on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
+    research_field = models.ForeignKey('ResearchField', on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
+
+    is_admin = models.BooleanField(default=False)
+    is_researcher = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.email})"
+
 
 
     def clean(self):
@@ -39,24 +53,24 @@ class User(AbstractUser):
     def is_researcher_user(self):
         return self.is_researcher
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    bio = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=100, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+#     bio = models.TextField(blank=True, null=True)
+#     location = models.CharField(max_length=100, blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     last_updated = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.user.username}'s Profile"
+#     def __str__(self):
+#         return f"{self.user.username}'s Profile"
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.profile.save()
 
 
 class ConversionFactor(models.Model):
