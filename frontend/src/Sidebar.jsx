@@ -63,6 +63,14 @@ const Sidebar = () => {
     });
 }
 
+function isResponseOk(response) {
+  if (response.status >= 200 && response.status <= 299) {
+      return response.json();
+  } else {
+      throw Error(response.statusText);
+  }
+}
+
     const handleLogout = () => {
       localStorage.removeItem("userToken"); 
       fetch(backendUrl.concat("api2/logout"), {

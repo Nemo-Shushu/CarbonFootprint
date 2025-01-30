@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './static/index.css';
 import App from './App';
 import RegisterForm from './RegisterForm';
 import SignInForm from './SignInForm';
@@ -10,6 +9,7 @@ import Frontpage from './Frontpage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
+import Profile from './Profile';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -17,16 +17,17 @@ root.render(
   //   <Frontpage />
   // </React.StrictMode>
   <BrowserRouter>
-  <Routes>
-  <Route path="/">
-  <Route index element={<Frontpage />}/>
-  <Route path="sign-in" element={<SignInForm />}/>
-  <Route path="register" element={<RegisterForm />}/>
-  <Route path="dashboard" element={<Dashboard />}/>
-  <Route path="request-admin" element={<RequestAdmin />}/>
-  <Route path="calculator/*" element={<Calculator />}/>
-  </Route>
-  </Routes>
+    <Routes>
+      <Route path="/">
+        <Route index element={<Frontpage />}/>
+        <Route path="sign-in" element={<SignInForm />}/>
+        <Route path="register" element={<RegisterForm />}/>
+        <Route path="dashboard" element={<Dashboard />}/>
+        <Route path="request-admin" element={<RequestAdmin />}/>
+        <Route path="calculator/*" element={<Calculator />}/>
+        <Route path="profile" element={<Profile />}/>
+      </Route>
+    </Routes>
   </BrowserRouter>
 );
 
