@@ -26,6 +26,8 @@ const CalculationBar = () => {
         location.pathname.startsWith("/calculator/travel") ||
         location.pathname.startsWith("/calculator/waste");
 
+    
+
     const handleNavigate = (path) => {
         if (path === "/calculator/general-data-entry") {
             navigate("/calculator/utilities");

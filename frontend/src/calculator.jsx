@@ -73,7 +73,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(utilitiesReport, null, 2)}
+                {/* {JSON.stringify(utilitiesReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
                         <div className="mt-4 fst-italic">
@@ -211,7 +211,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(travelReport, null, 2)}
+                {/* {JSON.stringify(travelReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
@@ -408,7 +408,7 @@ function Calculator() {
 
         return (
             <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(wasteReport, null, 2)}
+                {/* {JSON.stringify(wasteReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
 
@@ -501,6 +501,7 @@ function Calculator() {
 
         const [category, setCategory] = useState('');
         const [visibleField, setVisibleField] = useState("invisible col-sm-3");
+        const [rowVisibility, setRowVisibility] = useState({});
 
         const handleCategoryChange = (event) => {
             let eventValue = event.target.value;
@@ -517,20 +518,36 @@ function Calculator() {
             navigate("/calculator/results");
         };
 
+        const handleProcurementDelete = (categoryCode) => {
+            setProcurementReport((prevReport) => {
+                const updatedReport = { ...prevReport };
+                delete updatedReport[categoryCode];
+                return updatedReport;
+            });
+        
+            setRowVisibility((prevVisibility) => ({
+                ...prevVisibility,
+                [categoryCode]: false,
+            }));
+        };
+
         const handleProcurementChange = (event) => {
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
-            document.getElementById(name).className = "d-block align-middle";
+            setRowVisibility((prevVisibility) => ({
+                ...prevVisibility,
+                [name]: true,
+            }));
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
-                {JSON.stringify(procurementReport, null, 2)}
+            <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
+                {/* {JSON.stringify(procurementReport, null, 2)} */}
                 <h2>Procurement</h2>
                 <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
                     <option selected disabled="disabled">Select a procurement category</option>
                     {procurementCategories.map((category) => (
-                        <option value={category.code}>{category.name}</option>
+                        <option value={category.code}>{category.code} - {category.name}</option>
                     ))}
                 </select>
 
@@ -538,7 +555,6 @@ function Calculator() {
                     <div className="row g-2">
 
                         <div className={visibleField}>
-                            <label htmlFor="firstName" className="form-label"><strong>{category + " - " + procurementCategories.find(categories => categories.code === category)?.name}</strong></label>
                             <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
                             <div className="invalid-feedback">
                             Valid number is required.
@@ -548,10 +564,10 @@ function Calculator() {
                     </div>
                 </form>
 
-                <div class="table-responsive small">
-                    <table class="table table-striped table-sm">
+                <div class="table-responsive small mt-3">
+                    <table class="table table-light table-sm">
                     <thead>
-                        <tr>
+                        <tr className="align-middle text-center">
                         <th scope="col">code</th>
                         <th scope="col">category</th>
                         <th scope="col">value</th>
@@ -560,11 +576,11 @@ function Calculator() {
                     </thead>
                     <tbody>
                     {procurementCategories.map((category) => (
-                        <tr key={category.code} className="d-none align-middle" id={category.code}>
+                        <tr key={category.code} className={rowVisibility[category.code] ? 'align-middle text-center' : 'd-none align-middle text-center'} id={category.code}>
                         <th scope="row">{category.code}</th>
                         <td>{category.name}</td>
                         <td>{procurementReport[category.code]}</td>
-                        <td><button className="btn btn-outline-secondary w-30" type="button">View & Edit</button></td>
+                        <td><button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(category.code)}>Delete</button></td>
                         </tr>
                     ))}
                     </tbody>
@@ -572,8 +588,8 @@ function Calculator() {
                 </div>
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
+                    <button type="button" className="btn btn-success" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -606,10 +622,10 @@ function Calculator() {
 
     return useAuth() ? (    
         <div style={{ display: "flex", height: "100vh" }}>
-            <Sidebar style={{ flex: "0 0 20%", backgroundColor: "#385A4F" }} />
-            <main style={{ flex: "1", padding: "1rem", maxWidth: "80%" }}>
+            <Sidebar style={{ flex: "0 0 17%",}} />
+            <main style={{flex: "1", padding: "1rem", overflowY: "auto",}}>
                 <CalculationBar />
-                {JSON.stringify(report, null, 2)}
+                {/* {JSON.stringify(report, null, 2)} */}
                 <Routes>
                     <Route path="/" element={<Instructions />} />
                     <Route path="utilities" element={<Utilities />} />

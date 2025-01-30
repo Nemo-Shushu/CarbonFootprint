@@ -1,0 +1,15 @@
+// Custom.scss
+// Option A: Include all of Bootstrap
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+$custom-colors: (
+  "moss": #385a4f,
+  "grey": #7d7d7d77,
+);
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

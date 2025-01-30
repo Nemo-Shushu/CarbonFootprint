@@ -13,6 +13,8 @@ function Frontpage() {
         <div className="col-lg-6 mx-auto">
           <p className="lead mb-4">
             Welcome to the Carbon Footprint Tool
+            <br />
+            Register or Login to Get Started
           </p>
           <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <Link to="/register">

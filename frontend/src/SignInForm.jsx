@@ -61,7 +61,7 @@ function SignInForm() {
                 setIsAuthenticated(true);
             } else {
                 setIsAuthenticated(false);
-            getCSRF();
+                getCSRF();
             }
         })
         .catch((err) => {
@@ -120,28 +120,13 @@ function SignInForm() {
             setPassword("");
             setError("");
             navigate('/dashboard');
+            navigate('/dashboard');
         })
         .catch((err) => {
             console.log(err);
             setError("Wrong username or password");
         });
-        console.log(isAuthenticated);
     }
-
-    function logout() {
-        fetch(backendUrl.concat("api2/logout"), {
-            credentials: "include",
-        })
-        .then(isResponseOk)
-        .then((data) => {
-            console.log(data);
-            setIsAuthenticated(false);
-            getCSRF();
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
