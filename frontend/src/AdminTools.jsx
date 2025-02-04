@@ -6,6 +6,10 @@ import './scss/custom.scss';
 const AdminTool = () => {
     const [selectedText, setSelectedText] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [confirmationModal, setConfirmationModal] = useState(false);
+    const [actionType, setActionType] = useState(""); 
+    const [selectedRequest, setSelectedRequest] = useState(null);
+
     const data = [
         {
             id: 1,
@@ -34,6 +38,23 @@ const AdminTool = () => {
         setSelectedText("");
     };
 
+    const handleActionClick = (request, action) => {
+        setSelectedRequest(request); 
+        setActionType(action);
+        setConfirmationModal(true); 
+    };
+
+    const closeConfirmationModal = () => {
+        setConfirmationModal(false);
+        setSelectedRequest(null);
+        setActionType("");
+    };
+
+    const confirmAction = () => {
+        console.log('${actionType} action confirmed for request:', selectedRequest);
+        closeConfirmationModal(); 
+    };
+
     return (
         <div style={{ display: "flex", height: "100vh" }}>
             {/* SideBar */}
@@ -58,13 +79,21 @@ const AdminTool = () => {
                                     <tr key={row.id} className="align-middle">
                                         <td>{row.id}</td>
                                         <td>{row.email}</td>
-                                        <td style={{
-                                            maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                                            paddingRight: "50px", cursor: "pointer"
-                                        }} onClick={() => handleTextClick(row.text)}> {row.text} </td>
+                                        <td 
+                                        className="text-truncate"
+                                        style={{ color: "black", maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                                            paddingRight: "50px", cursor: "pointer" }} 
+                                        onClick={() => handleTextClick(row.text)}
+                                        onMouseEnter={(e) => (e.target.style.color = "blue")} 
+                                        onMouseLeave={(e) => (e.target.style.color = "black")}
+                                        > 
+                                        {row.text} 
+                                        </td>
                                         <td>
-                                            <button className="btn btn-success me-2" type="button"> Confirm </button>
-                                            <button className="btn btn-danger" type="button"> Deny </button>
+                                            <button className="btn btn-success me-2" type="button" onClick={() => handleActionClick(row, "Confirm")}
+                                            > Confirm </button>
+                                            <button className="btn btn-danger" type="button" onClick={() => handleActionClick(row, "Deny")}
+                                            > Deny </button>
                                         </td>
                                     </tr>
                                 ))
@@ -81,9 +110,11 @@ const AdminTool = () => {
                 
                 {/* PoP-up */}
                 {showModal && (
+                    <>
+                    <div className="modal-backdrop fade show"></div>
                     <div
-                        className="bg-background modal fade show"
-                        style={{ display: "block", background: "#0000007c" }}
+                        className=" modal fade show"
+                        style={{ display: "block", }}
                         tabIndex="-1"
                         role="dialog"
                     >
@@ -93,7 +124,7 @@ const AdminTool = () => {
                                     <h5 className="modal-title">Full Request Text</h5>
                                     <button type="button" className="btn-close" aria-label="Close" onClick={closeModal} ></button>
                                 </div>
-                                <div className="modal-body" style={{ maxHeight: "60vh", overflowY: "scroll", whiteSpace: "pre-wrap", }}>
+                                <div className="modal-body overflow-auto text-wrap" style={{ maxHeight: "60vh", }}>
                                     <p>{selectedText}</p>
                                 </div>
                                 <div className="modal-footer">
@@ -104,7 +135,44 @@ const AdminTool = () => {
                             </div>
                         </div>
                     </div>
+                    </>
                 )}
+
+                {confirmationModal && (
+                    <>
+                    <div className="modal-backdrop fade show"></div>
+                    <div
+                        className=" modal fade show"
+                        style={{ display: "block", }}
+                        tabIndex="-1"
+                        role="dialog"
+                    >
+                        <div className="modal-dialog modal-lg" style={{ display: "flex", alignItems: "center", justifyContent: "center", }}>
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Confirm Action</h5>
+                                    <button type="button" className="btn-close" onClick={closeConfirmationModal}></button>
+                                </div>
+                                <div className="modal-body">
+                                    <p>
+                                        Are you sure you want to <strong>{actionType}</strong> the request from{" "}
+                                        <strong>{selectedRequest?.email}</strong>?
+                                    </p>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={closeConfirmationModal}>
+                                        Cancel
+                                    </button>
+                                    <button type="button" className="btn btn-primary" onClick={confirmAction}>
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </>
+                )}
+
             </main>
         </div>
     );
