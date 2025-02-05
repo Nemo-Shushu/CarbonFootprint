@@ -499,14 +499,27 @@ function Calculator() {
             }
         }, [report["procurement"]]);
 
-        const [category, setCategory] = useState('');
-        const [visibleField, setVisibleField] = useState("invisible col-sm-3");
         const [rowVisibility, setRowVisibility] = useState({});
+        const [currentRow, setCurrentRow] = useState(0);
+        const [rowCategory, setRowCategory] = useState({});
+        const rows = Array.from({ length: 400 }, (_, i) => i);
+
+        const handleRevealRow = () => {
+            setCurrentRow(currentRow + 1);
+            setRowVisibility((prevVisibility) => ({
+                ...prevVisibility,
+                [currentRow]: true,
+            }));
+        }
 
         const handleCategoryChange = (event) => {
-            let eventValue = event.target.value;
-            setCategory(eventValue);
-            setVisibleField("visible col-sm-3");
+            const selectedValue = event.target.value;
+            const rowNum = event.target.closest('tr').id;
+        
+            setRowCategory((prevRowCategory) => ({
+                ...prevRowCategory,
+                [rowNum]: selectedValue
+            }));
         };
 
         const handleBack = () => {
@@ -542,45 +555,41 @@ function Calculator() {
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {/* {JSON.stringify(procurementReport, null, 2)} */}
+                {JSON.stringify(procurementReport, null, 2)}
+                {currentRow}
+                {JSON.stringify(rowVisibility, null, 2)}
                 <h2>Procurement</h2>
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
-                    <option selected disabled="disabled">Select a procurement category</option>
-                    {procurementCategories.map((category) => (
-                        <option value={category.code}>{category.code} - {category.name}</option>
-                    ))}
-                </select>
-
-                <form className="needs-validation" noValidate>
-                    <div className="row g-2">
-
-                        <div className={visibleField}>
-                            <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
+                
+                <button className="btn btn-light text-moss fs-1" onClick={handleRevealRow}>
+                    +
+                </button>
 
                 <div class="table-responsive small mt-3">
                     <table class="table table-light table-sm">
                     <thead>
                         <tr className="align-middle text-center">
-                        <th scope="col">code</th>
                         <th scope="col">category</th>
                         <th scope="col">value</th>
-                        <th scope="col">button</th>
+                        <th scope="col">delete</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {procurementCategories.map((category) => (
-                        <tr key={category.code} className={rowVisibility[category.code] ? 'align-middle text-center' : 'd-none align-middle text-center'} id={category.code}>
-                        <th scope="row">{category.code}</th>
-                        <td>{category.name}</td>
-                        <td>{procurementReport[category.code]}</td>
-                        <td><button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(category.code)}>Delete</button></td>
+                    {rows.map((num) => (
+                        <tr key={num} id={num} className={rowVisibility[num] ? 'align-middle text-center' : 'd-none align-middle text-center'}>
+                        <td>
+                            <select className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
+                                <option selected disabled="disabled">Select a procurement category</option>
+                                {procurementCategories.map((category) => (
+                                    <option value={category.code}>{category.code} - {category.name}</option>
+                                ))}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" className="form-control form-control-sm" disabled={rowCategory[num] === undefined} name={rowCategory[num]} placeholder="Enter amount spent in GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
+                        </td>
+                        <td>
+                            <button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(num)}>Delete</button>
+                        </td>
                         </tr>
                     ))}
                     </tbody>
