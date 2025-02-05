@@ -6,7 +6,7 @@ import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const Sidebar = ({ onNameClick }) => {
+function Sidebar({ onNameClick }) {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isAuthenticated, setIsAuthenticated] = useState(false);

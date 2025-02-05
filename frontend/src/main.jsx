@@ -27,7 +27,7 @@ root.render(
         <Route path="request-admin" element={<RequestAdmin />}/>
         <Route path="calculator/*" element={<Calculator />}/>
         <Route path="profile" element={<Profile />}/>
-        <Route path="adminTool" element={<AdminTool />}/>
+        <Route path="admin-tool" element={<AdminTool />}/>
       </Route>
     </Routes>
   </BrowserRouter>

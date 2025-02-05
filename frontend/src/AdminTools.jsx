@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./Sidebar";
 import './scss/custom.scss';
+import './static/AdminTools.css';
 
 function AdminTool() {
     const [selectedText, setSelectedText] = useState("");
-    const [showModal, setShowModal] = useState(false);
-    const [confirmationModal, setConfirmationModal] = useState(false);
+    const [showPopUp, setShowPopUp] = useState(false);
+    const [confirmationPopUp, setConfirmationPopUp] = useState(false);
     const [actionType, setActionType] = useState(""); 
     const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -30,29 +31,29 @@ function AdminTool() {
 
     function handleTextClick(text) {
         setSelectedText(text);
-        setShowModal(true);
+        setShowPopUp(true);
     };
 
-    function closeModal() {
-        setShowModal(false);
+    function closePopUp() {
+        setShowPopUp(false);
         setSelectedText("");
     };
 
     function handleActionClick(request, action) {
         setSelectedRequest(request); 
         setActionType(action);
-        setConfirmationModal(true); 
+        setConfirmationPopUp(true); 
     };
 
-    function closeConfirmationModal() {
-        setConfirmationModal(false);
+    function closeConfirmationPopUp() {
+        setConfirmationPopUp(false);
         setSelectedRequest(null);
         setActionType("");
     };
 
     function confirmAction() {
         console.log('${actionType} action confirmed for request:', selectedRequest);
-        closeConfirmationModal(); 
+        closeConfirmationPopUp(); 
     };
 
     return (
@@ -61,16 +62,16 @@ function AdminTool() {
             <Sidebar style={{ flex: "0 0 17%", }} />
 
             {/* Maincontent */}
-            <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
+            <main className="Main-context">
                 <h2 className="mt-4">Admin Requests</h2>
                 <div className="table-responsive small mt-3">
                     <table className="table table-striped table-sm">
                         <thead className="thead-dark">
                             <tr>
-                                <th style={{ width: "5%" }}>ID</th>
-                                <th style={{ width: "25%" }}>EMAIL</th>
-                                <th style={{ width: "50%" }}>REQUEST TEXT</th>
-                                <th style={{ width: "20%" }}>CONFIRMATION</th>
+                                <th style={{ width: "5%" }}>Id</th>
+                                <th style={{ width: "25%" }}>Email</th>
+                                <th style={{ width: "50%" }}>Request Admin</th>
+                                <th style={{ width: "20%" }}>Confirmaction</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,9 +81,7 @@ function AdminTool() {
                                         <td>{row.id}</td>
                                         <td>{row.email}</td>
                                         <td 
-                                        className="text-truncate"
-                                        style={{ color: "black", maxWidth: "200px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                                            paddingRight: "50px", cursor: "pointer" }} 
+                                        className="text-truncate ellipsis-text"
                                         onClick={() => handleTextClick(row.text)}
                                         onMouseEnter={(e) => (e.target.style.color = "blue")} 
                                         onMouseLeave={(e) => (e.target.style.color = "black")}
@@ -109,7 +108,7 @@ function AdminTool() {
                 </div>
                 
                 {/* PoP-up */}
-                {showModal && (
+                {showPopUp && (
                     <>
                     <div className="modal-backdrop fade show"></div>
                     <div
@@ -118,17 +117,17 @@ function AdminTool() {
                         tabIndex="-1"
                         role="dialog"
                     >
-                        <div className="modal-dialog modal-lg" style={{ display: "flex", alignItems: "center", justifyContent: "center", }}>
+                        <div className="modal-dialog modal-lg centered-flex" >
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h5 className="modal-title">Full Request Text</h5>
-                                    <button type="button" className="btn-close" aria-label="Close" onClick={closeModal} ></button>
+                                    <button type="button" className="btn-close" aria-label="Close" onClick={closePopUp} ></button>
                                 </div>
                                 <div className="modal-body overflow-auto text-wrap" style={{ maxHeight: "60vh", }}>
                                     <p>{selectedText}</p>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                                    <button type="button" className="btn btn-secondary" onClick={closePopUp}>
                                         Close
                                     </button>
                                 </div>
@@ -138,7 +137,7 @@ function AdminTool() {
                     </>
                 )}
 
-                {confirmationModal && (
+                {confirmationPopUp && (
                     <>
                     <div className="modal-backdrop fade show"></div>
                     <div
@@ -147,11 +146,11 @@ function AdminTool() {
                         tabIndex="-1"
                         role="dialog"
                     >
-                        <div className="modal-dialog modal-lg" style={{ display: "flex", alignItems: "center", justifyContent: "center", }}>
+                        <div className="modal-dialog modal-lg centered-flex">
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h5 className="modal-title">Confirm Action</h5>
-                                    <button type="button" className="btn-close" onClick={closeConfirmationModal}></button>
+                                    <button type="button" className="btn-close" onClick={closeConfirmationPopUp}></button>
                                 </div>
                                 <div className="modal-body">
                                     <p>
@@ -160,7 +159,7 @@ function AdminTool() {
                                     </p>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={closeConfirmationModal}>
+                                    <button type="button" className="btn btn-secondary" onClick={closeConfirmationPopUp}>
                                         Cancel
                                     </button>
                                     <button type="button" className="btn btn-primary" onClick={confirmAction}>
