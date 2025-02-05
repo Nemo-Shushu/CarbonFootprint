@@ -502,6 +502,7 @@ function Calculator() {
         const [rowVisibility, setRowVisibility] = useState({});
         const [currentRow, setCurrentRow] = useState(0);
         const [rowCategory, setRowCategory] = useState({});
+        const [categorySelected, setCategorySelected] = useState({});
         const rows = Array.from({ length: 400 }, (_, i) => i);
 
         const handleRevealRow = () => {
@@ -520,6 +521,11 @@ function Calculator() {
                 ...prevRowCategory,
                 [rowNum]: selectedValue
             }));
+
+            setCategorySelected((prevCategorySelected) => ({
+                ...prevCategorySelected,
+                [selectedValue]: true,
+            }));
         };
 
         const handleBack = () => {
@@ -531,26 +537,27 @@ function Calculator() {
             navigate("/calculator/results");
         };
 
-        const handleProcurementDelete = (categoryCode) => {
+        const handleProcurementDelete = (num) => {
             setProcurementReport((prevReport) => {
                 const updatedReport = { ...prevReport };
-                delete updatedReport[categoryCode];
+                delete updatedReport[rowCategory[num]];
                 return updatedReport;
             });
         
             setRowVisibility((prevVisibility) => ({
                 ...prevVisibility,
-                [categoryCode]: false,
+                [num]: false,
+            }));
+
+            setCategorySelected((prevCategorySelected) => ({
+                ...prevCategorySelected,
+                [rowCategory[num]]: false,
             }));
         };
 
         const handleProcurementChange = (event) => {
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
-            setRowVisibility((prevVisibility) => ({
-                ...prevVisibility,
-                [name]: true,
-            }));
         };
 
         return (
@@ -577,10 +584,10 @@ function Calculator() {
                     {rows.map((num) => (
                         <tr key={num} id={num} className={rowVisibility[num] ? 'align-middle text-center' : 'd-none align-middle text-center'}>
                         <td>
-                            <select className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
-                                <option selected disabled="disabled">Select a procurement category</option>
+                            <select className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange} disabled={rowCategory[num] !== undefined}>
+                                <option selected disabled="true">Select a procurement category</option>
                                 {procurementCategories.map((category) => (
-                                    <option value={category.code}>{category.code} - {category.name}</option>
+                                    <option value={category.code} disabled={categorySelected[category.code]}>{category.code} - {category.name}{categorySelected[category.code] && category.code != rowCategory[num] ? " - SELECTED" : ''}</option>
                                 ))}
                             </select>
                         </td>
