@@ -120,7 +120,6 @@ function SignInForm() {
             setPassword("");
             setError("");
             navigate('/dashboard');
-            navigate('/dashboard');
         })
         .catch((err) => {
             console.log(err);
