@@ -6,7 +6,7 @@ import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const Sidebar = () => {
+const Sidebar = ({ onNameClick }) => {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -121,7 +121,7 @@ function isResponseOk(response) {
     <div className="bg-moss text-white d-flex flex-column pt-3 align-items-center" style={{width: 15 + 'rem', maxWidth: 20 + 'rem'}}>
       <div className="m-2">
       <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
-        <span>{firstName}</span>
+        <span style={{ cursor: 'pointer' }} onClick={onNameClick} >{firstName} </span>
         <img src="/images/logout.png" alt="Logout Icon" onClick={handleLogout} style={{width: 25 + 'px', objectFit: 'contain', cursor: "pointer"}}/>
       </div>
         <p className="fs-6 align-items-center text-white-50" style={{overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 + 'px'}}>{email}</p>

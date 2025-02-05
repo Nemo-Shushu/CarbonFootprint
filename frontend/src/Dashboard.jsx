@@ -71,20 +71,34 @@ function Dashboard() {
     };
 
     const toggleProfile = () => {
-        setShowProfile((prev) => !prev);
-    }
+        const queryParams = new URLSearchParams(location.search);
+        if (queryParams.get("showProfile") === "true") {
+            queryParams.delete("showProfile"); 
+        } else {
+            queryParams.set("showProfile", "true"); 
+        }
+        navigate(`?${queryParams.toString()}`);
+    };
+
+    const closeProfile = (event) => {
+        if (!event.target.closest(".profile-container") && showProfile) {
+            const queryParams = new URLSearchParams(location.search);
+            queryParams.delete("showProfile");
+            navigate(`?${queryParams.toString()}`, { replace: true });
+        }
+    };
     
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         setShowProfile(queryParams.get("showProfile") === "true");
-      }, [location.search]);
+    }, [location.search]);
 
       return useAuth() ? (
-        <div style={{ display: "flex", height: "100vh" }}>
+        <div style={{ display: "flex", height: "100vh" }} onClick={closeProfile} >
             <Sidebar style={{ flex: "0 0 17%",}} onNameClick={toggleProfile}/>
-            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} onClick={() => setShowProfile(false)}>
+            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} >
                 <div className="d-flex flex-column">
-                    {showProfile && <Profile />}
+                    {showProfile && <div className="profile-container"><Profile /></div>}
                     <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h1 className="h2">Dashboard</h1>
                     </div>
