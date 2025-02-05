@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./Sidebar";
 import './scss/custom.scss';
 
-const AdminTool = () => {
+function AdminTool() {
     const [selectedText, setSelectedText] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [confirmationModal, setConfirmationModal] = useState(false);
@@ -28,29 +28,29 @@ const AdminTool = () => {
         },
     ];
 
-    const handleTextClick = (text) => {
+    function handleTextClick(text) {
         setSelectedText(text);
         setShowModal(true);
     };
 
-    const closeModal = () => {
+    function closeModal() {
         setShowModal(false);
         setSelectedText("");
     };
 
-    const handleActionClick = (request, action) => {
+    function handleActionClick(request, action) {
         setSelectedRequest(request); 
         setActionType(action);
         setConfirmationModal(true); 
     };
 
-    const closeConfirmationModal = () => {
+    function closeConfirmationModal() {
         setConfirmationModal(false);
         setSelectedRequest(null);
         setActionType("");
     };
 
-    const confirmAction = () => {
+    function confirmAction() {
         console.log('${actionType} action confirmed for request:', selectedRequest);
         closeConfirmationModal(); 
     };
