@@ -8,7 +8,6 @@
 $custom-colors: (
   "moss": #385a4f,
   "grey": #7d7d7d77,
-  "backgroud": #0000007c,
 );
 
 $theme-colors: map-merge($theme-colors, $custom-colors);
