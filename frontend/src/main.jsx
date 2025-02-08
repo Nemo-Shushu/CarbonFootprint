@@ -11,6 +11,7 @@ import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import Profile from './Profile';
 import AdminTool from './AdminTools';
+import UpdateFactors from './UpdateFactors';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -25,6 +26,7 @@ root.render(
         <Route path="register" element={<RegisterForm />}/>
         <Route path="dashboard" element={<Dashboard />}/>
         <Route path="request-admin" element={<RequestAdmin />}/>
+        <Route path="update-factors" element={<UpdateFactors />}/>
         <Route path="calculator/*" element={<Calculator />}/>
         <Route path="profile" element={<Profile />}/>
         <Route path="admin-tool" element={<AdminTool />}/>

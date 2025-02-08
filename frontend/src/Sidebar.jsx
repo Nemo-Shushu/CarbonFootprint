@@ -117,6 +117,10 @@ function Sidebar({ onNameClick }) {
     navigate("/request-admin")
   };
 
+  function handleUpdateFactors() {
+    navigate("/update-factors")
+  };
+
   return (
     <div className="bg-moss text-white d-flex flex-column pt-3 align-items-center" style={{width: 15 + 'rem', maxWidth: 20 + 'rem'}}>
       <div className="m-2">
@@ -131,6 +135,9 @@ function Sidebar({ onNameClick }) {
             <img src="/images/Dashboard.png" alt="Dashboard Icon" style={{width: 20 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Dashboard
           </div>
           <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Request Admin" ? "active" : ""}`} onClick={handleRequestAdmin} style={{cursor: "pointer", width: 90 + '%'}}>
+            <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
+          </div>
+          <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Update Factors" ? "active" : ""}`} onClick={handleUpdateFactors} style={{cursor: "pointer", width: 90 + '%'}}>
             <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
           </div>
         </nav>
