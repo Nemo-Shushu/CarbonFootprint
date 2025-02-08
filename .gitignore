@@ -12,3 +12,4 @@ accounts/__pycache__
 # React files
 frontend/dist
 node_modules/
+.vite/
