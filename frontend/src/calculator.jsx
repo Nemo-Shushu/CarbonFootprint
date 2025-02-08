@@ -553,6 +553,8 @@ function Calculator() {
                 ...prevCategorySelected,
                 [rowCategory[num]]: false,
             }));
+
+            setCurrentRow(currentRow - 1);
         };
 
         const handleProcurementChange = (event) => {
@@ -562,12 +564,12 @@ function Calculator() {
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {JSON.stringify(procurementReport, null, 2)}
+                {/* {JSON.stringify(procurementReport, null, 2)}
                 {currentRow}
-                {JSON.stringify(rowVisibility, null, 2)}
+                {JSON.stringify(rowVisibility, null, 2)} */}
                 <h2>Procurement</h2>
                 
-                <button className="btn btn-light text-moss fs-1" onClick={handleRevealRow}>
+                <button className="btn btn-outline-moss fs-1" onClick={handleRevealRow}>
                     +
                 </button>
 
