@@ -6,7 +6,7 @@ import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const Sidebar = () => {
+function Sidebar({ onNameClick }) {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -42,7 +42,7 @@ const Sidebar = () => {
     .catch((err) => {
       console.log(err);
     });
-}
+  }
 
   function getSession() {
     fetch(backendUrl.concat("api2/session/"), {
@@ -61,67 +61,67 @@ const Sidebar = () => {
     .catch((err) => {
         console.log(err);
     });
-}
-
-function isResponseOk(response) {
-  if (response.status >= 200 && response.status <= 299) {
-      return response.json();
-  } else {
-      throw Error(response.statusText);
   }
-}
 
-    const handleLogout = () => {
-      localStorage.removeItem("userToken"); 
-      fetch(backendUrl.concat("api2/logout"), {
-        credentials: "include",
-      })
-      .then(isResponseOk)
-      .then((data) => {
-          console.log(data);
-          setIsAuthenticated(false);
-          getCSRF();
-          navigate("/sign-in");
-      })
-      .catch((err) => {
-          console.log(err);
-      });
-    };
+  function isResponseOk(response) {
+    if (response.status >= 200 && response.status <= 299) {
+        return response.json();
+    } else {
+        throw Error(response.statusText);
+    }
+  }
 
-    const getName = () => {
-      localStorage.removeItem("userToken"); 
-      fetch(backendUrl.concat("api2/whoami/"), {
-        credentials: "include",
-      })
-      .then((res) => res.json())
-      .then((data) => {
+  function handleLogout() {
+    localStorage.removeItem("userToken"); 
+    fetch(backendUrl.concat("api2/logout"), {
+      credentials: "include",
+    })
+    .then(isResponseOk)
+    .then((data) => {
         console.log(data);
-        setUserName(data.username);
-        setFirstName(data.forename);
-        setEmail(data.email);
-      })
-      .catch((err) => {
+        setIsAuthenticated(false);
+        getCSRF();
+        navigate("/sign-in");
+    })
+    .catch((err) => {
         console.log(err);
-      });
-    };
+    });
+  };
 
-    const handleDashboard = () => {
-      navigate("/dashboard")
-    };
+  function getName() {
+    localStorage.removeItem("userToken"); 
+    fetch(backendUrl.concat("api2/whoami/"), {
+      credentials: "include",
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      setUserName(data.username);
+      setFirstName(data.forename);
+      setEmail(data.email);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  };
 
-    const handleCalculator = () => {
-      navigate("/calculator")
-    };
+  function handleDashboard() {
+    navigate("/dashboard")
+  };
 
-    const handleRequestAdmin = () => {
-      navigate("/request-admin")
-    };
+  function handleCalculator() {
+    navigate("/calculator")
+  };
+
+  function handleRequestAdmin() {
+    navigate("/request-admin")
+  };
 
   return (
     <div className="bg-moss text-white d-flex flex-column pt-3 align-items-center" style={{width: 15 + 'rem', maxWidth: 20 + 'rem'}}>
       <div className="m-2">
       <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
-        <span>{firstName}</span>
+        <span style={{ cursor: 'pointer' }} onClick={onNameClick} >{firstName} </span>
         <img src="/images/logout.png" alt="Logout Icon" onClick={handleLogout} style={{width: 25 + 'px', objectFit: 'contain', cursor: "pointer"}}/>
       </div>
         <p className="fs-6 align-items-center text-white-50" style={{overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 + 'px'}}>{email}</p>
