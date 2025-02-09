@@ -493,23 +493,35 @@ function Calculator() {
 
         const navigate = useNavigate();
         const [procurementReport, setProcurementReport] = useState({});
-        useEffect(() => {
-            if (typeof report["procurement"] !== "undefined") {
-              setProcurementReport(report["procurement"]);
-            }
-        }, [report["procurement"]]);
-
-        const [rowVisibility, setRowVisibility] = useState({});
         const [currentRow, setCurrentRow] = useState(0);
+        const [loaded, setLoaded] = useState(false);
         const [rowCategory, setRowCategory] = useState({});
         const [categorySelected, setCategorySelected] = useState({});
-        const rows = Array.from({ length: 400 }, (_, i) => i);
 
-        const handleRevealRow = () => {
-            setCurrentRow(currentRow + 1);
-            setRowVisibility((prevVisibility) => ({
-                ...prevVisibility,
-                [currentRow]: true,
+        useEffect(() => {
+            if (typeof report["procurement"] !== "undefined" && !loaded) {
+              setProcurementReport(report["procurement"]);
+              let count = 0;
+              let newRowCategory = {};
+              let newCategorySelected = {};
+              for (const entry in report["procurement"]){
+                count++;
+                newRowCategory[count] = entry;
+                newCategorySelected[entry] = true;
+              }
+              setCurrentRow(count);
+              setRowCategory(newRowCategory);
+              setCategorySelected(newCategorySelected);
+              setLoaded(true);
+            }
+        }, [report["procurement"], loaded]);
+
+        const handleAddRow = () => {
+            let row = currentRow + 1;
+            setCurrentRow(row);
+            setRowCategory((prevRowCategory) => ({
+                ...prevRowCategory,
+                [row]: null,
             }));
         }
 
@@ -519,7 +531,7 @@ function Calculator() {
         
             setRowCategory((prevRowCategory) => ({
                 ...prevRowCategory,
-                [rowNum]: selectedValue
+                [rowNum]: selectedValue,
             }));
 
             setCategorySelected((prevCategorySelected) => ({
@@ -543,18 +555,17 @@ function Calculator() {
                 delete updatedReport[rowCategory[num]];
                 return updatedReport;
             });
-        
-            setRowVisibility((prevVisibility) => ({
-                ...prevVisibility,
-                [num]: false,
-            }));
 
             setCategorySelected((prevCategorySelected) => ({
                 ...prevCategorySelected,
                 [rowCategory[num]]: false,
             }));
 
-            setCurrentRow(currentRow - 1);
+            setRowCategory((prevRowCategory) => {
+                const updatedRowCategory = { ...prevRowCategory };
+                delete updatedRowCategory[num];
+                return updatedRowCategory;
+            });
         };
 
         const handleProcurementChange = (event) => {
@@ -564,12 +575,12 @@ function Calculator() {
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {/* {JSON.stringify(procurementReport, null, 2)}
+                {JSON.stringify(procurementReport, null, 2)}
                 {currentRow}
-                {JSON.stringify(rowVisibility, null, 2)} */}
+                {JSON.stringify(rowCategory, null, 2)}
                 <h2>Procurement</h2>
                 
-                <button className="btn btn-outline-moss fs-1" onClick={handleRevealRow}>
+                <button className="btn btn-outline-moss fs-1" onClick={handleAddRow}>
                     +
                 </button>
 
@@ -583,11 +594,11 @@ function Calculator() {
                         </tr>
                     </thead>
                     <tbody>
-                    {rows.map((num) => (
-                        <tr key={num} id={num} className={rowVisibility[num] ? 'align-middle text-center' : 'd-none align-middle text-center'}>
+                    {Object.keys(rowCategory).map((num) => (
+                        <tr key={num} id={num} className='align-middle text-center'>
                         <td>
-                            <select className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange} disabled={rowCategory[num] !== undefined}>
-                                <option selected disabled="true">Select a procurement category</option>
+                            <select defaultValue={rowCategory[num] === null ? "default" : rowCategory[num]} className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange} disabled={rowCategory[num] !== null}>
+                                <option value="default" disabled="true">Select a procurement category</option>
                                 {procurementCategories.map((category) => (
                                     <option value={category.code} disabled={categorySelected[category.code]}>{category.code} - {category.name}{categorySelected[category.code] && category.code != rowCategory[num] ? " - SELECTED" : ''}</option>
                                 ))}
