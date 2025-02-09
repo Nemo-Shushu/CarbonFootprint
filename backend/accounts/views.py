@@ -6,10 +6,10 @@ from rest_framework import status
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
-from .models import User
-from .serializers import RegisterSerializer,UserSerializer
+from .models import User, ConversionFactor
+from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -60,3 +60,11 @@ class LogoutView(APIView):
     def post(self, request, format=None):
         logout(request)
         return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+    
+class ConversionFactorsView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None):
+        queryset = ConversionFactor.objects.all().order_by('activity')
+        serializer_class = ConversionFactorsSerializer(queryset, many=True)
+        return Response(serializer_class.data)
