@@ -6,9 +6,10 @@ env/
 .env.prod
 .env.prod.db
 *sqlite3
-accounts/migrations
+migrations/
 accounts/__pycache__
 
 # React files
 frontend/dist
 node_modules/
+.vite/
