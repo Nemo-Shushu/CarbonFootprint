@@ -575,14 +575,15 @@ function Calculator() {
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {JSON.stringify(procurementReport, null, 2)}
+                {/* {JSON.stringify(procurementReport, null, 2)}
                 {currentRow}
-                {JSON.stringify(rowCategory, null, 2)}
-                <h2>Procurement</h2>
-                
-                <button className="btn btn-outline-moss fs-1" onClick={handleAddRow}>
-                    +
-                </button>
+                {JSON.stringify(rowCategory, null, 2)} */}
+                <div className="d-flex justify-content-between align-items-center">
+                    <h2>Procurement</h2>
+                    <button className="btn btn-outline-moss px-5 py-1" style={{ fontSize: '2rem' }} onClick={handleAddRow}>
+                        +
+                    </button>
+                </div>
 
                 <div class="table-responsive small mt-3">
                     <table class="table table-light table-sm">
@@ -590,7 +591,7 @@ function Calculator() {
                         <tr className="align-middle text-center">
                         <th scope="col">category</th>
                         <th scope="col">value</th>
-                        <th scope="col">delete</th>
+                        <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -605,7 +606,7 @@ function Calculator() {
                             </select>
                         </td>
                         <td>
-                            <input type="number" className="form-control form-control-sm" disabled={rowCategory[num] === undefined} name={rowCategory[num]} placeholder="Enter amount spent in GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
+                            <input type="number" className="form-control form-control-sm" disabled={rowCategory[num] === null} name={rowCategory[num]} placeholder="Expenses, GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
                         </td>
                         <td>
                             <button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(num)}>Delete</button>
