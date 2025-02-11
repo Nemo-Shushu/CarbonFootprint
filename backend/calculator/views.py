@@ -8,6 +8,8 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated
+from .models import emission_factors
+from .models import ProcurementData, CategoryCarbonImpact 
 
 class ReportcalculateView(APIView):
     permission_classes = (AllowAny,)
@@ -16,17 +18,17 @@ class ReportcalculateView(APIView):
     """
 
     # 预设值
-    BENCHMARK_ELECTRICITY = {
-        "Academic laboratory": 207.99,
-        "Academic office": 108.74,
-        "Admin office": 115.17
-    }
+    # BENCHMARK_ELECTRICITY = {
+    #     "Academic laboratory": 207.99,
+    #     "Academic office": 108.74,
+    #     "Admin office": 115.17
+    # }
 
-    BENCHMARK_GAS = {
-        "Academic laboratory": 247.39,
-        "Academic office": 170.85,
-        "Admin office": 180.41
-    }
+    # BENCHMARK_GAS = {
+    #     "Academic laboratory": 247.39,
+    #     "Academic office": 170.85,
+    #     "Admin office": 180.41
+    # }
 
     BENCHMARK_WATER = {
         "Physical sciences laboratory": 1.7,
@@ -106,20 +108,30 @@ class ReportcalculateView(APIView):
                 "Admin office": "admin-office-area"
             }.items():
                 total_area = float(utilities.get(area_key, 0))
+                factor = emission_factors.objects.filter(category=space_type).first()
 
                 if total_area:
-                    benchmark_electricity = self.BENCHMARK_ELECTRICITY[space_type]
-                    benchmark_gas = self.BENCHMARK_GAS[space_type]
+                    # benchmark_electricity = self.BENCHMARK_ELECTRICITY[space_type]
+                    # benchmark_gas = self.BENCHMARK_GAS[space_type]
 
-                    electricity_consumption = total_area * benchmark_electricity * proportion
-                    gas_consumption = total_area * benchmark_gas * proportion
+                    # electricity_consumption = total_area * benchmark_electricity * proportion
+                    # gas_consumption = total_area * benchmark_gas * proportion
 
-                    electricity_emissions = electricity_consumption * (
-                        self.ELECTRICITY_GRID_INTENSITY + self.ELECTRICITY_TRANSMISSION_DISTRIBUTION
-                    )
-                    gas_emissions = gas_consumption * (
-                        self.GAS_CARBON_INTENSITY + self.GAS_TRANSMISSION_DISTRIBUTION
-                    )
+                    # electricity_emissions = electricity_consumption * (
+                    #     self.ELECTRICITY_GRID_INTENSITY + self.ELECTRICITY_TRANSMISSION_DISTRIBUTION
+                    # )
+                    # gas_emissions = gas_consumption * (
+                    #     self.GAS_CARBON_INTENSITY + self.GAS_TRANSMISSION_DISTRIBUTION
+                    # )
+
+                    # total_electricity_emissions += electricity_emissions
+                    # total_gas_emissions += gas_emissions
+                    
+                    electricity_consumption = total_area * factor.benchmark_electricity * proportion
+                    gas_consumption = total_area * factor.benchmark_gas * proportion
+
+                    electricity_emissions = electricity_consumption * 0.231  # 假设电力碳排因子
+                    gas_emissions = gas_consumption * 0.201  # 假设燃气碳排因子
 
                     total_electricity_emissions += electricity_emissions
                     total_gas_emissions += gas_emissions
@@ -210,118 +222,236 @@ class ReportcalculateView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# class ProcurementCalculatorView(APIView):
+#     permission_classes = (AllowAny,)
+
+#     # 预设的 Carbon Impact (ton CO2e) 值
+#     CATEGORY_CARBON_IMPACT = {
+#         "Business Services": 0.97,
+#         "Paper Products": 0.19,
+#         "Other Manufactured Products": 2.02,
+#         "Manufactured Fuels, Chemicals and Glasses": 0.10,
+#         "Food and Catering": 0.94,
+#         "Construction": 1.0,  # 默认值为 0
+#         "Information and Communication Technologies": 1.44,
+#         "Waste and Water": 1.0,  # 默认值为 0
+#         "Medical and Precision Instruments": 1.84,
+#         "Other Procurement": 1.0,  # 默认值为 0
+#         "Unclassified": 1.0,  # 默认值为 0
+#         "Business Travel":1.0
+#     }
+
+#     # 类别与前缀映射关系
+#     CATEGORY_PREFIX_MAPPING = {
+#     "Business Services": [
+#         "AF", "AH", "AL", "AT", "AU", "BE", "BK", "BN", "BS", "BT", "BW",
+#         "CG", "CS", "EF", "EG", "GC", "GD", "GG", "GH", "H", "HD", "HG",
+#         "JF", "KJ", "KO", "KS", "KT", "KU", "LI", "N", "NA", "NB", "ND",
+#         "NE", "NF", "Q", "QH", "QJ", "QR", "QT", "R", "RA", "RB", "RC",
+#         "RD", "RE", "RG", "RI", "RJ", "RK", "RL", "RM", "RN", "RP", "RQ",
+#         "RR", "RS", "RT", "RU", "RV", "RW", "RX", "RY", "TQ", "TR", "U",
+#         "UF", "UH", "UL", "VD", "VE", "WD", "WH", "WK", "WL", "WN", "WU",
+#         "YA", "YB", "YC", "YD", "YE", "YF", "YP", "YQ", "YS", "AB"
+#     ],
+#     "Food and Catering": [
+#         "CA", "CB", "CC", "CD", "CE", "CH", "CJ", "CM", "CP", "CQ", "CU",
+#         "CV", "YR"
+#     ],
+#     "Information and Communication Technologies": [
+#         "AE", "AJ", "BI", "BJ", "BP", "BQ", "BR", "K", "KE", "KG", "KH",
+#         "KI", "KM", "KN", "KV", "KW", "QG", "QN", "UJ","AA"
+#     ],
+#     "Waste and Water": [
+#         "JE", "YG", "YH", "YJ", "YK", "YL", "LN", "HH"
+#     ],
+#     "Medical and Precision Instruments": [
+#         "D", "DA", "DB", "DC", "DF", "DH", "DJ", "DL", "EJ", "ET", "L",
+#         "LA", "LC", "LE", "LF", "LG", "LH", "LK", "LL", "LM", "LP", "LQ",
+#         "LR", "LS", "LT", "LX", "UC", "UP"
+#     ],
+#     "Other Manufactured Products": [
+#         "AC", "AG", "CF", "CK", "CL", "CN", "CY", "DE", "E", "EA", "EB",
+#         "EC", "ED", "EH", "EK", "EL", "EM", "EN", "EP", "ES", "F", "FA",
+#         "FB", "FC", "FE", "FF", "FG", "FK", "FL", "FN", "FP", "FT", "FU",
+#         "GA", "GB", "GE", "GF", "GJ", "HB", "HR", "LB", "LJ", "M", "MB",
+#         "ME", "MF", "MG", "MH", "ML", "MN", "MP", "MS", "MT", "NC", "NG",
+#         "NH", "SC", "UB", "UD", "UE", "UK", "UM", "UN", "VA", "VJ", "VR",
+#         "WA", "WJ", "WP", "WX", "WY", "XM", "YM", "YN"
+#     ],
+#     "Paper Products": [
+#         "B", "BA", "BB", "BC", "BD", "BF", "BG", "BL", "BM", "BV", "P",
+#         "PA", "PC", "PD", "S", "SA", "SB", "SD", "SF", "SJ"
+#     ],
+#     "Manufactured Fuels, Chemicals and Glasses": [
+#         "J", "JA", "JB", "JC", "JD", "TE", "VG"
+#     ],
+#     "Unclassified": [
+#         "XE", "XH", "XK", "XS", "XT", "XA", "XB", "XC", "XD", "XG", "XJ",
+#         "XL", "XN", "XR", "XU"
+#     ],
+#     "Construction": [
+#         "FD", "MJ", "MK", "MM", "MQ", "W", "WB"
+#     ],
+#     "Other Procurement": [
+#         "G", "JH", "JJ", "RF", "RH", "RO", "VB", "VP"
+#     ],
+#     "Business Travel": [
+#         "T", "TA", "TB", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL",
+#         "TM", "TN", "TP", "TT", "TU", "VC"
+#     ]
+# }
+
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             # 获取前端发送的花费数据
+#             expenses = request.data  # 示例：{"CA": 100, "WB": 200}
+
+#             # 初始化结果字典
+#             result = {category: {"spend": 0, "carbon_impact": 0} for category in self.CATEGORY_CARBON_IMPACT}
+#             total_spend = 0
+#             total_carbon_impact = 0
+
+#             # 遍历每个前端传递的花费条目
+#             for prefix, spend in expenses.items():
+#                 spend = float(spend)  # 转换为浮点数
+#                 matched_categories = []
+
+#                 # 匹配类别
+#                 for category, prefixes in self.CATEGORY_PREFIX_MAPPING.items():
+#                     if prefix in prefixes:
+#                         matched_categories.append(category)
+
+#                 # 如果找到匹配的类别，则分配花费和计算碳排放
+#                 for category in matched_categories:
+#                     result[category]["spend"] += spend
+#                     result[category]["carbon_impact"] += spend * self.CATEGORY_CARBON_IMPACT[category]
+
+#             # 计算总花费和总碳排放
+#             for category, data in result.items():
+#                 total_spend += data["spend"]
+#                 total_carbon_impact += data["carbon_impact"]
+
+#             # 构建返回结果
+#             result["Total"] = {"spend": total_spend, "carbon_impact": total_carbon_impact}
+#             return Response(result, status=status.HTTP_200_OK)
+
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class ProcurementCalculatorView(APIView):
     permission_classes = (AllowAny,)
-
-    # 预设的 Carbon Impact (ton CO2e) 值
-    CATEGORY_CARBON_IMPACT = {
-        "Business Services": 0.97,
-        "Paper Products": 0.19,
-        "Other Manufactured Products": 2.02,
-        "Manufactured Fuels, Chemicals and Glasses": 0.10,
-        "Food and Catering": 0.94,
-        "Construction": 1.0,  # 默认值为 0
-        "Information and Communication Technologies": 1.44,
-        "Waste and Water": 1.0,  # 默认值为 0
-        "Medical and Precision Instruments": 1.84,
-        "Other Procurement": 1.0,  # 默认值为 0
-        "Unclassified": 1.0,  # 默认值为 0
-        "Business Travel":1.0
+    
+    CATEGORY_PREFIX_MAPPING = {  # 完整加入类别映射
+        "Business Services": ["AF", "AH", "AL", "AT", "AU", "BE", "BK", "BN", "BS", "BT", "BW", "CG", "CS", "EF", "EG", "GC", "GD", "GG", "GH", "H", "HD", "HG", "JF", "KJ", "KO", "KS", "KT", "KU", "LI", "N", "NA", "NB", "ND", "NE", "NF", "Q", "QH", "QJ", "QR", "QT", "R", "RA", "RB", "RC", "RD", "RE", "RG", "RI", "RJ", "RK", "RL", "RM", "RN", "RP", "RQ", "RR", "RS", "RT", "RU", "RV", "RW", "RX", "RY", "TQ", "TR", "U", "UF", "UH", "UL", "VD", "VE", "WD", "WH", "WK", "WL", "WN", "WU", "YA", "YB", "YC", "YD", "YE", "YF", "YP", "YQ", "YS", "AB"],
+        "Food and Catering": ["C","CA", "CB", "CC", "CD", "CE", "CH", "CJ", "CM", "CP", "CQ", "CU", "CV", "YR"],
+        "Information and Communication Technologies": ["AE", "AJ", "BI", "BJ", "BP", "BQ", "BR", "K", "KE", "KG", "KH", "KI", "KM", "KN", "KV", "KW", "QG", "QN", "UJ", "AA"],
+        "Waste and Water": ["JE", "YG", "YH", "YJ", "YK", "YL", "LN", "HH"],
+        "Medical and Precision Instruments": ["D", "DA", "DB", "DC", "DF", "DH", "DJ", "DL", "EJ", "ET", "L", "LA", "LC", "LE", "LF", "LG", "LH", "LK", "LL", "LM", "LP", "LQ", "LR", "LS", "LT", "LX", "UC", "UP"],
+        "Other Manufactured Products": ["AC", "AG", "CF", "CK", "CL", "CN", "CY", "DE", "E", "EA", "EB", "EC", "ED", "EH", "EK", "EL", "EM", "EN", "EP", "ES", "F", "FA", "FB", "FC", "FE", "FF", "FG", "FK", "FL", "FN", "FP", "FT", "FU", "GA", "GB", "GE", "GF", "GJ", "HB", "HR", "LB", "LJ", "M", "MB", "ME", "MF", "MG", "MH", "ML", "MN", "MP", "MS", "MT", "NC", "NG", "NH", "SC", "UB", "UD", "UE", "UK", "UM", "UN", "VA", "VJ", "VR", "WA", "WJ", "WP", "WX", "WY", "XM", "YM", "YN"],
+        "Paper Products": ["B", "BA", "BB", "BC", "BD", "BF", "BG", "BL", "BM", "BV", "P", "PA", "PC", "PD", "S", "SA", "SB", "SD", "SF", "SJ"],
+        "Manufactured Fuels, Chemicals and Glasses": ["J", "JA", "JB", "JC", "JD", "TE", "VG"],
+        "Unclassified": ["XE", "XH", "XK", "XS", "XT", "XA", "XB", "XC", "XD", "XG", "XJ", "XL", "XN", "XR", "XU"],
+        "Construction": ["FD", "MJ", "MK", "MM", "MQ", "W", "WB"],
+        "Other Procurement": ["G", "JH", "JJ", "RF", "RH", "RO", "VB", "VP"],
+        "Business Travel": ["T", "TA", "TB", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TP", "TT", "TU", "VC"]
     }
-
-    # 类别与前缀映射关系
-    CATEGORY_PREFIX_MAPPING = {
-    "Business Services": [
-        "AF", "AH", "AL", "AT", "AU", "BE", "BK", "BN", "BS", "BT", "BW",
-        "CG", "CS", "EF", "EG", "GC", "GD", "GG", "GH", "H", "HD", "HG",
-        "JF", "KJ", "KO", "KS", "KT", "KU", "LI", "N", "NA", "NB", "ND",
-        "NE", "NF", "Q", "QH", "QJ", "QR", "QT", "R", "RA", "RB", "RC",
-        "RD", "RE", "RG", "RI", "RJ", "RK", "RL", "RM", "RN", "RP", "RQ",
-        "RR", "RS", "RT", "RU", "RV", "RW", "RX", "RY", "TQ", "TR", "U",
-        "UF", "UH", "UL", "VD", "VE", "WD", "WH", "WK", "WL", "WN", "WU",
-        "YA", "YB", "YC", "YD", "YE", "YF", "YP", "YQ", "YS", "AB"
-    ],
-    "Food and Catering": [
-        "CA", "CB", "CC", "CD", "CE", "CH", "CJ", "CM", "CP", "CQ", "CU",
-        "CV", "YR"
-    ],
-    "Information and Communication Technologies": [
-        "AE", "AJ", "BI", "BJ", "BP", "BQ", "BR", "K", "KE", "KG", "KH",
-        "KI", "KM", "KN", "KV", "KW", "QG", "QN", "UJ"
-    ],
-    "Waste and Water": [
-        "JE", "YG", "YH", "YJ", "YK", "YL", "LN", "HH"
-    ],
-    "Medical and Precision Instruments": [
-        "D", "DA", "DB", "DC", "DF", "DH", "DJ", "DL", "EJ", "ET", "L",
-        "LA", "LC", "LE", "LF", "LG", "LH", "LK", "LL", "LM", "LP", "LQ",
-        "LR", "LS", "LT", "LX", "UC", "UP"
-    ],
-    "Other Manufactured Products": [
-        "AC", "AG", "CF", "CK", "CL", "CN", "CY", "DE", "E", "EA", "EB",
-        "EC", "ED", "EH", "EK", "EL", "EM", "EN", "EP", "ES", "F", "FA",
-        "FB", "FC", "FE", "FF", "FG", "FK", "FL", "FN", "FP", "FT", "FU",
-        "GA", "GB", "GE", "GF", "GJ", "HB", "HR", "LB", "LJ", "M", "MB",
-        "ME", "MF", "MG", "MH", "ML", "MN", "MP", "MS", "MT", "NC", "NG",
-        "NH", "SC", "UB", "UD", "UE", "UK", "UM", "UN", "VA", "VJ", "VR",
-        "WA", "WJ", "WP", "WX", "WY", "XM", "YM", "YN"
-    ],
-    "Paper Products": [
-        "B", "BA", "BB", "BC", "BD", "BF", "BG", "BL", "BM", "BV", "P",
-        "PA", "PC", "PD", "S", "SA", "SB", "SD", "SF", "SJ"
-    ],
-    "Manufactured Fuels, Chemicals and Glasses": [
-        "J", "JA", "JB", "JC", "JD", "TE", "VG"
-    ],
-    "Unclassified": [
-        "XE", "XH", "XK", "XS", "XT", "XA", "XB", "XC", "XD", "XG", "XJ",
-        "XL", "XN", "XR", "XU"
-    ],
-    "Construction": [
-        "FD", "MJ", "MK", "MM", "MQ", "W", "WB"
-    ],
-    "Other Procurement": [
-        "G", "JH", "JJ", "RF", "RH", "RO", "VB", "VP"
-    ],
-    "Business Travel": [
-        "T", "TA", "TB", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL",
-        "TM", "TN", "TP", "TT", "TU", "VC"
-    ]
-}
 
     def post(self, request, *args, **kwargs):
         try:
-            # 获取前端发送的花费数据
-            expenses = request.data  # 示例：{"CA": 100, "WB": 200}
+            expenses = request.data  # 示例：{"AA": 10000, "A": 5000, "AG": 12000}
+            result = {}
 
-            # 初始化结果字典
-            result = {category: {"spend": 0, "carbon_impact": 0} for category in self.CATEGORY_CARBON_IMPACT}
-            total_spend = 0
-            total_carbon_impact = 0
+            for code, spend in expenses.items():
+                spend = float(spend)
+                procurement_entry = ProcurementData.objects.filter(code=code).first()
+                if not procurement_entry:
+                    continue
+                description_dict = procurement_entry.description_dict
 
-            # 遍历每个前端传递的花费条目
-            for prefix, spend in expenses.items():
-                spend = float(spend)  # 转换为浮点数
-                matched_categories = []
+                total_carbon_impact = 0
+                for category, proportion in description_dict.items():
+                    category_entry = CategoryCarbonImpact.objects.filter(category=category).first()
+                    if not category_entry:
+                        continue
+                    carbon_factor = category_entry.carbon_impact
+                    total_carbon_impact += (spend / 1000) * proportion * carbon_factor
 
-                # 匹配类别
+                category_found = None
                 for category, prefixes in self.CATEGORY_PREFIX_MAPPING.items():
-                    if prefix in prefixes:
-                        matched_categories.append(category)
+                    if code in prefixes:
+                        category_found = category
+                        break
 
-                # 如果找到匹配的类别，则分配花费和计算碳排放
-                for category in matched_categories:
-                    result[category]["spend"] += spend
-                    result[category]["carbon_impact"] += spend * self.CATEGORY_CARBON_IMPACT[category]
+                if category_found:
+                    if category_found not in result:
+                        result[category_found] = {"spend": 0, "carbon_impact": 0}
+                    result[category_found]["spend"] += spend
+                    result[category_found]["carbon_impact"] += total_carbon_impact
 
-            # 计算总花费和总碳排放
-            for category, data in result.items():
-                total_spend += data["spend"]
-                total_carbon_impact += data["carbon_impact"]
-
-            # 构建返回结果
-            result["Total"] = {"spend": total_spend, "carbon_impact": total_carbon_impact}
             return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class ReportView(APIView):
+    """
+    API View to calculate total carbon emissions from utilities, travel, waste, and procurement.
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # 1️⃣ 先调用 `ReportcalculateView` 计算 水、电、气、交通、废弃物 的碳排放
+            report_view = ReportcalculateView()
+            report_response = report_view.post(request)
+            
+            if report_response.status_code != 200:
+                return Response({'error': 'Error calculating report emissions'}, status=report_response.status_code)
+            
+            report_data = report_response.data
+
+            # 2️⃣ 再调用 `ProcurementCalculatorView` 计算 采购的碳排放
+            procurement_view = ProcurementCalculatorView()
+            procurement_response = procurement_view.post(request)
+            
+            if procurement_response.status_code != 200:
+                return Response({'error': 'Error calculating procurement emissions'}, status=procurement_response.status_code)
+            
+            procurement_data = procurement_response.data
+
+            # 3️⃣ 计算总碳排放量
+            total_electricity_emissions = report_data.get('electricity_and_gas', {}).get('total_electricity_emissions', 0.0)
+            total_gas_emissions = report_data.get('electricity_and_gas', {}).get('total_gas_emissions', 0.0)
+            total_water_emissions = report_data.get('water', {}).get('total_water_emissions', 0.0)
+            total_travel_emissions = report_data.get('travel', {}).get('total_travel_emissions', 0.0)
+            total_waste_emissions = report_data.get('waste', {}).get('total_waste_emissions', 0.0)
+
+            # 计算采购的碳排放总和
+            total_procurement_emissions = sum(category_data["carbon_impact"] for category_data in procurement_data.values())
+
+            # 计算最终总碳排放
+            total_carbon_emissions = (
+                total_electricity_emissions +
+                total_gas_emissions +
+                total_water_emissions +
+                total_travel_emissions +
+                total_waste_emissions +
+                total_procurement_emissions
+            )
+
+            # 4️⃣ 返回最终合并的 JSON 结构
+            return Response({
+                "total_electricity_emissions": round(total_electricity_emissions, 2),
+                "total_gas_emissions": round(total_gas_emissions, 2),
+                "total_water_emissions": round(total_water_emissions, 2),
+                "total_travel_emissions": round(total_travel_emissions, 2),
+                "total_waste_emissions": round(total_waste_emissions, 2),
+                "total_procurement_emissions": round(total_procurement_emissions, 2),
+                "total_carbon_emissions": round(total_carbon_emissions, 2)
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
