@@ -6,19 +6,6 @@ import "./static/sign-in.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-async function loginUser(credentials) {
-    return fetch(backendUrl.concat('/api/accounts/signin/'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-}
-
 function SignInForm() {
     const [csrf, setCsrf] = useState();
     const [error, setError] = useState();
@@ -71,22 +58,6 @@ function SignInForm() {
             console.log(err);
         });
     }
-    
-    function whoami() {
-        fetch(backendUrl.concat("api2/whoami/"), {
-            headers: {
-            "Content-Type": "application/json",
-            },
-            credentials: "include",
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log("You are logged in as: " + data.username);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }
 
     function handlePasswordChange(event) {
         setPassword(event.target.value)
@@ -130,22 +101,6 @@ function SignInForm() {
         });
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        loginUser({ username, password });
-        navigate('/dashboard')
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        if (name == "username"){
-            setUserName(value);
-        }
-        else if (name == "password"){
-            setPassword(value);
-        }
-    };
-
     return !useAuth() ? (
         <div>
         {/* Main Form */}
@@ -171,7 +126,7 @@ function SignInForm() {
                     className="form-control"
                     id="floatingPassword"
                     placeholder="Password"
-                    onChange={handleChange}
+                    onChange={handlePasswordChange}
                 />
                 <label htmlFor="floatingPassword">Password</label>
                 

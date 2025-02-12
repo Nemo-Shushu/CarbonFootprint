@@ -66,25 +66,54 @@ function Dashboard() {
     const queryParams = new URLSearchParams(location.search);
     const [showProfile, setShowProfile] = useState(queryParams.get("showProfile") === "true");
 
-    const handleProtect = () => {
+    function handleProtect() {
         navigate("/sign-in")
     };
+    
+    /**
+     * Toggles the visibility of the Profile by updating the URL parameters.
+     * - If `showProfile=true` is already present in the URL, it removes it (hides the profile).
+     * - If `showProfile!=true`, it adds it to the URL (shows the profile).
+     * - This ensures that the URL changes, triggering a re-render and state update.
+     */
+    function toggleProfile() {
+        // Create an object to manage URL query parameters
+        const queryParams = new URLSearchParams(location.search);
+        if (queryParams.get("showProfile") === "true") {
+            queryParams.delete("showProfile"); 
+        } else {
+            queryParams.set("showProfile", "true"); 
+        }
+        // Navigate to the updated URL to reflect the profile visibility state
+        navigate(`?${queryParams.toString()}`);
+    };
 
-    const toggleProfile = () => {
-        setShowProfile((prev) => !prev);
-    }
+    /**
+     * Closes the Profile component when clicking outside of it.
+     * - Checks if the click event occurred outside the `.profile-container`.
+     * - If the Profile is currently visible, it updates the URL to remove `showProfile`.
+     * - This ensures that the Profile hides properly and the URL state is synchronized.
+     */
+    function closeProfile(event) {
+        if (!event.target.closest(".profile-container") && showProfile) {
+            const queryParams = new URLSearchParams(location.search);
+            queryParams.delete("showProfile");
+            // Update the URL without adding a new history entry
+            navigate(`?${queryParams.toString()}`, { replace: true });
+        }
+    };
     
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         setShowProfile(queryParams.get("showProfile") === "true");
-      }, [location.search]);
+    }, [location.search]);
 
       return useAuth() ? (
-        <div style={{ display: "flex", height: "100vh" }}>
+        <div style={{ display: "flex", height: "100vh" }} onClick={closeProfile} >
             <Sidebar style={{ flex: "0 0 17%",}} onNameClick={toggleProfile}/>
-            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} onClick={() => setShowProfile(false)}>
+            <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} >
                 <div className="d-flex flex-column">
-                    {showProfile && <Profile />}
+                    {showProfile && <div className="profile-container"><Profile /></div>}
                     <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                         <h1 className="h2">Dashboard</h1>
                     </div>
