@@ -14,7 +14,7 @@ function Calculator() {
 
     const navigate = useNavigate();
 
-    const handleProtect = () => {
+    function handleProtect(){
         navigate("/sign-in")
     };
 
@@ -35,7 +35,7 @@ function Calculator() {
 
         const navigate = useNavigate();
 
-        const handleRoute = () => {
+        function handleRoute(){
             navigate("/calculator/utilities")
         };
 
@@ -61,12 +61,12 @@ function Calculator() {
             }
         }, [report["utilities"]]);
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['utilities']: utilitiesReport }));
             navigate("/calculator/travel");
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setUtilitiesReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -195,16 +195,16 @@ function Calculator() {
             }
         }, [report["travel"]]);
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/utilities")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['travel']: travelReport }));
             navigate("/calculator/waste");
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setTravelReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -392,16 +392,16 @@ function Calculator() {
             }
         }, [report["waste"]]);
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/travel")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['waste']: wasteReport }));
             navigate("/calculator/procurement")
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setWasteReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -499,6 +499,12 @@ function Calculator() {
         const [categorySelected, setCategorySelected] = useState({});
 
         useEffect(() => {
+            /* 
+            this useEffect is responsible for reloading saved procurement data:
+            if it exists and hasn't been loaded yet, the procurementReport is updated,
+            then rowCategory and categorySelected are populated with that data,
+            after which currentRow is updated and loaded is set to true to avoid repeated loading
+            */
             if (typeof report["procurement"] !== "undefined" && !loaded) {
               setProcurementReport(report["procurement"]);
               let count = 0;
@@ -516,7 +522,8 @@ function Calculator() {
             }
         }, [report["procurement"], loaded]);
 
-        const handleAddRow = () => {
+        function handleAddRow() {
+            //new row is added using a new row index
             let row = currentRow + 1;
             setCurrentRow(row);
             setRowCategory((prevRowCategory) => ({
@@ -525,7 +532,8 @@ function Calculator() {
             }));
         }
 
-        const handleCategoryChange = (event) => {
+        function handleCategoryChange(event){
+            //when a new category is selected, it's added to categorySelected and the row is updated with that category
             const selectedValue = event.target.value;
             const rowNum = event.target.closest('tr').id;
         
@@ -540,16 +548,17 @@ function Calculator() {
             }));
         };
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/waste");
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ["procurement"]: procurementReport }));
             navigate("/calculator/results");
         };
 
-        const handleProcurementDelete = (num) => {
+        function handleProcurementDelete(num){
+            //first the data is cleared from the report, then category is removed from the list of selected categories, finally the row is deleted
             setProcurementReport((prevReport) => {
                 const updatedReport = { ...prevReport };
                 delete updatedReport[rowCategory[num]];
@@ -568,16 +577,15 @@ function Calculator() {
             });
         };
 
-        const handleProcurementChange = (event) => {
+        function handleProcurementChange(event){
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
         };
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {/* {JSON.stringify(procurementReport, null, 2)}
-                {currentRow}
-                {JSON.stringify(rowCategory, null, 2)} */}
+                
+                {/* Header and New Row Button */}
                 <div className="d-flex justify-content-between align-items-center">
                     <h2>Procurement</h2>
                     <button className="btn btn-outline-moss px-5 py-1" style={{ fontSize: '2rem' }} onClick={handleAddRow}>
@@ -585,6 +593,7 @@ function Calculator() {
                     </button>
                 </div>
 
+                {/* Table */}
                 <div class="table-responsive small mt-3">
                     <table class="table table-light table-sm">
                     <thead>
@@ -594,6 +603,8 @@ function Calculator() {
                         <th scope="col"></th>
                         </tr>
                     </thead>
+
+                    {/* Table Body */}
                     <tbody>
                     {Object.keys(rowCategory).map((num) => (
                         <tr key={num} id={num} className='align-middle text-center'>
@@ -620,6 +631,7 @@ function Calculator() {
                     </table>
                 </div>
                 
+                {/* Nav Buttons */}
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
                     <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
@@ -632,11 +644,11 @@ function Calculator() {
         
         const navigate = useNavigate();
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/procurement")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             navigate("/dashboard")
         };
 
