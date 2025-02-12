@@ -14,7 +14,7 @@ function Calculator() {
 
     const navigate = useNavigate();
 
-    const handleProtect = () => {
+    function handleProtect(){
         navigate("/sign-in")
     };
 
@@ -35,7 +35,7 @@ function Calculator() {
 
         const navigate = useNavigate();
 
-        const handleRoute = () => {
+        function handleRoute(){
             navigate("/calculator/utilities")
         };
 
@@ -45,7 +45,7 @@ function Calculator() {
                 <h5>Use Calculator like that. Click "Next" to save your inputs.</h5>
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Start</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Start</button>
                 </div>
             </main>
         );
@@ -61,12 +61,12 @@ function Calculator() {
             }
         }, [report["utilities"]]);
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['utilities']: utilitiesReport }));
             navigate("/calculator/travel");
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setUtilitiesReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -179,7 +179,7 @@ function Calculator() {
                 </form>
 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -195,16 +195,16 @@ function Calculator() {
             }
         }, [report["travel"]]);
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/utilities")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['travel']: travelReport }));
             navigate("/calculator/waste");
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setTravelReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -376,7 +376,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -392,16 +392,16 @@ function Calculator() {
             }
         }, [report["waste"]]);
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/travel")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ['waste']: wasteReport }));
             navigate("/calculator/procurement")
         };
 
-        const handleChange = (event) => {
+        function handleChange(event){
             const { name, value } = event.target;
             setWasteReport(prevReport => ({ ...prevReport, [name]: value }));
         };
@@ -483,7 +483,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -493,117 +493,162 @@ function Calculator() {
 
         const navigate = useNavigate();
         const [procurementReport, setProcurementReport] = useState({});
+        const [currentRow, setCurrentRow] = useState(0);
+        const [loaded, setLoaded] = useState(false);
+        const [rowCategory, setRowCategory] = useState({});
+        const [categorySelected, setCategorySelected] = useState({});
+
         useEffect(() => {
-            if (typeof report["procurement"] !== "undefined") {
+            /* 
+            this useEffect is responsible for reloading saved procurement data:
+            if it exists and hasn't been loaded yet, the procurementReport is updated,
+            then rowCategory and categorySelected are populated with that data,
+            after which currentRow is updated and loaded is set to true to avoid repeated loading
+            */
+            if (typeof report["procurement"] !== "undefined" && !loaded) {
               setProcurementReport(report["procurement"]);
+              let count = 0;
+              let newRowCategory = {};
+              let newCategorySelected = {};
+              for (const entry in report["procurement"]){
+                count++;
+                newRowCategory[count] = entry;
+                newCategorySelected[entry] = true;
+              }
+              setCurrentRow(count);
+              setRowCategory(newRowCategory);
+              setCategorySelected(newCategorySelected);
+              setLoaded(true);
             }
-        }, [report["procurement"]]);
+        }, [report["procurement"], loaded]);
 
-        const [category, setCategory] = useState('');
-        const [visibleField, setVisibleField] = useState("invisible col-sm-3");
-        const [rowVisibility, setRowVisibility] = useState({});
+        function handleAddRow() {
+            //new row is added using a new row index
+            let row = currentRow + 1;
+            setCurrentRow(row);
+            setRowCategory((prevRowCategory) => ({
+                ...prevRowCategory,
+                [row]: null,
+            }));
+        }
 
-        const handleCategoryChange = (event) => {
-            let eventValue = event.target.value;
-            setCategory(eventValue);
-            setVisibleField("visible col-sm-3");
+        function handleCategoryChange(event){
+            //when a new category is selected, it's added to categorySelected and the row is updated with that category
+            const selectedValue = event.target.value;
+            const rowNum = event.target.closest('tr').id;
+        
+            setRowCategory((prevRowCategory) => ({
+                ...prevRowCategory,
+                [rowNum]: selectedValue,
+            }));
+
+            setCategorySelected((prevCategorySelected) => ({
+                ...prevCategorySelected,
+                [selectedValue]: true,
+            }));
         };
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/waste");
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             setReport(prevReport => ({ ...prevReport, ["procurement"]: procurementReport }));
             navigate("/calculator/results");
         };
 
-        const handleProcurementDelete = (categoryCode) => {
+        function handleProcurementDelete(num){
+            //first the data is cleared from the report, then category is removed from the list of selected categories, finally the row is deleted
             setProcurementReport((prevReport) => {
                 const updatedReport = { ...prevReport };
-                delete updatedReport[categoryCode];
+                delete updatedReport[rowCategory[num]];
                 return updatedReport;
             });
-        
-            setRowVisibility((prevVisibility) => ({
-                ...prevVisibility,
-                [categoryCode]: false,
+
+            setCategorySelected((prevCategorySelected) => ({
+                ...prevCategorySelected,
+                [rowCategory[num]]: false,
             }));
+
+            setRowCategory((prevRowCategory) => {
+                const updatedRowCategory = { ...prevRowCategory };
+                delete updatedRowCategory[num];
+                return updatedRowCategory;
+            });
         };
 
-        const handleProcurementChange = (event) => {
+        function handleProcurementChange(event){
             const { name, value } = event.target;
             setProcurementReport(prevReport => ({ ...prevReport, [name]: value }));
-            setRowVisibility((prevVisibility) => ({
-                ...prevVisibility,
-                [name]: true,
-            }));
         };
 
         return (
             <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-                {/* {JSON.stringify(procurementReport, null, 2)} */}
-                <h2>Procurement</h2>
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange={handleCategoryChange}>
-                    <option selected disabled="disabled">Select a procurement category</option>
-                    {procurementCategories.map((category) => (
-                        <option value={category.code}>{category.code} - {category.name}</option>
-                    ))}
-                </select>
+                
+                {/* Header and New Row Button */}
+                <div className="d-flex justify-content-between align-items-center">
+                    <h2>Procurement</h2>
+                    <button className="btn btn-outline-moss px-5 py-1" style={{ fontSize: '2rem' }} onClick={handleAddRow}>
+                        +
+                    </button>
+                </div>
 
-                <form className="needs-validation" noValidate>
-                    <div className="row g-2">
-
-                        <div className={visibleField}>
-                            <input type="number" className="form-control" name={category} placeholder="Enter amount spent in GBP" value={procurementReport[category] ?? ''} onChange={handleProcurementChange} required />
-                            <div className="invalid-feedback">
-                            Valid number is required.
-                            </div>
-                        </div>
-
-                    </div>
-                </form>
-
+                {/* Table */}
                 <div class="table-responsive small mt-3">
                     <table class="table table-light table-sm">
                     <thead>
                         <tr className="align-middle text-center">
-                        <th scope="col">code</th>
                         <th scope="col">category</th>
                         <th scope="col">value</th>
-                        <th scope="col">button</th>
+                        <th scope="col"></th>
                         </tr>
                     </thead>
+
+                    {/* Table Body */}
                     <tbody>
-                    {procurementCategories.map((category) => (
-                        <tr key={category.code} className={rowVisibility[category.code] ? 'align-middle text-center' : 'd-none align-middle text-center'} id={category.code}>
-                        <th scope="row">{category.code}</th>
-                        <td>{category.name}</td>
-                        <td>{procurementReport[category.code]}</td>
-                        <td><button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(category.code)}>Delete</button></td>
+                    {Object.keys(rowCategory).map((num) => (
+                        <tr key={num} id={num} className='align-middle text-center'>
+                        <td>
+                            <select defaultValue={rowCategory[num] === null ? "default" : rowCategory[num]} className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange} disabled={rowCategory[num] !== null}>
+                                <option value="default" disabled="true">Select a procurement category</option>
+                                {procurementCategories.map((category) => (
+                                    <option value={category.code} disabled={categorySelected[category.code]}>{category.code} - {category.name}{categorySelected[category.code] && category.code != rowCategory[num] ? " - SELECTED" : ''}</option>
+                                ))}
+                            </select>
+                        </td>
+                        <td className='text-center'>
+                            <div className='d-inline-flex align-items-center'>
+                                <span style={{ fontSize: '1rem', fontWeight: '600'}}>£:</span>
+                                <input type="number" className="form-control form-control-sm ms-2" disabled={rowCategory[num] === null} name={rowCategory[num]} placeholder="Expenses, GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
+                            </div>
+                        </td>
+                        <td>
+                            <button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(num)}>Delete</button>
+                        </td>
                         </tr>
                     ))}
                     </tbody>
                     </table>
                 </div>
                 
+                {/* Nav Buttons */}
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" className="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
     };
 
     function Results() {
-
+        
         const navigate = useNavigate();
 
-        const handleBack = () => {
+        function handleBack(){
             navigate("/calculator/procurement")
         };
 
-        const handleRoute = () => {
+        function handleRoute(){
             navigate("/dashboard")
         };
 
@@ -613,7 +658,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Submit</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
                 </div>
             </main>
         );
