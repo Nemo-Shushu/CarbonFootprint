@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import Sidebar from "./Sidebar";
-import Cookies from 'js-cookie';
 import "./static/UpdateFactors.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
