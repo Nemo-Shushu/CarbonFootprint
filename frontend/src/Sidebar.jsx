@@ -23,7 +23,9 @@ function Sidebar({ onNameClick }) {
       setActiveItem("Dashboard");
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
-    } else if (location.pathname === "/calculator") {
+    } else if (location.pathname === "/update-factors") {
+      setActiveItem("Update Factors");
+    } else {
       setActiveItem("");
     }
     getSession();
@@ -137,8 +139,13 @@ function Sidebar({ onNameClick }) {
           <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Request Admin" ? "active" : ""}`} onClick={handleRequestAdmin} style={{cursor: "pointer", width: 90 + '%'}}>
             <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
           </div>
-          <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Update Factors" ? "active" : ""}`} onClick={handleUpdateFactors} style={{cursor: "pointer", width: 90 + '%'}}>
-            <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
+          <div className={`btn btn-moss d-flex text-center text-white fs-6 p-2 m-2 ${activeItem === "Update Factors" ? "active" : ""}`} onClick={handleUpdateFactors} style={{cursor: "pointer", width: 90 + '%'}}>
+            <div className="p-1 text-center">
+              <i className="bi bi-database-fill-gear align-middle" style={{fontSize: "18px"}}></i>
+            </div>
+            <div>
+              <p className="mb-0 ms-2 text-start">Update Conversion Factors</p>
+            </div>
           </div>
         </nav>
       </div>

@@ -6,7 +6,8 @@ import RegisterForm from './RegisterForm';
 import SignInForm from './SignInForm';
 import { Dashboard, TableComponent } from './Dashboard';
 import Frontpage from './Frontpage';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import Profile from './Profile';
