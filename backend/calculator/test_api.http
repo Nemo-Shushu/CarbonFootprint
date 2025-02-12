@@ -36,13 +36,7 @@ POST http://localhost:8000/api/calculator/procurement-calculator/
 Content-Type: application/json
 
 {
-  "CA": 100,
-  "WB": 200,
-  "PA": 50,
-  "AF": 150,
-  "TA": 120,
-  "AB": 1,
-  "C" : 100
+
 }
 
 
@@ -52,7 +46,7 @@ POST http://localhost:8000/api/calculator/Report/
 Content-Type: application/json
 
 {
-    "utilities": {
+  "utilities": {
     "FTE-staff": "10",
     "FTE-members": "20",
     "academic-laboratory-area": "100",
@@ -85,6 +79,6 @@ Content-Type: application/json
     "AF": 150,
     "TA": 120,
     "AB": 1,
-    "C" : 100
-}
+    "C": 100
+  }
 }
