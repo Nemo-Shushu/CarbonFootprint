@@ -3,6 +3,7 @@ import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -14,7 +15,14 @@ async function createUser(user) {
     },
     body: JSON.stringify(user),
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(errorData => {
+        throw errorData;
+      });
+    }
+    return response.json();
+  })
   .then(data => {
     console.log(data);
     return data;
@@ -24,6 +32,7 @@ async function createUser(user) {
     throw error;
   });
 }
+
 
 function RegisterForm() {
   const [user, setUser] = useState({ 
@@ -40,17 +49,15 @@ function RegisterForm() {
   const [institutions, setInstitutions] = useState([]);
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
-
-  const handleInstitutionsChange = (event) => {
-    let eventValue = event.target.value;
-    setInstitutions(eventValue);
-};
-
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => {
+    setShowPassword(prev => !prev);
+  };
   useEffect(() => {
     fetch(backendUrl.concat('api2/institutions/'))
       .then(response => {
         if (!response.ok) {
-          throw new Error('Fail to get an unveristy lists.');
+          throw new Error('Fail to get an university lists.');
         }
         return response.json();
       })
@@ -88,7 +95,14 @@ function RegisterForm() {
       })
       .catch(err => {
         console.error('Error creating user:', err);
-        setError(err.message);
+        const errorKeys = Object.keys(err); 
+        if (errorKeys.length > 0) {
+          const firstKey = errorKeys[0];
+          const firstMessage = err[firstKey][0]; 
+          setError(firstMessage);
+        } else {
+          setError("An unknown error occurred.");
+        }
       });
   };
 
@@ -97,6 +111,15 @@ function RegisterForm() {
     setUser(prevUser => ({ ...prevUser, [name]: value }));
   };
 
+  const handleInstitutionsChange = (event) => {
+    const selectedInstitute = event.target.value;
+    setUser(prevUser => ({ ...prevUser, institute: selectedInstitute }));
+  };
+
+  const handleFieldsChange = (event) => {
+    const selectedField = event.target.value;
+    setUser(prevUser => ({ ...prevUser, research_field: selectedField }));
+  };
   const handleProtect = () => {
     navigate("/sign-in");
   };
@@ -157,62 +180,88 @@ function RegisterForm() {
           </div>
 
           <div className="form-floating">
-            <input
-              list="institutions"
+            <select
               name="institute"
-              className="form-control"
+              className="form-select form-select-lg mb-3"
               id="floatingInputInstitute"
-              onChange={handleChange}
-            />
-
-          <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" onChange={handleInstitutionsChange}>
-            {institutions.map((inst, index) => (
-                <option key={index} value={inst.name} />
+              value={user.institute}
+              onChange={handleInstitutionsChange}
+              style={{ fontSize: '12px' }}
+            >
+              <option value="" disabled>
+                Select an institution
+              </option>
+              {institutions.map((inst, index) => (
+                <option key={index} value={inst.name}>
+                  {inst.name}
+                </option>
               ))}
-          </select>
+            </select>
           
             <label htmlFor="floatingInputInstitute">Academic Institution</label>
           </div>
 
           <div className="form-floating">
-            <input
-              list="research-fields"
+            <select
               name="research_field"
-              className="form-control"
+              className="form-select form-select-lg mb-3"
               id="floatingInputResearch"
-              onChange={handleChange}
-            />
-            <datalist id="research-fields">
-            {fields.map((inst, index) => (
-                <option key={index} value={inst.name} />
+              value={user.research_field} 
+              style={{ fontSize: '12px' }}
+              onChange={handleFieldsChange}
+            >
+              <option value="" disabled>
+                Select a Research Field
+              </option>
+              {fields.map((inst, index) => (
+                <option key={index} value={inst.name} >
+                  {inst.name}
+                </option>
               ))}
-            </datalist>
+            </select>
             <label htmlFor="floatingInputResearch">Research Field</label>
           </div>
 
-          <div className="form-floating">
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              id="floatingPassword"
-              placeholder="Password"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingPassword">Password</label>
-          </div>
+        <div className="form-floating position-relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            className="form-control"
+            id="floatingPassword"
+            placeholder="Password"
+            onChange={handleChange}
+          />
+          <label htmlFor="floatingPassword">Password</label>
+          
+          <button 
+            type="button"
+            onClick={toggleShowPassword}
+            className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
+            style={{ textDecoration: 'none' }}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
+      </div>
 
-          <div className="form-floating">
-            <input
-              type="password"
-              name="password2"
-              className="form-control"
-              id="floatingPasswordConfirm"
-              placeholder="Confirm Password"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingPasswordConfirm">Confirm Password</label>
-          </div>
+      <div className="form-floating position-relative mt-3">
+        <input
+          type={showPassword ? "text" : "password"}
+          name="password2"
+          className="form-control"
+          id="floatingPasswordConfirm"
+          placeholder="Confirm Password"
+          onChange={handleChange}
+        />
+        <label htmlFor="floatingPasswordConfirm">Confirm Password</label>
+        <button 
+          type="button"
+          onClick={toggleShowPassword}
+          className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
+          style={{ textDecoration: 'none' }}
+        >
+          {showPassword ? 'Hide' : 'Show'}
+        </button>
+      </div>
 
           <p className="warning">{error}</p>
 

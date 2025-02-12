@@ -439,8 +439,8 @@ CREATE TABLE public.accounts_user (
     is_active boolean NOT NULL,
     date_joined timestamp with time zone NOT NULL,
     email character varying(35) NOT NULL,
-    institute_id bigint,
-    research_field_id bigint,
+    institute_id character varying(150),
+    research_field_id character varying(150),
     is_admin boolean NOT NULL,
     is_researcher boolean NOT NULL,
     is_verified boolean NOT NULL
