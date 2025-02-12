@@ -45,7 +45,7 @@ function Calculator() {
                 <h5>Use Calculator like that. Click "Next" to save your inputs.</h5>
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Start</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Start</button>
                 </div>
             </main>
         );
@@ -179,7 +179,7 @@ function Calculator() {
                 </form>
 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -376,7 +376,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -483,7 +483,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -605,8 +605,11 @@ function Calculator() {
                                 ))}
                             </select>
                         </td>
-                        <td>
-                            <input type="number" className="form-control form-control-sm" disabled={rowCategory[num] === null} name={rowCategory[num]} placeholder="Expenses, GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
+                        <td className='text-center'>
+                            <div className='d-inline-flex align-items-center'>
+                                <span style={{ fontSize: '1rem', fontWeight: '600'}}>£:</span>
+                                <input type="number" className="form-control form-control-sm ms-2" disabled={rowCategory[num] === null} name={rowCategory[num]} placeholder="Expenses, GBP" value={procurementReport[rowCategory[num]] ?? ''} onChange={handleProcurementChange} required />
+                            </div>
                         </td>
                         <td>
                             <button className="btn btn-outline-danger w-30" type="button" onClick={() => handleProcurementDelete(num)}>Delete</button>
@@ -619,14 +622,14 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" className="btn btn-success" onClick={handleRoute}>Next</button>
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
     };
 
     function Results() {
-
+        
         const navigate = useNavigate();
 
         const handleBack = () => {
@@ -643,7 +646,7 @@ function Calculator() {
                 
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-success" onClick={handleRoute}>Submit</button>
+                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
                 </div>
             </main>
         );
