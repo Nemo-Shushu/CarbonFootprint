@@ -68,21 +68,21 @@ function UpdateFactors() {
             <main style={{flex: "1", padding: "1rem", overflowY: "auto",}} className="update-factors-container">
                 <div class="container-fluid">
                     <div className="row align-items-center">
-                        <div className="col-md-8 align-middle">
+                        <div className="col-md-8 align-middle" style={{paddingLeft: "0px"}}>
                             <h2 className="text-start">Update Conversion Factors</h2>
                         </div>
-                        <div class="col-6 col-md-3 text-end">
+                        <div class="col-6 col-md-4 text-end">
                         <Button onClick={() => handleShow(0, "", null)}>Add New Conversion Factor</Button>
                         </div>
                     </div>
                 </div>
 
-                <table className="table table-hover">
+                <table className="table table-hover table-striped">
                     <thead>
                         <tr className="align-middle text-start">
-                        <th scope="col" style={{width:"50%"}}>Activity</th>
+                        <th scope="col" style={{width:"60%"}}>Activity</th>
                         <th scope="col" style={{width:"30%"}}>kg CO2e</th>
-                        <th scope="col" style={{width:"20%"}}>Actions</th>
+                        <th scope="col" style={{width:"10%"}}></th>
                         </tr>
                     </thead>
                     <tbody className="table-group-divider">
@@ -92,7 +92,7 @@ function UpdateFactors() {
                         <td>{factor.value}</td>
                         <td>
                             <a className="edit-icon me-5" onClick={() => handleShow(factor.id, factor.activity, factor.value)}>
-                                <i className="bi bi-pen-fill" style={{fontSize: "20px"}}></i>
+                                <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}></i>
                             </a>
                             <a className="delete-icon me-5 text-danger">
                                 <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}></i>

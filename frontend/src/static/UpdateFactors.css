@@ -1,7 +1,8 @@
 .update-factors-container {
     flex: 1;
     padding: 2rem;
-    margin-left: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
     margin-top: 0.8rem;
     display: flex;
     flex-direction: column;
