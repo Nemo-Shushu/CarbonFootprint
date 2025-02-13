@@ -118,7 +118,7 @@ function UpdateFactors() {
                         <div class="input-group mb-3">
                             <label for="basic-url" class="form-label">Activity Name</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder={selectedFactor.activity} aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
+                                <input type="text" class="form-control" placeholder={selectedFactor.name} aria-label="Recipient's username" aria-describedby="basic-addon2"></input>
                             </div>
                         </div>
                         <div class="input-group mb-3">
