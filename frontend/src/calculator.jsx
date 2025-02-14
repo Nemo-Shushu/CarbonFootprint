@@ -7,6 +7,7 @@ import "./static/dashboard.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
 import { useAuth } from './useAuth';
+import ResultsDisplay from './ResultsDisplay';
 
 function Calculator() {
 
@@ -643,6 +644,46 @@ function Calculator() {
     function Results() {
         
         const navigate = useNavigate();
+        const [data, setData] = useState([
+            {
+                "total_electricity_emissions": 123.45,
+                "total_gas_emissions": 67.89,
+                "total_water_emissions": 45.67,
+                "total_travel_emissions": 89.12,
+                "total_waste_emissions": 34.56,
+                "total_procurement_emissions": 78.90,
+                "total_carbon_emissions": 439.59
+            }
+        ]);
+
+        useEffect(() => {
+            if (report) {
+                peekCalculations(report);
+            }
+        }, [report]);
+
+        async function peekCalculations(report) {
+            try {
+                const response = await fetch(`${backendUrl}calculator/Report/`, { // Change this to actual API!
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(report),
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+    
+                const responseData = await response.json();
+                console.log('Calculations received:', responseData);
+    
+                setData(responseData);
+            } catch (error) {
+                console.error('Error fetching calculations:', error);
+            }
+        }
 
         function handleBack(){
             navigate("/calculator/procurement")
@@ -655,7 +696,7 @@ function Calculator() {
         return (
             <main class="ms-sm-auto px-md-4">
                 <h2>Results</h2>
-                
+                <ResultsDisplay data={data}/>
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
                     <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
