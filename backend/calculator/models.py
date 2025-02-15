@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import *
 
 class CalculationRecord(models.Model):
     # 时间戳
@@ -37,7 +38,7 @@ class ProcurementData(models.Model):
         return self.code
     
     class Meta:
-        db_table = "procurement_data"
+        db_table = "calculate_procurement_data"
 
 
 class CategoryCarbonImpact(models.Model):
@@ -48,4 +49,32 @@ class CategoryCarbonImpact(models.Model):
         return self.category
     
     class Meta:
-        db_table = "category_carbon_impact"
+        db_table = "calculate_category_carbon_impact"
+
+class Result(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_electricity_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_gas_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_water_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_travel_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_waste_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_procurement_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    total_carbon_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    # submitted_user = models.ForeignKey(User)
+
+    class Meta:
+        db_table = 'calculate_result'  # 指定数据库表名
+
+class WasteEmission(models.Model):
+    id = models.BigAutoField(primary_key=True)  # ID 字段
+    type_of_waste = models.CharField(max_length=50, unique=True)  # 废弃物类型（唯一）
+    amount = models.FloatField()  # 数量
+    carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)  # 碳排放因子
+    total_emissions = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)  # 总碳排放
+    submission_id = models.BigIntegerField()  # 提交 ID
+
+    class Meta:
+        db_table = "accounts_wasteemission"  # 这里要和数据库里的表名一致
+
+    def __str__(self):
+        return f"{self.type_of_waste}: {self.carbon_intensity}"

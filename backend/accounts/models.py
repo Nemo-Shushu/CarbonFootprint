@@ -178,35 +178,35 @@ class ProportionEntry(models.Model):
     def __str__(self):
         return f"Proportion for Submission: {self.submission.project_name}"
 
-class WasteEmission(models.Model):
-    submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="waste_emissions")
-    type_of_waste = models.CharField(max_length=50, choices=WASTE_TYPE_CHOICES)  # choices
-    amount = models.FloatField()  # amount in tonnes
-    carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, blank=True, null=True)  # Fetched from ConversionFactor
-    total_emissions = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)  
+# class WasteEmission(models.Model):
+#     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="waste_emissions")
+#     type_of_waste = models.CharField(max_length=50, choices=WASTE_TYPE_CHOICES)  # choices
+#     amount = models.FloatField()  # amount in tonnes
+#     carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, blank=True, null=True)  # Fetched from ConversionFactor
+#     total_emissions = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)  
 
-    def calculate_emissions(self):
-        try:
-            conversion_factor = ConversionFactor.objects.get(activity=self.type_of_waste)
-            self.carbon_intensity = conversion_factor.value
-        except ConversionFactor.DoesNotExist:
-            self.carbon_intensity = None
+#     def calculate_emissions(self):
+#         try:
+#             conversion_factor = ConversionFactor.objects.get(activity=self.type_of_waste)
+#             self.carbon_intensity = conversion_factor.value
+#         except ConversionFactor.DoesNotExist:
+#             self.carbon_intensity = None
 
-        # Calculate total emissions if carbon intensity is available
-        if self.carbon_intensity is not None:
-            self.total_emissions = self.amount * float(self.carbon_intensity)
-        else:
-            self.total_emissions = None
+#         # Calculate total emissions if carbon intensity is available
+#         if self.carbon_intensity is not None:
+#             self.total_emissions = self.amount * float(self.carbon_intensity)
+#         else:
+#             self.total_emissions = None
 
-        return self.total_emissions
+#         return self.total_emissions
 
-    def save(self, *args, **kwargs):
-        # ensure that emissions are calculated before saving
-        self.calculate_emissions()
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         # ensure that emissions are calculated before saving
+#         self.calculate_emissions()
+#         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.type_of_waste}: {self.total_emissions} kg CO2e"
+#     def __str__(self):
+#         return f"{self.type_of_waste}: {self.total_emissions} kg CO2e"
 
 class TravelEmission(models.Model):
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name="travel_emissions")

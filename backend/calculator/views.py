@@ -1,4 +1,9 @@
 import json
+
+from django.db import IntegrityError
+import api
+import accounts
+import carbonfoot
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,8 +14,14 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated
-from .models import emission_factors
+from .models import Result, emission_factors
 from .models import ProcurementData, CategoryCarbonImpact 
+from .models import WasteEmission 
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
 
 
 class ProcurementCalculatorView:
@@ -18,12 +29,12 @@ class ProcurementCalculatorView:
         "Business Services": ["AF","AH","AL","AN","AT","AU","BE","BK","BN","BS","BT","BW","BZ"
         ,"CG","CS"],
         "Food and Catering": ["C","CA","CB","CC","CD","CE","CH","CJ","CM","CP","CQ","CT","CU"
-        ,"CU","CV"],
+        ,"CU","CV","CZ"],
         "Information and Communication Technologies": ["A","AA","AE","AJ","AK","AM","AP","AR"
         ,"AZ","BI","BJ","BP","BQ","BR"],
         "Waste and Water": [],
-        "Medical and Precision Instruments": [],
-        "Other Manufactured Products": ["AB","AC","AD","AG","CF","CK","CL","CN","CR"],
+        "Medical and Precision Instruments": ["D","DA","DB","DC","DD"],
+        "Other Manufactured Products": ["AB","AC","AD","AG","CF","CK","CL","CN","CR","CY","DE"],
         "Paper Products": ["B","BA","BB","BC","BD","BF","BG","BL","BM","BL","BM","BV"],
         "Manufactured Fuels, Chemicals and Glasses": [],
         "Unclassified": ["AQ"],
@@ -135,9 +146,13 @@ class ReportcalculateView:
 
         # 计算废弃物碳排放
         for waste_type, amount in waste.items():
-            if waste_type in self.CARBON_INTENSITY_WASTE:
-                total_waste_emissions += float(amount) * self.CARBON_INTENSITY_WASTE[waste_type]
-
+            waste_entry = WasteEmission.objects.filter(type_of_waste=waste_type).first()
+            if waste_entry and waste_entry.carbon_intensity is not None:
+                try:
+                    total_waste_emissions += float(amount) * float(waste_entry.carbon_intensity)  # 转换 Decimal 为 float
+                except Exception as e:
+                    print(f" 计算 {waste_type} 排放错误: {str(e)}")  # Debug 输出
+                    
         return {
             "total_electricity_emissions": round(total_electricity_emissions, 2),
             "total_gas_emissions": round(total_gas_emissions, 2),
@@ -155,7 +170,7 @@ class ReportView(APIView):
             travel = request.data.get("travel", {})
             waste = request.data.get("waste", {})
             procurement = request.data.get("procurement", {})
-
+            
             if not all(isinstance(data, dict) for data in [utilities, travel, waste, procurement]):
                 return Response({"error": "Invalid input format"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -189,7 +204,74 @@ class ReportView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        
+#@ensure_csrf_cookie
+class SubmitView(APIView):
+
+    """
+    API 用于确认计算结果，并存入数据库
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # 获取请求数据
+            # id = request.data.get("id", {})
+            user_id = request.user.id
+            print(request.user)
+            # user_id = request.data.get("user_id")
+            utilities = request.data.get("utilities", {})
+            travel = request.data.get("travel", {})
+            waste = request.data.get("waste", {})
+            procurement = request.data.get("procurement", {})
+
+            # 确保所有数据格式正确
+            if not all(isinstance(data, dict) for data in [utilities, travel, waste, procurement]):
+                return Response({"error": "Invalid input format"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+            # 计算碳排放
+            report_calculator = ReportcalculateView()
+            report_data = report_calculator.calculate_report_emissions(request.data)
+
+            if "error" in report_data:
+                return Response({"error": report_data["error"]}, status=status.HTTP_400_BAD_REQUEST)
+
+            procurement_calculator = ProcurementCalculatorView()
+            procurement_data = procurement_calculator.calculate_procurement_emissions(procurement)
+            total_procurement_emissions = sum(category_data["carbon_impact"] for category_data in procurement_data.values())
+
+            # 计算总碳排放
+            total_carbon_emissions = (
+                report_data["total_electricity_emissions"] +
+                report_data["total_gas_emissions"] +
+                report_data["total_water_emissions"] +
+                report_data["total_travel_emissions"] +
+                report_data["total_waste_emissions"] +
+                total_procurement_emissions
+            )
+
+            # 存储到数据库
+            try:
+                # print(request.user)
+                result_entry = Result(
+                    user_id ,
+                    total_electricity_emissions=report_data["total_electricity_emissions"],
+                    total_gas_emissions=report_data["total_gas_emissions"],
+                    total_water_emissions=report_data["total_water_emissions"],
+                    total_travel_emissions=report_data["total_travel_emissions"],
+                    total_waste_emissions=report_data["total_waste_emissions"],
+                    total_procurement_emissions=total_procurement_emissions,
+                    total_carbon_emissions=total_carbon_emissions
+                )
+                result_entry.save()
+            except IntegrityError:
+                print(str(Exception))
+                return Response({"error": "User already has a stored result"}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({"success": True}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 # class ReportcalculateView(APIView):
 #     permission_classes = (AllowAny,)
 #     """
