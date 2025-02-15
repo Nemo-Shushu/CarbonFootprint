@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./useAuth";
-import Sidebar from "./Sidebar";
-import "./static/UpdateFactors.css";
+import { useAuth } from "../../useAuth";
+import Sidebar from "../../Sidebar";
+import "./UpdateFactors.css";
 import { Tooltip } from 'react-tooltip';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -12,30 +12,50 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 function UpdateFactors() {
     const navigate = useNavigate();
 
-    function handleProtect() {
-        navigate("/sign-in")
-    };
+    useEffect(() => {
+        getConversionFactors();
+    }, []);
 
     const [conversionFactors, setConversionFactors] = useState([]);
-    const [show, setShow] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
+    
+    // set title for the delete and edit modals
+    const [modalTitle, setModalTitle] = useState("");
 
     // used to populate and unpopulate modal popups
     const initialFactorValue = [
         { id: 0, name: "", value: 0}
     ];
-    
     const [selectedFactor, setSelectedFactor] = useState(initialFactorValue);
+
+    function handleProtect() {
+        navigate("/sign-in")
+    };
     
-    function handleClose() {
+    function handleCloseEdit() {
         setSelectedFactor({id: 0, name: "", value: 0});
-        setShow(false);
-    }
-    
-    function handleShow(id, name, value) {
-        setSelectedFactor({id, name, value});
-        setShow(true);
+        setShowEdit(false);
     }
 
+    function handleCloseDelete() {
+        setShowDelete(false);
+    }
+    
+    function handleShowEdit(id, name, value) {
+        setModalTitle("Edit");
+        setSelectedFactor({id, name, value});
+        setShowEdit(true);
+    }
+
+    function handleShowCreate() {
+        setModalTitle("Create a New");
+        setShowEdit(true);
+    }
+    
+    function handleShowDelete() {
+        setShowDelete(true);
+    }
 
     function getConversionFactors() {
         fetch(backendUrl.concat('api/accounts/conversion-factors/'), {
@@ -54,13 +74,8 @@ function UpdateFactors() {
           })
           .catch(err => {
             console.error('failed to retrieve conversion factors', err);
-          });
+        });
     }
-
-    useEffect(() => {
-        getConversionFactors();
-    }, []);
-
 
     return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
@@ -72,7 +87,7 @@ function UpdateFactors() {
                             <h2 className="text-start">Update Conversion Factors</h2>
                         </div>
                         <div class="col-6 col-md-4 text-end">
-                        <Button onClick={() => handleShow(0, "", null)}>Add New Conversion Factor</Button>
+                        <Button onClick={handleShowCreate}>Add New Conversion Factor</Button>
                         </div>
                     </div>
                 </div>
@@ -91,10 +106,10 @@ function UpdateFactors() {
                         <td>{factor.activity}</td>
                         <td>{factor.value}</td>
                         <td>
-                            <a className="edit-icon me-5" onClick={() => handleShow(factor.id, factor.activity, factor.value)}>
+                            <a className="edit-icon me-5" onClick={() => handleShowEdit(factor.id, factor.activity, factor.value)}>
                                 <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}></i>
                             </a>
-                            <a className="delete-icon me-5 text-danger">
+                            <a className="delete-icon me-5 text-danger" onClick={handleShowDelete}>
                                 <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}></i>
                             </a>
                         </td>
@@ -110,9 +125,9 @@ function UpdateFactors() {
                     delete activity
                 </Tooltip>
                 <div className="editModal">
-                    <Modal show={show} onHide={handleClose} centered>
+                    <Modal show={showEdit} onHide={handleCloseEdit} centered>
                         <Modal.Header closeButton>
-                        <Modal.Title>Edit Conversion Factor</Modal.Title>
+                        <Modal.Title>{modalTitle} Conversion Factor</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                         <div class="input-group mb-3">
@@ -130,11 +145,34 @@ function UpdateFactors() {
                         </div>
                         </Modal.Body>
                         <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="secondary" onClick={handleCloseEdit}>
                             Close
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button variant="primary" onClick={handleCloseEdit}>
                             Save Changes
+                        </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </div>
+
+                <div className="deleteModal">
+                    <Modal show={showDelete} onHide={handleCloseDelete} centered size="sm">
+                        <Modal.Header closeButton className="text-center">
+                        <Modal.Title className="w-100">Warning</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <div className="text-center">
+                            <p>Are you sure you want to delete the following conversion factor?</p>
+                            <p><strong>This action cannot be undone</strong></p>
+                        </div>
+                        
+                        </Modal.Body>
+                        <Modal.Footer className="justify-content-center" centered>
+                        <Button variant="secondary" onClick={handleCloseDelete}>
+                            Close
+                        </Button>
+                        <Button variant="danger" onClick={handleCloseDelete}>
+                            Delete
                         </Button>
                         </Modal.Footer>
                     </Modal>
