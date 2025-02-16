@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit, setSelectedFactor}) {
+function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit, setSelectedFactor, buttonContents}) {
 
     function handleChange(event) {
         const {name, value} = event.target;
@@ -55,7 +55,7 @@ function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSubmit}>
-                    Save Changes
+                    {buttonContents}
                 </Button>
                 </Modal.Footer>
             </Modal>

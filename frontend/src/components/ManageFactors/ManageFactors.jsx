@@ -195,6 +195,7 @@ function ManageFactors() {
                     selectedFactor={selectedFactor}
                     handleSubmit={handleUpdateSubmission}
                     setSelectedFactor={setSelectedFactor}
+                    buttonContents={"Save Changes"}
                 ></EditFactor>
                 
                 <EditFactor
@@ -204,6 +205,7 @@ function ManageFactors() {
                     selectedFactor={selectedFactor}
                     handleSubmit={handleCreateSubmission}
                     setSelectedFactor={setSelectedFactor}
+                    buttonContents={"Create"}
                 ></EditFactor>
                 
                 <DeleteFactor
