@@ -33,7 +33,7 @@ function Sidebar({ onNameClick }) {
   }, [location.pathname]); 
 
   function getCSRF() {
-    fetch(backendUrl.concat("api2/csrf/"), {
+    fetch(backendUrl + "api2/csrf/", {
       credentials: "include",
     })
     .then((res) => {
@@ -47,7 +47,7 @@ function Sidebar({ onNameClick }) {
   }
 
   function getSession() {
-    fetch(backendUrl.concat("api2/session/"), {
+    fetch(backendUrl + "api2/session/", {
         credentials: "include",
     })
     .then((res) => res.json())
@@ -75,7 +75,7 @@ function Sidebar({ onNameClick }) {
 
   function handleLogout() {
     localStorage.removeItem("userToken"); 
-    fetch(backendUrl.concat("api2/logout"), {
+    fetch(backendUrl + "api2/logout", {
       credentials: "include",
     })
     .then(isResponseOk)
@@ -92,7 +92,7 @@ function Sidebar({ onNameClick }) {
 
   function getName() {
     localStorage.removeItem("userToken"); 
-    fetch(backendUrl.concat("api2/whoami/"), {
+    fetch(backendUrl + "api2/whoami/", {
       credentials: "include",
     })
     .then((res) => res.json())
