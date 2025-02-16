@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../useAuth";
 import Sidebar from "../../Sidebar";
-import "./UpdateFactors.css";
+import "./ManageFactors.css";
 import { Tooltip } from 'react-tooltip';
 import Button from 'react-bootstrap/Button';
 import DeleteFactor from "./DeleteFactor";
@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-function UpdateFactors() {
+function ManageFactors() {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,7 +20,7 @@ function UpdateFactors() {
     }, []);
 
     const [conversionFactors, setConversionFactors] = useState([]);
-    const [showEdit, setShowEdit] = useState(false);
+    const [showUpdate, setShowUpdate] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [showCreate, setShowCreate] = useState(false);
 
@@ -39,9 +39,9 @@ function UpdateFactors() {
         navigate("/sign-in")
     };
     
-    function handleCloseEdit() {
+    function handleCloseUpdate() {
         setSelectedFactor(initialFactorValue);
-        setShowEdit(false);
+        setShowUpdate(false);
     }
 
     function handleCloseCreate() {
@@ -49,10 +49,10 @@ function UpdateFactors() {
         setShowCreate(false);
     }
 
-    function handleShowEdit(id, activity, value) {
-        setModalTitle("Edit");
+    function handleShowUpdate(id, activity, value) {
+        setModalTitle("Update");
         setSelectedFactor({id, activity, value});
-        setShowEdit(true);
+        setShowUpdate(true);
     }
 
     function handleShowDelete(acitivtyId) {
@@ -86,7 +86,7 @@ function UpdateFactors() {
         });
     }
 
-    async function handleEditSubmission(event) {
+    async function handleUpdateSubmission(event) {
         event.preventDefault();
         await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
             method: "PUT",
@@ -174,7 +174,7 @@ function UpdateFactors() {
                 <div className="container-fluid">
                     <div className="row align-items-center">
                         <div className="col-md-8 align-middle" style={{paddingLeft: "0px"}}>
-                            <h2 className="text-start">Update Conversion Factors</h2>
+                            <h2 className="text-start">Manage Conversion Factors</h2>
                         </div>
                         <div class="col-6 col-md-4 text-end">
                         <Button onClick={handleShowCreate}>Add New Conversion Factor</Button>
@@ -185,23 +185,21 @@ function UpdateFactors() {
                 <FactorTable
                     conversionFactors={conversionFactors}
                     showDelete={handleShowDelete}
-                    handleShowEdit={handleShowEdit}
+                    handleShowEdit={handleShowUpdate}
                 ></FactorTable>
 
                 <EditFactor
-                    handleCloseEdit={handleCloseEdit}
-                    showEdit={showEdit}
+                    handleClose={handleCloseUpdate}
+                    show={showUpdate}
                     modalTitle={modalTitle}
                     selectedFactor={selectedFactor}
-                    handleSubmit={handleEditSubmission}
+                    handleSubmit={handleUpdateSubmission}
                     setSelectedFactor={setSelectedFactor}
                 ></EditFactor>
-
-                // this modal is for creating new factors
-                // rename in the future to increase readability
+                
                 <EditFactor
-                    handleCloseEdit={handleCloseCreate}
-                    showEdit={showCreate}
+                    handleClose={handleCloseCreate}
+                    show={showCreate}
                     modalTitle={modalTitle}
                     selectedFactor={selectedFactor}
                     handleSubmit={handleCreateSubmission}
@@ -227,4 +225,4 @@ function UpdateFactors() {
     );
 }
 
-export default UpdateFactors;
+export default ManageFactors;

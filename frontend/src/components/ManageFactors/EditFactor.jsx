@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-function EditFactor({showEdit, handleCloseEdit, modalTitle, selectedFactor, handleSubmit, setSelectedFactor}) {
+function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit, setSelectedFactor}) {
 
     function handleChange(event) {
         const {name, value} = event.target;
@@ -13,7 +13,7 @@ function EditFactor({showEdit, handleCloseEdit, modalTitle, selectedFactor, hand
 
     return (
         <div className="editModal">
-            <Modal show={showEdit} onHide={handleCloseEdit} centered>
+            <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                 <Modal.Title>{modalTitle} Conversion Factor</Modal.Title>
                 </Modal.Header>
@@ -51,7 +51,7 @@ function EditFactor({showEdit, handleCloseEdit, modalTitle, selectedFactor, hand
                 </form>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseEdit}>
+                <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleSubmit}>
