@@ -4,11 +4,11 @@ import { useAuth } from "../../useAuth";
 import Sidebar from "../../Sidebar";
 import "./UpdateFactors.css";
 import { Tooltip } from 'react-tooltip';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import DeleteFactor from "./DeleteFactor";
 import EditFactor from "./EditFactor";
 import FactorTable from "./FactorTable";
+import Cookies from "js-cookie";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -22,13 +22,14 @@ function UpdateFactors() {
     const [conversionFactors, setConversionFactors] = useState([]);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
+    const [csrfToken, setCrsfToken] = useState("");
     
     // set title for the delete and edit modals
     const [modalTitle, setModalTitle] = useState("");
 
     // used to populate and unpopulate modal popups
     const initialFactorValue = [
-        { id: 0, name: "", value: 0}
+        { id: 0, activity: "", value: 0}
     ];
     const [selectedFactor, setSelectedFactor] = useState(initialFactorValue);
 
@@ -37,7 +38,7 @@ function UpdateFactors() {
     };
     
     function handleCloseEdit() {
-        setSelectedFactor({id: 0, name: "", value: 0});
+        setSelectedFactor({id: 0, activity: "", value: 0});
         setShowEdit(false);
     }
 
@@ -46,14 +47,14 @@ function UpdateFactors() {
         setShowEdit(true);
     }
 
-    function handleShowEdit(id, name, value) {
+    function handleShowEdit(id, activity, value) {
         setModalTitle("Edit");
-        setSelectedFactor({id, name, value});
+        setSelectedFactor({id, activity, value});
         setShowEdit(true);
     }
 
-    function getConversionFactors() {
-        fetch(backendUrl.concat('api/accounts/conversion-factors/'), {
+    async function getConversionFactors() {
+        await fetch(backendUrl + 'api/accounts/conversion-factors/', {
             method: "GET",
             credentials: "include",
         })
@@ -72,11 +73,38 @@ function UpdateFactors() {
         });
     }
 
+    async function handleEditSubmission(event) {
+        event.preventDefault();
+        console.log(Cookies.get('csrftoken'));
+        await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                'content-type': 'application/json',
+                "X-CSRFToken": Cookies.get('csrftoken'),
+            },
+            body: JSON.stringify(selectedFactor)
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('failed to update conversion factors');
+            }
+            return response.json();
+          })
+          .then(data => {
+            setConversionFactors(data);
+            console.log(data);
+          })
+          .catch(err => {
+            console.error('failed to update conversion factors', err);
+        });
+    }
+
     return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 17%", }} />
             <main style={{flex: "1", padding: "1rem", overflowY: "auto",}} className="update-factors-container">
-                <div class="container-fluid">
+                <div className="container-fluid">
                     <div className="row align-items-center">
                         <div className="col-md-8 align-middle" style={{paddingLeft: "0px"}}>
                             <h2 className="text-start">Update Conversion Factors</h2>
@@ -98,6 +126,7 @@ function UpdateFactors() {
                     showEdit={showEdit}
                     modalTitle={modalTitle}
                     selectedFactor={selectedFactor}
+                    handleSubmit={handleEditSubmission}
                 ></EditFactor>
                 
                 <DeleteFactor
