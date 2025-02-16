@@ -53,6 +53,11 @@ function UpdateFactors() {
         setShowEdit(true);
     }
 
+    function handleShowDelete(acitivtyId) {
+        setSelectedFactor({id: acitivtyId, activity: "", value: 0});
+        setShowDelete(true);
+    }
+
     async function getConversionFactors() {
         await fetch(backendUrl + 'api/accounts/conversion-factors/', {
             method: "GET",
@@ -105,6 +110,28 @@ function UpdateFactors() {
         setShowEdit(false);
     }
 
+    async function handleDeleteSubmission(event) {
+        event.preventDefault();
+        console.log(event);
+        await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                'content-type': 'application/json',
+                "X-CSRFToken": csrftoken,
+            },
+        })
+        .then(data => {
+            console.log(data);
+            setConversionFactors(conversionFactors.filter(row => selectedFactor.id !== row.id)
+            );
+          })
+        .catch(err => {
+            console.error('unable to delete specified conversion factor', err);
+        });
+        setShowDelete(false);
+    }
+
     return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 17%", }} />
@@ -122,7 +149,7 @@ function UpdateFactors() {
 
                 <FactorTable
                     conversionFactors={conversionFactors}
-                    showDelete={() => setShowDelete(true)}
+                    showDelete={handleShowDelete}
                     handleShowEdit={handleShowEdit}
                 ></FactorTable>
 
@@ -136,7 +163,7 @@ function UpdateFactors() {
                 ></EditFactor>
                 
                 <DeleteFactor
-                    handleCloseDelete={() => setShowDelete(false)}
+                    handleCloseDelete={handleDeleteSubmission}
                     showDelete={showDelete}
                 ></DeleteFactor>
 

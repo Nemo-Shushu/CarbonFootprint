@@ -1,6 +1,4 @@
 import React from "react";
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 
 function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
 
@@ -15,14 +13,14 @@ function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
             </thead>
             <tbody className="table-group-divider">
             {conversionFactors.map((factor) => (
-                <tr className="align-middle text-start">
+                <tr className="align-middle text-start" key={factor.id}>
                 <td>{factor.activity}</td>
                 <td>{factor.value}</td>
                 <td>
                     <a className="edit-icon me-5" onClick={() => handleShowEdit(factor.id, factor.activity, factor.value)}>
                         <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}></i>
                     </a>
-                    <a className="delete-icon me-5 text-danger" onClick={showDelete}>
+                    <a className="delete-icon me-5 text-danger" onClick={() => showDelete(factor.id)}>
                         <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}></i>
                     </a>
                 </td>
