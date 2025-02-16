@@ -8,6 +8,7 @@ function EditFactor({showEdit, handleCloseEdit, modalTitle, selectedFactor, hand
         const {name, value} = event.target;
         setSelectedFactor((prevState) => ({ ...prevState, [name]: value }));
         console.log(name, value);
+        console.log(selectedFactor);
     }
 
     return (
@@ -41,7 +42,7 @@ function EditFactor({showEdit, handleCloseEdit, modalTitle, selectedFactor, hand
                                 placeholder={selectedFactor.value}
                                 aria-label="Recipient's username"
                                 aria-describedby="basic-addon2"
-                                name="activityValue"
+                                name="value"
                                 onChange={handleChange}
                             ></input>
                             <span class="input-group-text" id="basic-addon2">kg CO2e</span>

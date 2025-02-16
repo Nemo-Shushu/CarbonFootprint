@@ -22,6 +22,8 @@ function UpdateFactors() {
     const [conversionFactors, setConversionFactors] = useState([]);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
+    const [showCreate, setShowCreate] = useState(false);
+
     const csrftoken = Cookies.get('csrftoken');
     
     // set title for the delete and edit modals
@@ -38,13 +40,13 @@ function UpdateFactors() {
     };
     
     function handleCloseEdit() {
-        setSelectedFactor({id: 0, activity: "", value: 0});
+        setSelectedFactor(initialFactorValue);
         setShowEdit(false);
     }
 
-    function handleShowCreate() {
-        setModalTitle("Create a New");
-        setShowEdit(true);
+    function handleCloseCreate() {
+        setSelectedFactor(initialFactorValue);
+        setShowCreate(false);
     }
 
     function handleShowEdit(id, activity, value) {
@@ -56,6 +58,12 @@ function UpdateFactors() {
     function handleShowDelete(acitivtyId) {
         setSelectedFactor({id: acitivtyId, activity: "", value: 0});
         setShowDelete(true);
+    }
+
+    function handleShowCreate() {
+        setModalTitle("Create a New");
+        setSelectedFactor(initialFactorValue);
+        setShowCreate(true);
     }
 
     async function getConversionFactors() {
@@ -110,6 +118,33 @@ function UpdateFactors() {
         setShowEdit(false);
     }
 
+    async function handleCreateSubmission(event) {
+        event.preventDefault();
+        await fetch(backendUrl + 'api/accounts/conversion-factors/', {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                'content-type': 'application/json',
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({activity: selectedFactor.activity, value: selectedFactor.value})
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('failed to create new conversion factor');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data);
+            setConversionFactors(prevFactors => [...prevFactors, data]);
+          })
+          .catch(err => {
+            console.error('failed to create conversion factors', err);
+        });
+        setShowCreate(false);
+    }
+
     async function handleDeleteSubmission(event) {
         event.preventDefault();
         console.log(event);
@@ -159,6 +194,17 @@ function UpdateFactors() {
                     modalTitle={modalTitle}
                     selectedFactor={selectedFactor}
                     handleSubmit={handleEditSubmission}
+                    setSelectedFactor={setSelectedFactor}
+                ></EditFactor>
+
+                // this modal is for creating new factors
+                // rename in the future to increase readability
+                <EditFactor
+                    handleCloseEdit={handleCloseCreate}
+                    showEdit={showCreate}
+                    modalTitle={modalTitle}
+                    selectedFactor={selectedFactor}
+                    handleSubmit={handleCreateSubmission}
                     setSelectedFactor={setSelectedFactor}
                 ></EditFactor>
                 
