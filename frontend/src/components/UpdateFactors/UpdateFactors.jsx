@@ -22,7 +22,7 @@ function UpdateFactors() {
     const [conversionFactors, setConversionFactors] = useState([]);
     const [showEdit, setShowEdit] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
-    const [csrfToken, setCrsfToken] = useState("");
+    const csrftoken = Cookies.get('csrftoken');
     
     // set title for the delete and edit modals
     const [modalTitle, setModalTitle] = useState("");
@@ -75,13 +75,12 @@ function UpdateFactors() {
 
     async function handleEditSubmission(event) {
         event.preventDefault();
-        console.log(Cookies.get('csrftoken'));
         await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
             method: "PUT",
             credentials: "include",
             headers: {
                 'content-type': 'application/json',
-                "X-CSRFToken": Cookies.get('csrftoken'),
+                "X-CSRFToken": csrftoken,
             },
             body: JSON.stringify(selectedFactor)
         })
@@ -92,12 +91,18 @@ function UpdateFactors() {
             return response.json();
           })
           .then(data => {
-            setConversionFactors(data);
             console.log(data);
+            setConversionFactors(prevState => 
+                prevState.map(item => 
+                    item.id === data.id ? data : item
+                )
+            );
+            console.log(conversionFactors.find(i => i.id === data.id));
           })
           .catch(err => {
             console.error('failed to update conversion factors', err);
         });
+        setShowEdit(false);
     }
 
     return useAuth() ? (
@@ -127,6 +132,7 @@ function UpdateFactors() {
                     modalTitle={modalTitle}
                     selectedFactor={selectedFactor}
                     handleSubmit={handleEditSubmission}
+                    setSelectedFactor={setSelectedFactor}
                 ></EditFactor>
                 
                 <DeleteFactor
