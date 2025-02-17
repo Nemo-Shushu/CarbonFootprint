@@ -1,0 +1,15 @@
+stages:
+  - build
+    
+.build_react:
+  stage: build
+  image: node:23
+  variables:
+    VITE_BACKEND_URL: "http://localhost:8000/"
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+    - build/
