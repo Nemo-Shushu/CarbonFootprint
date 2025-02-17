@@ -5,8 +5,8 @@ import Sidebar from "../../../Sidebar";
 import "../assets/ManageFactors.css";
 import { Tooltip } from 'react-tooltip';
 import Button from 'react-bootstrap/Button';
-import DeleteFactor from "./DeleteFactor";
-import EditFactor from "./EditFactor";
+import DeleteFactor from "./DeleteFactorModal";
+import EditFactor from "./EditFactorModal";
 import FactorTable from "./FactorTable";
 import Cookies from "js-cookie";
 import {
@@ -86,6 +86,12 @@ function ManageFactors() {
         setShowCreate(false);
     }
 
+    function handleDeleteSubmission(event) {
+        handleDeleteSubmissionAPI(event, selectedFactor);
+        setConversionFactors(conversionFactors.filter(row => selectedFactor.id !== row.id));
+        setShowDelete(false);
+    }
+
     return useAuth() ? (
         <div style={{ display: "flex", height: "100vh" }}>
             <Sidebar style={{ flex: "0 0 17%", }} />
@@ -129,11 +135,8 @@ function ManageFactors() {
                 
                 <DeleteFactor
                     showDelete={showDelete}
-                    handleDeleteAPI={handleDeleteSubmissionAPI}
-                    setShowDelete={setShowDelete}
-                    setConversionFactors={setConversionFactors}
-                    selectedFactor={selectedFactor}
-                    conversionFactors={conversionFactors}
+                    handleDelete={handleDeleteSubmission}
+                    handleClose={() => setShowDelete(false)}
                 ></DeleteFactor>
 
                 <Tooltip anchorSelect=".edit-icon" place="bottom">
