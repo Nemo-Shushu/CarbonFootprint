@@ -8,7 +8,7 @@ function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
                 <tr className="align-middle text-start">
                 <th scope="col" style={{width:"60%"}}>Activity</th>
                 <th scope="col" style={{width:"30%"}}>kg CO2e</th>
-                <th scope="col" style={{width:"10%"}}></th>
+                <th scope="col" style={{width:"10%"}}/>
                 </tr>
             </thead>
             <tbody className="table-group-divider">
@@ -18,10 +18,10 @@ function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
                 <td>{factor.value}</td>
                 <td>
                     <a className="edit-icon me-5" onClick={() => handleShowEdit(factor.id, factor.activity, factor.value)}>
-                        <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}></i>
+                        <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}/>
                     </a>
                     <a className="delete-icon me-5 text-danger" onClick={() => showDelete(factor.id)}>
-                        <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}></i>
+                        <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}/>
                     </a>
                 </td>
                 </tr>

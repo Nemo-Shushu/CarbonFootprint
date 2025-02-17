@@ -111,7 +111,7 @@ function ManageFactors() {
                     conversionFactors={conversionFactors}
                     showDelete={handleShowDelete}
                     handleShowEdit={handleShowUpdate}
-                ></FactorTable>
+                />
 
                 <EditFactor
                     handleClose={handleCloseUpdate}
@@ -121,7 +121,7 @@ function ManageFactors() {
                     handleSubmit={handleUpdateSubmission}
                     setSelectedFactor={setSelectedFactor}
                     buttonContents={"Save Changes"}
-                ></EditFactor>
+                />
                 
                 <EditFactor
                     handleClose={handleCloseCreate}
@@ -131,13 +131,13 @@ function ManageFactors() {
                     handleSubmit={handleCreateSubmission}
                     setSelectedFactor={setSelectedFactor}
                     buttonContents={"Create"}
-                ></EditFactor>
+                />
                 
                 <DeleteFactor
                     showDelete={showDelete}
                     handleDelete={handleDeleteSubmission}
                     handleClose={() => setShowDelete(false)}
-                ></DeleteFactor>
+                />
 
                 <Tooltip anchorSelect=".edit-icon" place="bottom">
                     edit activity
