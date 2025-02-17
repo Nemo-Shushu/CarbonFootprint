@@ -26,7 +26,7 @@ Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
 Connection: keep-alive
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=duL60Olpr0JgEVww7JrvcbpZRId1K6kt; sessionid=73gtmdh49uj6wjxlfilumixp6gv94x7q
+Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
 Host: localhost:8000
 Origin: http://localhost:3000
 Referer: http://localhost:3000/
@@ -51,28 +51,28 @@ GET http://localhost:8000/api2/get-csrf/
 ### test report
 POST http://localhost:8000/api2/Report/
 Content-Type: application/json
-Cookie: sessionid=p90kgzgo4ia8nr35yww8f36b8v2upxjb; csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
+Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
 X-CSRFToken: gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
 
 {
   "utilities": {
     "FTE-staff": "10",
     "FTE-members": "20",
-    "academic-laboratory-area": "100",
-    "academic-office-area": "200",
-    "admin-office-area": "300",
-    "admin-space-area": "150",
-    "medical-laboratory-area": "250",
-    "engineering-laboratory-area": "350",
-    "physical-laboratory-area": "400"
+    "Academic Laboratory": "100",
+    "Academic Office": "200",
+    "Admin Office": "300",
+    "Office/Admin Space": "150",
+    "Medical/Life Sciences Laboratory": "250",
+    "Engineering Laboratory": "350",
+    "Physical Sciences Laboratory": "400"
   },
   "travel": {
-    "air-eco-short": "1000",
-    "air-business-short": "500",
-    "air-eco-long": "800",
-    "air-business-long": "300",
+    "air-eco-short-UK": "1000",
+    "air-business-short-UK": "500",
+    "air-eco-long-UK": "800",
+    "air-business-long-UK": "300",
     "land-car": "1200",
-    "land-bus": "400"
+    "land-local-bus": "400"
   },
   "waste": {
     "mixed-recycle": "2",
@@ -95,28 +95,28 @@ X-CSRFToken: gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
 ### test submit
 POST http://localhost:8000/api2/Submit/
 Content-Type: application/json
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=duL60Olpr0JgEVww7JrvcbpZRId1K6kt; sessionid=73gtmdh49uj6wjxlfilumixp6gv94x7q
-X-CSRFToken: duL60Olpr0JgEVww7JrvcbpZRId1K6kt
+Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
+X-CSRFToken: 1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi
 
 {
   "utilities": {
     "FTE-staff": "10",
     "FTE-members": "20",
-    "academic-laboratory-area": "100",
-    "academic-office-area": "200",
-    "admin-office-area": "300",
-    "admin-space-area": "150",
-    "medical-laboratory-area": "250",
-    "engineering-laboratory-area": "350",
-    "physical-laboratory-area": "400"
+    "Academic Laboratory": "100",
+    "Academic Office": "200",
+    "Admin Office": "300",
+    "Office/Admin Space": "150",
+    "Medical/Life Sciences Laboratory": "250",
+    "Engineering Laboratory": "350",
+    "Physical Sciences Laboratory": "400"
   },
   "travel": {
-    "air-eco-short": "1000",
-    "air-business-short": "500",
-    "air-eco-long": "800",
-    "air-business-long": "300",
+    "air-eco-short-UK": "1000",
+    "air-business-short-UK": "500",
+    "air-eco-long-UK": "800",
+    "air-business-long-UK": "300",
     "land-car": "1200",
-    "land-bus": "400"
+    "land-local-bus": "400"
   },
   "waste": {
     "mixed-recycle": "2",

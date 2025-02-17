@@ -78,3 +78,16 @@ class WasteEmission(models.Model):
 
     def __str__(self):
         return f"{self.type_of_waste}: {self.carbon_intensity}"
+    
+class BenchmarkData(models.Model):
+    consumption_type = models.CharField(max_length=50) 
+    category = models.CharField(max_length=150)
+    amount = models.DecimalField(max_digits=10, decimal_places=2) 
+    unit = models.CharField(max_length=50) 
+    year = models.IntegerField()
+    intensity = models.DecimalField(max_digits=10, decimal_places=6, null=True) 
+    notes = models.TextField(null=True, blank=True)
+    transmission_distribution = models.DecimalField(max_digits=10, decimal_places=4)
+
+    class Meta:
+        db_table = 'accounts_benchmarkdata'

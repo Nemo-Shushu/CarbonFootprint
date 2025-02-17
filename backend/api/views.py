@@ -11,6 +11,7 @@ from calculator.models import Result, emission_factors
 from calculator.models import ProcurementData, CategoryCarbonImpact 
 from calculator.models import WasteEmission 
 from rest_framework import status
+from calculator.models import BenchmarkData
 
 
 
@@ -74,6 +75,12 @@ def test_view(request):
         'user': request.user.id
     })
 
+
+
+########### Calculator ############
+
+
+
 class ProcurementCalculatorView:
     CATEGORY_PREFIX_MAPPING = {
         "Business Services": ["AF","AH","AL","AN","AT","AU","BE","BK","BN","BS","BT","BW","BZ"
@@ -124,85 +131,111 @@ class ProcurementCalculatorView:
         return result
 
 
+
 class ReportcalculateView:
-    BENCHMARK_WATER = {
-        "Physical sciences laboratory": 1.7,
-        "Medical/Life sciences laboratory": 1.4,
-        "Engineering laboratory": 1.7,
-        "Office/Admin space": 1.0
-    }
 
-    ELECTRICITY_GRID_INTENSITY = 0.212
-    ELECTRICITY_TRANSMISSION_DISTRIBUTION = 0.019
-    GAS_CARBON_INTENSITY = 0.183
-    GAS_TRANSMISSION_DISTRIBUTION = 0.0188
-    WATER_CONSUMPTION_CARBON_INTENSITY = 0.149
-    WATER_TREATMENT_CARBON_INTENSITY = 0.272
+    def get_factor(self, category, consumption_type):
+        """ Retrieve emission factors from the `accounts_benchmarkdata` database """
+        print(f"Querying database: category={category}, consumption_type={consumption_type}")  # Debugging query parameters
 
-    CARBON_INTENSITY_TRAVEL = {
-        "air-eco-short": 0.151, "air-business-short": 0.227,
-        "air-eco-long": 0.148, "air-business-long": 0.429,
-        "land-car": 0.168, "land-bus": 0.102
-    }
+        factor = BenchmarkData.objects.filter(
+            category__iexact=consumption_type.strip(),
+            consumption_type__iexact=category.strip()
+        ).first()
 
-    CARBON_INTENSITY_WASTE = {
-        "mixed-recycle": 21.294, "general-waste": 446.242,
-        "clinical-waste": 297.000, "chemical-waste": 273.000, "bio-waste": 1000.000
-    }
+        if factor:
+            intensity = float(factor.intensity) if factor.intensity is not None else 0.0
+            transmission_distribution = float(factor.transmission_distribution) if factor.transmission_distribution is not None else 0.0
+            amount = float(factor.amount) if factor.amount is not None else 1.0  # Default to 1.0 to avoid division issues
 
+            total_intensity = intensity + transmission_distribution  # Sum intensity and transmission
+            print(f"Query successful: {category} ({consumption_type}) → Intensity: {intensity}, Transmission: {transmission_distribution}, Consumption Amount: {amount}")
+            return total_intensity, amount  
+        else:
+            print(f"Query failed: {category} ({consumption_type}) → No matching data found in the database")
+            return 0.0, 1.0  # Return (0.0, 1.0) if no data is found
+    
     def calculate_report_emissions(self, request):
+        """ Calculate total carbon emissions for electricity, gas, water, travel, and waste """
         utilities = request.get('utilities', {})
         travel = request.get('travel', {})
         waste = request.get('waste', {})
-        
+
         fte_staff = int(utilities.get('FTE-staff', 0))
         fte_members = int(utilities.get('FTE-members', 0))
         if fte_members == 0:
             return {"error": "Total FTE members cannot be zero."}
-        
-        proportion = fte_staff / fte_members
+
+        proportion = fte_staff / fte_members  # Adjust for staff proportion
         total_electricity_emissions = 0
         total_gas_emissions = 0
         total_water_emissions = 0
         total_travel_emissions = 0
         total_waste_emissions = 0
 
-        # Calculate water, electricity, and gas emissions
-        for space_type, area_key in {
-            "Academic laboratory": "academic-laboratory-area",
-            "Academic office": "academic-office-area",
-            "Admin office": "admin-office-area"
-        }.items():
-            total_area = float(utilities.get(area_key, 0))
-            factor = emission_factors.objects.filter(category=space_type).first()
-            if total_area and factor:
-                total_electricity_emissions += total_area * factor.benchmark_electricity * proportion * 0.231
-                total_gas_emissions += total_area * factor.benchmark_gas * proportion * 0.201
-        
-        for space_type, area_key in {
-            "Physical sciences laboratory": "physical-laboratory-area",
-            "Medical/Life sciences laboratory": "medical-laboratory-area",
-            "Engineering laboratory": "engineering-laboratory-area",
-            "Office/Admin space": "admin-space-area"
-        }.items():
-            total_area = float(utilities.get(area_key, 0))
-            if total_area:
-                total_water_emissions += total_area * self.BENCHMARK_WATER[space_type] * proportion * (self.WATER_CONSUMPTION_CARBON_INTENSITY + self.WATER_TREATMENT_CARBON_INTENSITY)
+        # **Calculate electricity and gas emissions**
+        for space_type in [
+            "Academic Laboratory",
+            "Academic Office",
+            "Admin Office"
+        ]:
+            total_area = float(utilities.get(space_type, 0))  # Match key directly in `utilities`
 
-        # Calculate travel carbon emissions
+            print(f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}")
+
+            electricity_factor, electricity_amount = self.get_factor("electricity", space_type)
+            gas_factor, gas_amount = self.get_factor("gas", space_type)
+
+            if total_area > 0:
+                electricity_consumption = total_area * electricity_amount  
+                gas_consumption = total_area * gas_amount  
+
+                electricity_emission = electricity_consumption * electricity_factor * proportion
+                gas_emission = gas_consumption * gas_factor * proportion  # Multiply by `proportion`
+
+                print(f"Calculating electricity emissions: {total_area}m² × {electricity_amount} × {electricity_factor} × {proportion} = {electricity_emission}")
+                print(f"Calculating gas emissions: {total_area}m² × {gas_amount} × {gas_factor} × {proportion} = {gas_emission}")
+
+                total_electricity_emissions += electricity_emission
+                total_gas_emissions += gas_emission
+
+        # **Calculate water emissions**
+        for space_type in [
+            "Physical Sciences Laboratory",
+            "Medical/Life Sciences Laboratory",
+            "Engineering Laboratory",
+            "Office/Admin Space"
+        ]:
+            total_area = float(utilities.get(space_type, 0))  
+
+            print(f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}")
+
+            water_factor, water_amount = self.get_factor("water", space_type)
+
+            if total_area > 0:
+                water_consumption = total_area * water_amount
+                water_emission = water_consumption * water_factor * proportion  # Multiply by `proportion`
+
+                print(f"💧 Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
+
+                total_water_emissions += water_emission
+
+        # **Calculate travel emissions**
         for mode, distance in travel.items():
-            if mode in self.CARBON_INTENSITY_TRAVEL:
-                total_travel_emissions += float(distance) * self.CARBON_INTENSITY_TRAVEL[mode]
+            travel_factor, _ = self.get_factor("travel", mode)
+            travel_emission = float(distance) * travel_factor * proportion  # Multiply by `proportion`
+            print(f"🚗 Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
+            total_travel_emissions += travel_emission
 
-        # Calculate waste carbon emissions
+        # **Calculate waste emissions**
         for waste_type, amount in waste.items():
-            waste_entry = WasteEmission.objects.filter(type_of_waste=waste_type).first()
-            if waste_entry and waste_entry.carbon_intensity is not None:
-                try:
-                    total_waste_emissions += float(amount) * float(waste_entry.carbon_intensity)  # Convert Decimal to float
-                except Exception as e:
-                    print(f" Calculate {waste_type} emission error: {str(e)}")  # Debug
-                    
+            waste_factor, _ = self.get_factor("waste", waste_type)
+            waste_emission = float(amount) * waste_factor * proportion  # Multiply by `proportion`
+            print(f"🗑️ Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
+            total_waste_emissions += waste_emission
+
+        print(f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}")
+
         return {
             "total_electricity_emissions": round(total_electricity_emissions, 2),
             "total_gas_emissions": round(total_gas_emissions, 2),
@@ -210,6 +243,8 @@ class ReportcalculateView:
             "total_travel_emissions": round(total_travel_emissions, 2),
             "total_waste_emissions": round(total_waste_emissions, 2)
         }
+
+
 
 @require_POST
 def report_view(request):
