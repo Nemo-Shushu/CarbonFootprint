@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../useAuth";
-import Sidebar from "../../Sidebar";
-import "./ManageFactors.css";
+import { useAuth } from "../../../useAuth";
+import Sidebar from "../../../Sidebar";
+import "../assets/ManageFactors.css";
 import { Tooltip } from 'react-tooltip';
 import Button from 'react-bootstrap/Button';
 import DeleteFactor from "./DeleteFactor";
 import EditFactor from "./EditFactor";
 import FactorTable from "./FactorTable";
 import Cookies from "js-cookie";
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import {
+    getConversionFactors,
+    handleUpdateSubmissionAPI,
+    handleCreateSubmissionAPI,
+    handleDeleteSubmissionAPI,
+} from "../api/apiFactors";
 
 function ManageFactors() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        getConversionFactors();
+        getConversionFactors(setConversionFactors);
     }, []);
 
     const [conversionFactors, setConversionFactors] = useState([]);
@@ -38,15 +42,15 @@ function ManageFactors() {
     function handleProtect() {
         navigate("/sign-in")
     };
-    
-    function handleCloseUpdate() {
-        setSelectedFactor(initialFactorValue);
-        setShowUpdate(false);
-    }
 
     function handleCloseCreate() {
         setSelectedFactor(initialFactorValue);
         setShowCreate(false);
+    }
+
+    function handleCloseUpdate() {
+        setSelectedFactor(initialFactorValue);
+        setShowUpdate(false);
     }
 
     function handleShowUpdate(id, activity, value) {
@@ -66,105 +70,20 @@ function ManageFactors() {
         setShowCreate(true);
     }
 
-    async function getConversionFactors() {
-        await fetch(backendUrl + 'api/accounts/conversion-factors/', {
-            method: "GET",
-            credentials: "include",
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('failed to retrieve conversion factors');
-            }
-            return response.json();
-          })
-          .then(data => {
-            setConversionFactors(data);
-            console.log(data);
-          })
-          .catch(err => {
-            console.error('failed to retrieve conversion factors', err);
-        });
+    function handleUpdateSubmission(event) {
+        handleUpdateSubmissionAPI(event, selectedFactor);
+        setConversionFactors(prevState => 
+            prevState.map(item => 
+                item.id === selectedFactor.id ? selectedFactor : item
+            )
+        );
+        setShowUpdate(false);
     }
 
-    async function handleUpdateSubmission(event) {
-        event.preventDefault();
-        await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
-            method: "PUT",
-            credentials: "include",
-            headers: {
-                'content-type': 'application/json',
-                "X-CSRFToken": csrftoken,
-            },
-            body: JSON.stringify(selectedFactor)
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('failed to update conversion factors');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log(data);
-            setConversionFactors(prevState => 
-                prevState.map(item => 
-                    item.id === data.id ? data : item
-                )
-            );
-            console.log(conversionFactors.find(i => i.id === data.id));
-          })
-          .catch(err => {
-            console.error('failed to update conversion factors', err);
-        });
-        setShowEdit(false);
-    }
-
-    async function handleCreateSubmission(event) {
-        event.preventDefault();
-        await fetch(backendUrl + 'api/accounts/conversion-factors/', {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                'content-type': 'application/json',
-                "X-CSRFToken": csrftoken,
-            },
-            body: JSON.stringify({activity: selectedFactor.activity, value: selectedFactor.value})
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('failed to create new conversion factor');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log(data);
-            setConversionFactors(prevFactors => [...prevFactors, data]);
-          })
-          .catch(err => {
-            console.error('failed to create conversion factors', err);
-        });
+    function handleCreateSubmission(event) {
+        handleCreateSubmissionAPI(event, selectedFactor);
+        setConversionFactors(prevFactors => [selectedFactor, ...prevFactors]);
         setShowCreate(false);
-    }
-
-    async function handleDeleteSubmission(event) {
-        event.preventDefault();
-        console.log(event);
-        await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                'content-type': 'application/json',
-                "X-CSRFToken": csrftoken,
-            },
-        })
-        .then(data => {
-            console.log(data);
-            setConversionFactors(conversionFactors.filter(row => selectedFactor.id !== row.id)
-            );
-          })
-        .catch(err => {
-            console.error('unable to delete specified conversion factor', err);
-        });
-        setShowDelete(false);
     }
 
     return useAuth() ? (
@@ -209,8 +128,12 @@ function ManageFactors() {
                 ></EditFactor>
                 
                 <DeleteFactor
-                    handleCloseDelete={handleDeleteSubmission}
                     showDelete={showDelete}
+                    handleDeleteAPI={handleDeleteSubmissionAPI}
+                    setShowDelete={setShowDelete}
+                    setConversionFactors={setConversionFactors}
+                    selectedFactor={selectedFactor}
+                    conversionFactors={conversionFactors}
                 ></DeleteFactor>
 
                 <Tooltip anchorSelect=".edit-icon" place="bottom">

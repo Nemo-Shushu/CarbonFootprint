@@ -7,8 +7,6 @@ function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit
     function handleChange(event) {
         const {name, value} = event.target;
         setSelectedFactor((prevState) => ({ ...prevState, [name]: value }));
-        console.log(name, value);
-        console.log(selectedFactor);
     }
 
     return (

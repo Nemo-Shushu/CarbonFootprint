@@ -2,11 +2,24 @@ import React from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-function DeleteFactor({handleCloseDelete, showDelete}) {
+function DeleteFactor({
+    showDelete,
+    handleDeleteAPI,
+    setShowDelete,
+    setConversionFactors,
+    selectedFactor,
+    conversionFactors
+    }) {
+
+    function handleDelete(event) {
+        handleDeleteAPI(event, selectedFactor);
+        setConversionFactors(conversionFactors.filter(row => selectedFactor.id !== row.id));
+        setShowDelete(false);
+    }
 
     return (
         <div className="deleteModal">
-            <Modal show={showDelete} onHide={handleCloseDelete} centered size="sm">
+            <Modal show={showDelete} onHide={handleDelete} centered size="sm">
                 <Modal.Header closeButton className="text-center">
                 <Modal.Title>Warning</Modal.Title>
                 </Modal.Header>
@@ -18,10 +31,10 @@ function DeleteFactor({handleCloseDelete, showDelete}) {
                 
                 </Modal.Body>
                 <Modal.Footer className="justify-content-center">
-                <Button variant="secondary" onClick={handleCloseDelete}>
+                <Button variant="secondary" onClick={handleDelete}>
                     Close
                 </Button>
-                <Button variant="danger" onClick={handleCloseDelete}>
+                <Button variant="danger" onClick={handleDelete}>
                     Delete
                 </Button>
                 </Modal.Footer>

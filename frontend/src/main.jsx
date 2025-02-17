@@ -12,7 +12,7 @@ import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import Profile from './Profile';
 import AdminTool from './AdminTools';
-import ManageFactors from './components/ManageFactors/ManageFactors';
+import ManageFactors from './features/ManageFactors/components/ManageFactors';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
