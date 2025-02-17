@@ -1,7 +1,4 @@
-stages:
-  - build
-    
-.build_react:
+build-job:
   stage: build
   image: node:23
   variables:
