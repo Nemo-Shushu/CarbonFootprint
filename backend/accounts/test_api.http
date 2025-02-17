@@ -19,7 +19,7 @@ sec-ch-ua: "Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"
 sec-ch-ua-mobile: ?0
 sec-ch-ua-platform: "Windows"
 
-### 测试user
+### test get id
 
 GET http://localhost:8000/api2/test/ HTTP/1.1
 Accept: */*
@@ -43,12 +43,12 @@ sec-ch-ua-platform: "Windows"
 
 
 
-### 测试 CombinedUtilitiesView
+### test  get-csrf
 GET http://localhost:8000/api2/get-csrf/
 
 
 
-### 发送 POST 请求测试计算
+### test report
 POST http://localhost:8000/api2/Report/
 Content-Type: application/json
 Cookie: sessionid=p90kgzgo4ia8nr35yww8f36b8v2upxjb; csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
@@ -92,7 +92,7 @@ X-CSRFToken: gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
   }
 }
 
-### 发送 POST 请求测试计算
+### test submit
 POST http://localhost:8000/api2/Submit/
 Content-Type: application/json
 Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=duL60Olpr0JgEVww7JrvcbpZRId1K6kt; sessionid=73gtmdh49uj6wjxlfilumixp6gv94x7q

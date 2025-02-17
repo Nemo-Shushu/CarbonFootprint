@@ -1,4 +1,4 @@
-### 测试 CombinedUtilitiesView
+### test CombinedUtilitiesView
 POST http://localhost:8000/api/calculator/createreport/
 Content-Type: application/json
 
@@ -31,17 +31,8 @@ Content-Type: application/json
   }
 }
 
-### 发送 POST 请求测试计算
-POST http://localhost:8000/api/calculator/procurement-calculator/
-Content-Type: application/json
 
-{
-
-}
-
-
-
-### 发送 POST 请求测试计算
+### test report
 POST http://localhost:8000/api/calculator/Report/
 Content-Type: application/json
 
@@ -83,7 +74,7 @@ Content-Type: application/json
   }
 }
 
-### 发送 POST 请求测试计算
+### test submit
 POST http://localhost:8000/api/calculator/Submit/
 Content-Type: application/json
 Cookie: "csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=3oxE6MDYYUpoIFPfT1zE1kKwln3fTl0j; sessionid=22sca1q6gvq0raoggw9vwn67ttvd4knw"

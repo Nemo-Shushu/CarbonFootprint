@@ -167,7 +167,7 @@ class ReportcalculateView:
         total_travel_emissions = 0
         total_waste_emissions = 0
 
-        # 计算水、电、气排放
+        # Calculate water, electricity, and gas emissions
         for space_type, area_key in {
             "Academic laboratory": "academic-laboratory-area",
             "Academic office": "academic-office-area",
@@ -189,19 +189,19 @@ class ReportcalculateView:
             if total_area:
                 total_water_emissions += total_area * self.BENCHMARK_WATER[space_type] * proportion * (self.WATER_CONSUMPTION_CARBON_INTENSITY + self.WATER_TREATMENT_CARBON_INTENSITY)
 
-        # 计算出行碳排放
+        # Calculate travel carbon emissions
         for mode, distance in travel.items():
             if mode in self.CARBON_INTENSITY_TRAVEL:
                 total_travel_emissions += float(distance) * self.CARBON_INTENSITY_TRAVEL[mode]
 
-        # 计算废弃物碳排放
+        # Calculate waste carbon emissions
         for waste_type, amount in waste.items():
             waste_entry = WasteEmission.objects.filter(type_of_waste=waste_type).first()
             if waste_entry and waste_entry.carbon_intensity is not None:
                 try:
-                    total_waste_emissions += float(amount) * float(waste_entry.carbon_intensity)  # 转换 Decimal 为 float
+                    total_waste_emissions += float(amount) * float(waste_entry.carbon_intensity)  # Convert Decimal to float
                 except Exception as e:
-                    print(f" 计算 {waste_type} 排放错误: {str(e)}")  # Debug 输出
+                    print(f" Calculate {waste_type} emission error: {str(e)}")  # Debug
                     
         return {
             "total_electricity_emissions": round(total_electricity_emissions, 2),
@@ -214,8 +214,8 @@ class ReportcalculateView:
 @require_POST
 def report_view(request):
     try:
-        data = json.loads(request.body)  # 解析 JSON 数据
-        print(f" 接收到数据: {data}")  # Debug
+        data = json.loads(request.body)  # Parse JSON data
+        print(f" Data received: {data}")  # Debug
 
         utilities = data.get("utilities", {})
         travel = data.get("travel", {})
@@ -263,7 +263,7 @@ def submit_view(request):
         # if not request.user or not request.user.is_authenticated:
         #     return JsonResponse({"error": "User not authenticated"}, status=400)
 
-        # 解析 JSON 数据
+        # Parse JSON data
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -274,11 +274,11 @@ def submit_view(request):
         waste = data.get("waste", {})
         procurement = data.get("procurement", {})
 
-        # 确保数据格式正确
+        # Ensure data format is correct
         if not all(isinstance(d, dict) for d in [utilities, travel, waste, procurement]):
             return JsonResponse({"error": "Invalid input format"}, status=400)
 
-        # 计算碳排放
+        # Calculate carbon emissions
         report_calculator = ReportcalculateView()
         report_data = report_calculator.calculate_report_emissions(data)
 
@@ -298,7 +298,7 @@ def submit_view(request):
             total_procurement_emissions
         )
 
-        # 存储到数据库
+        # Store to database
         result_entry = Result.objects.create(
                 user_id=request.user.id,
                 total_electricity_emissions=report_data["total_electricity_emissions"],
@@ -316,7 +316,7 @@ def submit_view(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-#  CSRF 令牌获取 API
+#  CSRF Token Retrieval API
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})

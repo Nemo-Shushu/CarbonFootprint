@@ -2,16 +2,16 @@ from django.db import models
 from accounts.models import *
 
 class CalculationRecord(models.Model):
-    # 时间戳
+    # time
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # 存储所有接收的数据
-    input_data = models.JSONField()  # 直接存储接收到的 JSON 数据
+    # Store all received data
+    input_data = models.JSONField()  
 
-    # 存储计算结果
-    results = models.JSONField()  # 存储计算后的结果
+    # Store calculated results
+    results = models.JSONField() 
 
-    # 可选：为某些字段添加额外的注释信息
+    # Add additional annotation information for certain fields
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -20,9 +20,9 @@ class CalculationRecord(models.Model):
     
 
 class emission_factors(models.Model):
-    category = models.CharField(max_length=255, unique=True)  # 类别名称
-    benchmark_electricity = models.FloatField(null=True, blank=True)  # 电力因子
-    benchmark_gas = models.FloatField(null=True, blank=True)  # 燃气因子
+    category = models.CharField(max_length=255, unique=True)  # category
+    benchmark_electricity = models.FloatField(null=True, blank=True)  # benchmark_electricity
+    benchmark_gas = models.FloatField(null=True, blank=True)  # benchmark_gas
 
     def __str__(self):
         return self.category
@@ -32,7 +32,7 @@ class emission_factors(models.Model):
         
 class ProcurementData(models.Model):
     code = models.CharField(max_length=10, unique=True)
-    description_dict = models.JSONField()  # 存储字典类型的数据
+    description_dict = models.JSONField()  # store description_dict
 
     def __str__(self):
         return self.code
@@ -63,18 +63,18 @@ class Result(models.Model):
     # submitted_user = models.ForeignKey(User)
 
     class Meta:
-        db_table = 'calculate_result'  # 指定数据库表名
+        db_table = 'calculate_result'  # Specify database table name
 
 class WasteEmission(models.Model):
-    id = models.BigAutoField(primary_key=True)  # ID 字段
-    type_of_waste = models.CharField(max_length=50, unique=True)  # 废弃物类型（唯一）
-    amount = models.FloatField()  # 数量
-    carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)  # 碳排放因子
-    total_emissions = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)  # 总碳排放
-    submission_id = models.BigIntegerField()  # 提交 ID
+    id = models.BigAutoField(primary_key=True)  
+    type_of_waste = models.CharField(max_length=50, unique=True)  
+    amount = models.FloatField()  
+    carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True) 
+    total_emissions = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)  
+    submission_id = models.BigIntegerField()  
 
     class Meta:
-        db_table = "accounts_wasteemission"  # 这里要和数据库里的表名一致
+        db_table = "accounts_wasteemission"  
 
     def __str__(self):
         return f"{self.type_of_waste}: {self.carbon_intensity}"
