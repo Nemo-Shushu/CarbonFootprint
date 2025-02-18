@@ -696,7 +696,7 @@ function Calculator() {
         return (
             <main class="ms-sm-auto px-md-4">
                 <h2>Results</h2>
-                <ResultsDisplay data={data}/>
+                <ResultsDisplay calculations={data} rawData={report}/>
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
                     <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
