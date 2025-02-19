@@ -15,8 +15,8 @@ lint-frontend:
   script:
     - npm i eslint
     - pwd
-    - ls
-    - frontend/node_modules/eslint/bin/eslint.js frontend/
+    - ls frontend/
+    - node_modules/eslint/bin/eslint.js frontend/
 
 build-job:
   stage: build
