@@ -10,7 +10,7 @@ lint-backend:
     - ruff check backend/
 
 lint-frontend:
-  stage: frontend
+  stage: lint
   image: node:23
   script:
     - npm i eslint
