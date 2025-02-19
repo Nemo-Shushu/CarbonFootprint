@@ -14,6 +14,7 @@ lint-frontend:
   image: node:23
   script:
     - npm install -g eslint
+    - cd frontend/
     - eslint .
 
 build-job:
