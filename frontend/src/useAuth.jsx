@@ -11,7 +11,7 @@ export function useAuth() {
     }, []);
 
     function getCSRF() {
-        fetch(backendUrl.concat("api2/csrf/"), {
+        fetch(backendUrl + "api2/csrf/", {
           credentials: "include",
         })
         .then((res) => {
@@ -25,7 +25,7 @@ export function useAuth() {
     }
         
     function getSession() {
-        fetch(backendUrl.concat("api2/session/"), {
+        fetch(backendUrl + "api2/session/", {
             credentials: "include",
         })
         .then((res) => res.json())

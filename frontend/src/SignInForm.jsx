@@ -27,7 +27,7 @@ function SignInForm() {
     }, []);
 
     function getCSRF() {
-        fetch(backendUrl.concat("api2/csrf/"), {
+        fetch(backendUrl + "api2/csrf/", {
           credentials: "include",
         })
         .then((res) => {
@@ -41,7 +41,7 @@ function SignInForm() {
     }
     
     function getSession() {
-        fetch(backendUrl.concat("api2/session/"), {
+        fetch(backendUrl + "api2/session/", {
             credentials: "include",
         })
         .then((res) => res.json())
@@ -77,7 +77,7 @@ function SignInForm() {
     
     function login(event) {
         event.preventDefault();
-        fetch(backendUrl.concat('api2/login/'), {
+        fetch(backendUrl + 'api2/login/', {
             method: "POST",
             headers: {
             "Content-Type": "application/json",

@@ -6,12 +6,13 @@ import RegisterForm from './RegisterForm';
 import SignInForm from './SignInForm';
 import { Dashboard, TableComponent } from './Dashboard';
 import Frontpage from './Frontpage';
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
 import RequestAdmin from './RequestAdmin';
 import { Calculator } from './calculator';
 import Profile from './Profile';
 import AdminTool from './AdminTools';
-import UpdateFactors from './UpdateFactors';
+import ManageFactors from './features/ManageFactors/components/ManageFactors';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -26,7 +27,7 @@ root.render(
         <Route path="register" element={<RegisterForm />}/>
         <Route path="dashboard" element={<Dashboard />}/>
         <Route path="request-admin" element={<RequestAdmin />}/>
-        <Route path="update-factors" element={<UpdateFactors />}/>
+        <Route path="manage-factors" element={<ManageFactors />}/>
         <Route path="calculator/*" element={<Calculator />}/>
         <Route path="profile" element={<Profile />}/>
         <Route path="admin-tool" element={<AdminTool />}/>

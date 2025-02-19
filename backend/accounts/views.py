@@ -10,6 +10,8 @@ from .models import User, ConversionFactor
 from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -61,12 +63,61 @@ class LogoutView(APIView):
         return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
     
 class ConversionFactorsView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAdminUser,)
 
     def get(self, request, format=None):
         queryset = ConversionFactor.objects.all().order_by('activity')
-        serializer_class = ConversionFactorsSerializer(queryset, many=True)
-        return Response(serializer_class.data)
+        serializer = ConversionFactorsSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ConversionFactorsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# view used to update specific conversion factor
+class ConversionFactorsAPIView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def get_object(self, factor_id):
+        try:
+            return ConversionFactor.objects.get(pk=factor_id)
+        except:
+            return None
+
+    def get(self, request, factor_id, format=None):
+        factor_instance = self.get_object(factor_id)
+        if not factor_instance:
+            return Response(
+                {"res": f"Object with factor id {factor_id} does not exist {IsAdminUser}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = ConversionFactorsSerializer(factor_instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, factor_id, format=None):
+        factor = self.get_object(factor_id)
+        serializer = ConversionFactorsSerializer(factor, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, factor_id):
+        factor_instance = self.get_object(factor_id)
+        if not factor_instance:
+            return Response(
+                {"res": "Object with factor id does not exists"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        factor_instance.delete()
+        return Response(
+            {"res": "Object deleted!"},
+            status=status.HTTP_200_OK
+        )        
+
     
 def get_ordered_errors(serializer):
     errors = serializer.errors
