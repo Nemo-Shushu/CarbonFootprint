@@ -14,9 +14,8 @@ lint-frontend:
   image: node:23
   script:
     - npm i eslint
-    - pwd
-    - ls frontend/
-    - node_modules/eslint/bin/eslint.js frontend/
+    - cd frontend/
+    - ../node_modules/eslint/bin/eslint.js .
 
 build-job:
   stage: build
