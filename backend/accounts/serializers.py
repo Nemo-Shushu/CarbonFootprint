@@ -42,14 +42,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         slug_field='name',            
         queryset=University.objects.all(),
         required=True,
-        error_messages={'blank': 'Instutution is empty. Please fill in the field.'}
+        error_messages={'null': 'Instutution is empty. Please fill in the field.'}
     )
 
     research_field = serializers.SlugRelatedField(
         slug_field='name',            
         queryset=ResearchField.objects.all(),
         required=True,
-        error_messages={'blank': 'Research Field is empty. Please fill in the field.'}
+        error_messages={'null': 'Research Field is empty. Please fill in the field.'}
     )
 
     password = serializers.CharField(
