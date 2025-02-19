@@ -9,8 +9,6 @@ class CalculationRecord(models.Model):
 
     def __str__(self):
         return f"Calculation on {self.timestamp}"
-    
-    
 
 class emission_factors(models.Model):
     category = models.CharField(max_length=255, unique=True)
@@ -32,7 +30,6 @@ class ProcurementData(models.Model):
     
     class Meta:
         db_table = "calculate_procurement_data"
-
 
 class CategoryCarbonImpact(models.Model):
     category = models.CharField(max_length=255, unique=True)
