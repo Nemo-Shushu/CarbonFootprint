@@ -1,5 +1,5 @@
 from django.urls import path
-from accounts.views import RegisterView, CsrfTokenView, LogoutView, LoginView, ConversionFactorsView
+from accounts.views import RegisterView, CsrfTokenView, LogoutView, LoginView, ConversionFactorsView, ConversionFactorsAPIView
 app_name = "accounts"
 
 urlpatterns = [
@@ -8,5 +8,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('conversion-factors/', ConversionFactorsView.as_view(), name='conversion-factor'),
-    
+    path('conversion-factors/<int:factor_id>', ConversionFactorsAPIView.as_view())
 ]

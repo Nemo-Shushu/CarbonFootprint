@@ -7,7 +7,7 @@ import "./static/sign-in.css";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function createUser(user) {
-  return fetch(backendUrl.concat('api/accounts/register/'), {
+  return fetch(backendUrl + 'api/accounts/register/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
