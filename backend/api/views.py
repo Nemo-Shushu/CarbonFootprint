@@ -13,8 +13,11 @@ from calculator.models import WasteEmission
 from rest_framework import status
 from calculator.models import BenchmarkData
 
-
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from accounts.models import University, ResearchField
+from rest_framework.response import Response
+from .serializers import InstitutionSerializer, ResearchFieldSerializer
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
@@ -70,6 +73,19 @@ def whoami_view(request):
         'research_field': getattr(user, 'research_field', None),  
     })
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def institution_list(request):
+    institutions = University.objects.all()
+    serializer_class = InstitutionSerializer(institutions, many=True)
+    return Response(serializer_class.data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def field_list(request):
+    fields = ResearchField.objects.all()
+    serializer_class = ResearchFieldSerializer(fields , many=True)
+    return Response(serializer_class.data)
 def test_view(request):
     return JsonResponse({
         'user': request.user.id

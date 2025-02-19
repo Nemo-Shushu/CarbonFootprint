@@ -7,14 +7,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class University(models.Model):
-    name = models.CharField(max_length=255, unique=True, primary_key=True)
+    name = models.CharField(max_length=255, unique=True,primary_key=True)
 
     def __str__(self):
         return self.name
 
 
 class ResearchField(models.Model):
-    name = models.CharField(max_length=255, unique=True, primary_key=True)
+    name = models.CharField(max_length=255, unique=True,primary_key=True)
 
     def __str__(self):
         return self.name
@@ -22,8 +22,8 @@ class ResearchField(models.Model):
 
 class User(AbstractUser):
     email = models.EmailField(max_length=35, unique=True, error_messages={'unique': "A user with this email already exists."})
-    institute = models.ForeignKey('University', on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
-    research_field = models.ForeignKey('ResearchField', on_delete=models.SET_NULL, null=True, blank=True, related_name="users")
+    institute = models.ForeignKey('University', on_delete=models.SET_NULL, null=True, blank=True, related_name="users", to_field='name')
+    research_field = models.ForeignKey('ResearchField', on_delete=models.SET_NULL, null=True, blank=True, related_name="users",to_field='name')
 
     is_admin = models.BooleanField(default=False)
     is_researcher = models.BooleanField(default=False)
