@@ -7,7 +7,7 @@ Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
 Connection: keep-alive
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=73613utFSLG251HbYdIQ7ZOFr5b7Rpcp; sessionid=curv0565ng9ik9zfpv2s3bu0xl3qlasn
+Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
 Host: localhost:8000
 Origin: http://localhost:3000
 Referer: http://localhost:3000/
@@ -26,7 +26,7 @@ Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
 Connection: keep-alive
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=73613utFSLG251HbYdIQ7ZOFr5b7Rpcp; sessionid=curv0565ng9ik9zfpv2s3bu0xl3qlasn
+Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
 Host: localhost:8000
 Origin: http://localhost:3000
 Referer: http://localhost:3000/
@@ -51,8 +51,8 @@ GET http://localhost:8000/api2/get-csrf/
 ### test report
 POST http://localhost:8000/api2/report/
 Content-Type: application/json
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=73613utFSLG251HbYdIQ7ZOFr5b7Rpcp; sessionid=curv0565ng9ik9zfpv2s3bu0xl3qlasn
-X-CSRFToken: 73613utFSLG251HbYdIQ7ZOFr5b7Rpcp
+Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
+X-CSRFToken: bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN
 
 {
   "utilities": {
@@ -95,8 +95,8 @@ X-CSRFToken: 73613utFSLG251HbYdIQ7ZOFr5b7Rpcp
 ### test submit
 POST http://localhost:8000/api2/submit/
 Content-Type: application/json
-Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
-X-CSRFToken: 1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi
+Cookie: csrftoken=nXOvmko4J2tFWhoUGojywVuesdYm8RMv; sessionid=hizt00ljb1f5lgysldvmwdyx7kdwd3in
+X-CSRFToken: nXOvmko4J2tFWhoUGojywVuesdYm8RMv
 
 {
   "utilities": {
@@ -135,3 +135,9 @@ X-CSRFToken: 1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi
     "C": 100
   }
 }
+
+### test getresult
+POST http://localhost:8000/api2/get_user_result_data/
+Content-Type: application/json
+Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
+X-CSRFToken: bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN

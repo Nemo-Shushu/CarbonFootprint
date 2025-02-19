@@ -13,5 +13,6 @@ urlpatterns = [
     path('test/', views.test_view, name='api-test'),
     path('report/', views.report_view, name='Report'),
     path('submit/', views.submit_view, name='Submits'),
-    path("get-csrf/", views.get_csrf_token, name="get-csrf-token")
+    path("get-csrf/", views.get_csrf_token, name="get-csrf-token"),
+    path("get_user_result_data/", views.get_user_result_data, name="get_user_result_data")
 ]

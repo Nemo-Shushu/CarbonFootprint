@@ -12,7 +12,8 @@ from calculator.models import ProcurementData, CategoryCarbonImpact
 from calculator.models import WasteEmission 
 from rest_framework import status
 from calculator.models import BenchmarkData
-
+from api.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from accounts.models import University, ResearchField
@@ -69,8 +70,8 @@ def whoami_view(request):
         'username': user.username,
         'forename': user.first_name,
         'email': user.email,
-        'institute': user.institute,
-        'research_field': getattr(user, 'research_field', None),  
+        'institute': user.institute.name,
+        'research_field':user.research_field.name
     })
 
 @api_view(['GET'])
@@ -246,7 +247,7 @@ class ReportcalculateView:
         for waste_type, amount in waste.items():
             waste_factor, _ = self.get_factor("waste", waste_type)
             waste_emission = float(amount) * waste_factor * proportion  # Multiply by `proportion`
-            print(f"🗑️ Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
+            print(f"Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
             total_waste_emissions += waste_emission
         print(f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}")
         return {
@@ -333,9 +334,10 @@ def submit_view(request):
                 total_travel_emissions=report_data["total_travel_emissions"],
                 total_waste_emissions=report_data["total_waste_emissions"],
                 total_procurement_emissions=total_procurement_emissions,
-                total_carbon_emissions=total_carbon_emissions
+                total_carbon_emissions=total_carbon_emissions,
+                report_data = data
             )
-        result_entry.save()            
+        result_entry.save()
         return JsonResponse({"success": True}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -344,3 +346,22 @@ def submit_view(request):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})
+
+def get_user_result_data(request):
+    try:
+        user_id = request.user.id
+        user_profile = get_object_or_404(User, id=user_id)
+        calculation_result = Result.objects.filter(user_id=user_id)
+        data = [{
+            "id": Result.id,
+            "institution": user_profile.institute_id,
+            "field": user_profile.research_field_id,
+            "emissions": float(Result.total_carbon_emissions),
+        }
+        for Result in calculation_result
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)

@@ -394,8 +394,8 @@ CREATE TABLE public.accounts_user (
     is_active boolean NOT NULL,
     date_joined timestamp with time zone NOT NULL,
     email character varying(35) NOT NULL,
-    institute_id character varying(150) NOT NULL,
-    research_field_id character varying(150) NOT NULL,
+    institute_id character varying(150),
+    research_field_id character varying(150),
     is_admin boolean NOT NULL,
     is_researcher boolean NOT NULL,
     is_verified boolean NOT NULL
@@ -655,7 +655,8 @@ CREATE TABLE public.calculate_result (
     total_travel_emissions numeric(10,2) NOT NULL,
     total_waste_emissions numeric(10,2) NOT NULL,
     total_procurement_emissions numeric(10,2) NOT NULL,
-    total_carbon_emissions numeric(10,2) NOT NULL
+    total_carbon_emissions numeric(10,2) NOT NULL,
+    report_data jsonb NULL
 );
 
 
@@ -1209,14 +1210,17 @@ University of York
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email, institute_id, research_field_id, is_admin, is_researcher, is_verified) FROM stdin;
-1	pbkdf2_sha256$600000$5RpJg3Rtza9i9zBSW6MjvW$NQswlVRTAU0QOxTQbgOO6XPUiuPJni3T82d0b56+6g8=	2025-01-29 22:08:04.711798+00	f	pratmaty	Pratt	Redman	f	t	2025-01-29 22:07:45.478265+00	adsfdsa@stu.gla.ac.uk	\N	\N	f	f	f
-4	pbkdf2_sha256$600000$jOzbmyDh9nvIiuLYUl35an$1jKlyUXnWmURcgVAxRZqDFTTbJawlMA3koc4xLmLbl0=	\N	f	beetroot	Betty	Foster	f	t	2025-01-29 22:11:45.93357+00	asdfasdv@stu.ga.ac.uk	\N	\N	f	f	f
-2	pbkdf2_sha256$600000$At4EMRpzz5FqTOleXbGk1l$Qz/UGzq7gjcrHrqB6OZYeaEkKS5RBCoiVPOBzQrjgR8=	2025-01-29 22:12:28.354429+00	f	carbonfoot	Carbonfoot	Test	f	t	2025-01-29 22:09:16.992218+00	asdfasd2@ed.ac.uk	\N	\N	f	f	f
-5	hashed_password_1	\N	f	alice	Alice	Johnson	f	t	2025-01-29 22:26:17.18664+00	alice@university.co.uk	1	1	f	t	t
-6	hashed_password_2	\N	f	bob	Bob	Smith	f	t	2025-01-29 22:26:17.18664+00	bob@research.co.uk	2	1	f	t	f
-7	hashed_password_3	\N	f	charlie	Charlie	Brown	f	t	2025-01-29 22:26:17.18664+00	charlie@science.co.uk	1	2	t	f	t
-8	hashed_password_4	\N	t	david	David	Lee	t	t	2025-01-29 22:26:17.18664+00	david@institute.co.uk	2	2	t	f	t
-3	pbkdf2_sha256$600000$pxLj6CB0T917wZVnmBAEdF$v71C1PI3Wbr6HDqujC8xgJbm3et3ZSziPQoc91DcsMk=	2025-02-19 12:15:23.415139+00	f	cipher	Cipher	Reed	f	t	2025-01-29 22:10:37.997918+00	yiuweahk@op.ac.uk	\N	\N	f	f	f
+9	pbkdf2_sha256$600000$0AGHjweRIxtdVfALahvKH0$6X1oYP4JGNWGwKHnH/n1zZCZbsPTqQg1c5h6B8B2qFo=	\N	f	test	test	test	f	t	2025-02-12 12:21:26.422376+00	wdas2@sada.ac.uk	Abertay University	Environmental Science	f	f	f
+12	pbkdf2_sha256$600000$Osa2Su6I6w1zysAaZHOai3$q+x8d8jDWxxlEw0C9gkcqvbFeP4NoSPKfZyHCZCnHFM=	\N	f	test12	test	test	f	t	2025-02-12 12:51:26.108744+00	wdas2@sad.ac.uk	Abertay University	Environmental Science	f	f	f
+5	hashed_password_1	\N	f	alice	Alice	Johnson	f	t	2025-01-29 22:26:17.18664+00	alice@university.co.uk	Canterbury Christ Church University	Sustainable Engineering	f	t	t
+6	hashed_password_2	\N	f	bob	Bob	Smith	f	t	2025-01-29 22:26:17.18664+00	bob@research.co.uk	University of Bath	Sustainable Engineering	f	t	f
+7	hashed_password_3	\N	f	charlie	Charlie	Brown	f	t	2025-01-29 22:26:17.18664+00	charlie@science.co.uk	University of Bath	Water Resource Management	t	f	t
+8	hashed_password_4	\N	t	david	David	Lee	t	t	2025-01-29 22:26:17.18664+00	david@institute.co.uk	University of Glasgow	Water Resource Management	t	f	t
+11	pbkdf2_sha256$600000$MaXJxFVVVkk3YtwyZWrfDh$tcuA/VYp3irPj0HaVphCdimaqpqK84sCxeYYSFZPUHk=	\N	f	sdadsa	test	test	f	t	2025-02-12 12:28:29.757371+00	asd2@sada.ac.uk	Abertay University	Environmental Science	f	f	f
+1	pbkdf2_sha256$600000$5RpJg3Rtza9i9zBSW6MjvW$NQswlVRTAU0QOxTQbgOO6XPUiuPJni3T82d0b56+6g8=	2025-02-19 14:22:08.94305+00	f	pratmaty	Pratt	Redman	f	t	2025-01-29 22:07:45.478265+00	adsfdsa@stu.gla.ac.uk	Brunel University London	Climate Change Studies	f	f	f
+2	pbkdf2_sha256$600000$At4EMRpzz5FqTOleXbGk1l$Qz/UGzq7gjcrHrqB6OZYeaEkKS5RBCoiVPOBzQrjgR8=	2025-01-29 22:12:28.354429+00	f	carbonfoot	Carbonfoot	Test	f	t	2025-01-29 22:09:16.992218+00	asdfasd2@ed.ac.uk	Brunel University London	Climate Change Studies	f	f	f
+3	pbkdf2_sha256$600000$pxLj6CB0T917wZVnmBAEdF$v71C1PI3Wbr6HDqujC8xgJbm3et3ZSziPQoc91DcsMk=	2025-01-29 22:11:11.996557+00	f	cipher	Cipher	Reed	f	t	2025-01-29 22:10:37.997918+00	yiuweahk@op.ac.uk	Brunel University London	Renewable Energy Systems	f	f	f
+4	pbkdf2_sha256$600000$jOzbmyDh9nvIiuLYUl35an$1jKlyUXnWmURcgVAxRZqDFTTbJawlMA3koc4xLmLbl0=	\N	f	beetroot	Betty	Foster	f	t	2025-01-29 22:11:45.93357+00	asdfasdv@stu.ga.ac.uk	Brunel University London	Renewable Energy Systems	f	f	f
 \.
 
 

@@ -24,7 +24,7 @@ function Calculator() {
     };
 
     async function submitReport(report) {
-        return fetch('http://localhost:8000/api/calculator/createreport/', {
+        return fetch('http://localhost:8000/api2/submit/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -230,7 +230,7 @@ function Calculator() {
                         <div className="row mb-2">
                             <div className="col-sm-4">
                                 <label htmlFor="firstName" className="form-label"><strong>Economy short-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-eco-short" placeholder="Enter number of distance(km)" value={travelReport["air-eco-short"]} onChange={handleChange} required />
+                                <input type="number" className="form-control" name="air-eco-short-UK" placeholder="Enter number of distance(km)" value={travelReport["air-eco-short-UK"]} onChange={handleChange} required />
                                 <div className="invalid-feedback">
                                 Valid number is required.
                                 </div>
@@ -238,7 +238,7 @@ function Calculator() {
 
                             <div className="col-sm-4">
                                 <label htmlFor="firstName" className="form-label"><strong>Business short-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-business-short" placeholder="Enter number of distance(km)" value={travelReport["air-business-short"]} onChange={handleChange} required />
+                                <input type="number" className="form-control" name="air-business-short-uk" placeholder="Enter number of distance(km)" value={travelReport["air-business-short"]} onChange={handleChange} required />
                                 <div className="invalid-feedback">
                                 Valid number is required.
                                 </div>
