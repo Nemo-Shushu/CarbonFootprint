@@ -35,6 +35,7 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY modified_libraries/middleware.py /usr/local/lib/python3.11/site-packages/django/contrib/sessions/
 COPY modified_libraries/cookies.py /usr/local/lib/python3.11/http/
 COPY modified_libraries/response.py /usr/local/lib/python3.11/site-packages/django/http/
+COPY modified_libraries/permissions.py /usr/local/lib/python3.11/site-packages/rest_framework/
 
 # Set the working directory
 WORKDIR /app

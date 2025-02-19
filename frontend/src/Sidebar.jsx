@@ -23,7 +23,9 @@ function Sidebar({ onNameClick }) {
       setActiveItem("Dashboard");
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
-    } else if (location.pathname === "/calculator") {
+    } else if (location.pathname === "/Manage-factors") {
+      setActiveItem("Manage Factors");
+    } else {
       setActiveItem("");
     }
     getSession();
@@ -31,7 +33,7 @@ function Sidebar({ onNameClick }) {
   }, [location.pathname]); 
 
   function getCSRF() {
-    fetch(backendUrl.concat("api2/csrf/"), {
+    fetch(backendUrl + "api2/csrf/", {
       credentials: "include",
     })
     .then((res) => {
@@ -45,7 +47,7 @@ function Sidebar({ onNameClick }) {
   }
 
   function getSession() {
-    fetch(backendUrl.concat("api2/session/"), {
+    fetch(backendUrl + "api2/session/", {
         credentials: "include",
     })
     .then((res) => res.json())
@@ -73,7 +75,7 @@ function Sidebar({ onNameClick }) {
 
   function handleLogout() {
     localStorage.removeItem("userToken"); 
-    fetch(backendUrl.concat("api2/logout"), {
+    fetch(backendUrl + "api2/logout", {
       credentials: "include",
     })
     .then(isResponseOk)
@@ -90,7 +92,7 @@ function Sidebar({ onNameClick }) {
 
   function getName() {
     localStorage.removeItem("userToken"); 
-    fetch(backendUrl.concat("api2/whoami/"), {
+    fetch(backendUrl + "api2/whoami/", {
       credentials: "include",
     })
     .then((res) => res.json())
@@ -117,8 +119,8 @@ function Sidebar({ onNameClick }) {
     navigate("/request-admin")
   };
 
-  function handleUpdateFactors() {
-    navigate("/update-factors")
+  function handleManageFactors() {
+    navigate("/manage-factors")
   };
 
   return (
@@ -137,8 +139,13 @@ function Sidebar({ onNameClick }) {
           <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Request Admin" ? "active" : ""}`} onClick={handleRequestAdmin} style={{cursor: "pointer", width: 90 + '%'}}>
             <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
           </div>
-          <div className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Update Factors" ? "active" : ""}`} onClick={handleUpdateFactors} style={{cursor: "pointer", width: 90 + '%'}}>
-            <img src="/images/RequestAdmin.png" alt="Request Admin Icon" style={{width: 16 + 'px', objectFit: 'contain', marginRight: 10 + 'px', marginLeft: '5' + 'px'}}/> Request Admin
+          <div className={`btn btn-moss d-flex text-center text-white fs-6 p-2 m-2 ${activeItem === "Manage Factors" ? "active" : ""}`} onClick={handleManageFactors} style={{cursor: "pointer", width: 90 + '%'}}>
+            <div className="p-1 text-center">
+              <i className="bi bi-database-fill-gear align-middle" style={{fontSize: "18px"}}></i>
+            </div>
+            <div>
+              <p className="mb-0 ms-2 text-start">Manage Conversion Factors</p>
+            </div>
           </div>
         </nav>
       </div>

@@ -1,9 +1,9 @@
 .update-factors-container {
     flex: 1;
     padding: 2rem;
-    margin-left: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
     margin-top: 0.8rem;
-    background-color: #f8f9fa;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -11,10 +11,9 @@
 }
 
 
-.update-factors-container h1 {
-    font-size: 2rem;
+.update-factors-container h2 {
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 1rem;
     color: #333;
 }
 
