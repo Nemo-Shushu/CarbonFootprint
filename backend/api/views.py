@@ -75,12 +75,6 @@ def test_view(request):
         'user': request.user.id
     })
 
-
-
-########### Calculator ############
-
-
-
 class ProcurementCalculatorView:
     CATEGORY_PREFIX_MAPPING = {
         "Business Services": ["AF","AH","AL","AN","AT","AU","BE","BK","BN","BS","BT","BW","BZ"
@@ -137,7 +131,6 @@ class ProcurementCalculatorView:
             if not procurement_entry:
                 continue
             description_dict = procurement_entry.description_dict
-
             total_carbon_impact = 0
             for category, proportion in description_dict.items():
                 category_entry = CategoryCarbonImpact.objects.filter(category=category).first()
@@ -145,13 +138,11 @@ class ProcurementCalculatorView:
                     continue
                 carbon_factor = category_entry.carbon_impact
                 total_carbon_impact += (spend / 1000) * proportion * carbon_factor
-
             category_found = None
             for category, prefixes in self.CATEGORY_PREFIX_MAPPING.items():
                 if code in prefixes:
                     category_found = category
                     break
-
             if category_found:
                 if category_found not in result:
                     result[category_found] = {"spend": 0, "carbon_impact": 0}
@@ -159,24 +150,19 @@ class ProcurementCalculatorView:
                 result[category_found]["carbon_impact"] += total_carbon_impact
         return result
 
-
-
 class ReportcalculateView:
 
     def get_factor(self, category, consumption_type):
         """ Retrieve emission factors from the `accounts_benchmarkdata` database """
         print(f"Querying database: category={category}, consumption_type={consumption_type}")  # Debugging query parameters
-
         factor = BenchmarkData.objects.filter(
             category__iexact=consumption_type.strip(),
             consumption_type__iexact=category.strip()
         ).first()
-
         if factor:
             intensity = float(factor.intensity) if factor.intensity is not None else 0.0
             transmission_distribution = float(factor.transmission_distribution) if factor.transmission_distribution is not None else 0.0
             amount = float(factor.amount) if factor.amount is not None else 1.0  # Default to 1.0 to avoid division issues
-
             total_intensity = intensity + transmission_distribution  # Sum intensity and transmission
             print(f"Query successful: {category} ({consumption_type}) → Intensity: {intensity}, Transmission: {transmission_distribution}, Consumption Amount: {amount}")
             return total_intensity, amount  
@@ -189,19 +175,16 @@ class ReportcalculateView:
         utilities = request.get('utilities', {})
         travel = request.get('travel', {})
         waste = request.get('waste', {})
-
         fte_staff = int(utilities.get('FTE-staff', 0))
         fte_members = int(utilities.get('FTE-members', 0))
         if fte_members == 0:
             return {"error": "Total FTE members cannot be zero."}
-
         proportion = fte_staff / fte_members  # Adjust for staff proportion
         total_electricity_emissions = 0
         total_gas_emissions = 0
         total_water_emissions = 0
         total_travel_emissions = 0
         total_waste_emissions = 0
-
         # **Calculate electricity and gas emissions**
         for space_type in [
             "Academic Laboratory",
@@ -209,22 +192,16 @@ class ReportcalculateView:
             "Admin Office"
         ]:
             total_area = float(utilities.get(space_type, 0))  # Match key directly in `utilities`
-
             print(f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}")
-
             electricity_factor, electricity_amount = self.get_factor("electricity", space_type)
             gas_factor, gas_amount = self.get_factor("gas", space_type)
-
             if total_area > 0:
                 electricity_consumption = total_area * electricity_amount  
                 gas_consumption = total_area * gas_amount  
-
                 electricity_emission = electricity_consumption * electricity_factor * proportion
                 gas_emission = gas_consumption * gas_factor * proportion  # Multiply by `proportion`
-
                 print(f"Calculating electricity emissions: {total_area}m² × {electricity_amount} × {electricity_factor} × {proportion} = {electricity_emission}")
                 print(f"Calculating gas emissions: {total_area}m² × {gas_amount} × {gas_factor} × {proportion} = {gas_emission}")
-
                 total_electricity_emissions += electricity_emission
                 total_gas_emissions += gas_emission
 
@@ -236,35 +213,26 @@ class ReportcalculateView:
             "Office/Admin Space"
         ]:
             total_area = float(utilities.get(space_type, 0))  
-
             print(f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}")
-
             water_factor, water_amount = self.get_factor("water", space_type)
-
             if total_area > 0:
                 water_consumption = total_area * water_amount
                 water_emission = water_consumption * water_factor * proportion  # Multiply by `proportion`
-
                 print(f" Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
-
                 total_water_emissions += water_emission
-
         # **Calculate travel emissions**
         for mode, distance in travel.items():
             travel_factor, _ = self.get_factor("travel", mode)
             travel_emission = float(distance) * travel_factor * proportion  # Multiply by `proportion`
             print(f" Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
             total_travel_emissions += travel_emission
-
         # **Calculate waste emissions**
         for waste_type, amount in waste.items():
             waste_factor, _ = self.get_factor("waste", waste_type)
             waste_emission = float(amount) * waste_factor * proportion  # Multiply by `proportion`
             print(f"🗑️ Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
             total_waste_emissions += waste_emission
-
         print(f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}")
-
         return {
             "total_electricity_emissions": round(total_electricity_emissions, 2),
             "total_gas_emissions": round(total_gas_emissions, 2),
@@ -273,32 +241,24 @@ class ReportcalculateView:
             "total_waste_emissions": round(total_waste_emissions, 2)
         }
 
-
-
 @require_POST
 def report_view(request):
     try:
         data = json.loads(request.body)  # Parse JSON data
         print(f" Data received: {data}")  # Debug
-
         utilities = data.get("utilities", {})
         travel = data.get("travel", {})
         waste = data.get("waste", {})
         procurement = data.get("procurement", {})
-
         if not all(isinstance(d, dict) for d in [utilities, travel, waste, procurement]):
             return JsonResponse({"error": "Invalid input format"}, status=400)
-
         report_calculator = ReportcalculateView()
         report_data = report_calculator.calculate_report_emissions(data)
-
         if "error" in report_data:
             return JsonResponse({"error": report_data["error"]}, status=400)
-
         procurement_calculator = ProcurementCalculatorView()
         procurement_data = procurement_calculator.calculate_procurement_emissions(procurement)
         total_procurement_emissions = sum(category_data["carbon_impact"] for category_data in procurement_data.values())
-
         total_carbon_emissions = (
             report_data["total_electricity_emissions"] +
             report_data["total_gas_emissions"] +
@@ -307,15 +267,12 @@ def report_view(request):
             report_data["total_waste_emissions"] +
             total_procurement_emissions
         )
-
         response_data = {
             **report_data,
             "total_procurement_emissions": round(total_procurement_emissions, 2),
             "total_carbon_emissions": round(total_carbon_emissions, 2)
         }
-
         return JsonResponse(response_data, status=200)
-
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON format"}, status=400)
     except Exception as e:
@@ -324,35 +281,25 @@ def report_view(request):
 @require_POST
 def submit_view(request):
     try:
-        # if not request.user or not request.user.is_authenticated:
-        #     return JsonResponse({"error": "User not authenticated"}, status=400)
-
-        # Parse JSON data
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
-
         utilities = data.get("utilities", {})
         travel = data.get("travel", {})
         waste = data.get("waste", {})
         procurement = data.get("procurement", {})
-
         # Ensure data format is correct
         if not all(isinstance(d, dict) for d in [utilities, travel, waste, procurement]):
             return JsonResponse({"error": "Invalid input format"}, status=400)
-
         # Calculate carbon emissions
         report_calculator = ReportcalculateView()
         report_data = report_calculator.calculate_report_emissions(data)
-
         if "error" in report_data:
             return JsonResponse({"error": report_data["error"]}, status=400)
-
         procurement_calculator = ProcurementCalculatorView()
         procurement_data = procurement_calculator.calculate_procurement_emissions(procurement)
         total_procurement_emissions = sum(category_data["carbon_impact"] for category_data in procurement_data.values())
-
         total_carbon_emissions = (
             report_data["total_electricity_emissions"] +
             report_data["total_gas_emissions"] +
@@ -361,7 +308,6 @@ def submit_view(request):
             report_data["total_waste_emissions"] +
             total_procurement_emissions
         )
-
         # Store to database
         result_entry = Result.objects.create(
                 user_id=request.user.id,
@@ -373,10 +319,8 @@ def submit_view(request):
                 total_procurement_emissions=total_procurement_emissions,
                 total_carbon_emissions=total_carbon_emissions
             )
-        result_entry.save()
-            
+        result_entry.save()            
         return JsonResponse({"success": True}, status=200)
-
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
@@ -384,5 +328,3 @@ def submit_view(request):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})
-
-

@@ -9,7 +9,7 @@ urlpatterns = [
     path('whoami/', views.whoami_view, name='api-whoami'),
     path('csrf/', views.get_csrf, name='api-csrf'),
     path('test/', views.test_view, name='api-test'),
-    path('Report/', views.report_view, name='Report'),
-    path('Submit/', views.submit_view, name='Submits'),
+    path('report/', views.report_view, name='Report'),
+    path('submit/', views.submit_view, name='Submits'),
     path("get-csrf/", views.get_csrf_token, name="get-csrf-token")
 ]

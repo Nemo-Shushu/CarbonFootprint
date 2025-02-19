@@ -49,7 +49,7 @@ GET http://localhost:8000/api2/get-csrf/
 
 
 ### test report
-POST http://localhost:8000/api2/Report/
+POST http://localhost:8000/api2/report/
 Content-Type: application/json
 Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
 X-CSRFToken: gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
@@ -93,7 +93,7 @@ X-CSRFToken: gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS
 }
 
 ### test submit
-POST http://localhost:8000/api2/Submit/
+POST http://localhost:8000/api2/submit/
 Content-Type: application/json
 Cookie: csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi; sessionid=tp2b546zih7wkdnont6ariieaota616y
 X-CSRFToken: 1axZ6eDVXaZZKXgGVJSlZzxLI7ia5RUi

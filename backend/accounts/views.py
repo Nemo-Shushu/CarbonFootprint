@@ -68,15 +68,6 @@ class ConversionFactorsView(APIView):
 
     def get(self, request, format=None):
         queryset = ConversionFactor.objects.all().order_by('activity')
-<<<<<<< HEAD
-        serializer_class = ConversionFactorsSerializer(queryset, many=True)
-        return Response(serializer_class.data)
-    
-    
-def get_csrf_token(request):
-    csrf_token = get_token(request)
-    return JsonResponse({'csrftoken': csrf_token})
-=======
         serializer = ConversionFactorsSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -127,4 +118,3 @@ class ConversionFactorsAPIView(APIView):
             {"res": "Object deleted!"},
             status=status.HTTP_200_OK
         )        
->>>>>>> develop
