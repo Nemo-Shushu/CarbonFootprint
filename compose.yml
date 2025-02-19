@@ -13,6 +13,7 @@ services:
 
   db:
     image: postgres:15
+    build: .
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
