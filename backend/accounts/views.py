@@ -10,6 +10,8 @@ from .models import User, ConversionFactor
 from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
