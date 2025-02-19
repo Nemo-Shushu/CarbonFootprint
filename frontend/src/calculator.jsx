@@ -8,6 +8,10 @@ import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
 import { useAuth } from './useAuth';
 import ResultsDisplay from './ResultsDisplay';
+import Cookies from "js-cookie"
+
+const csrftoken = Cookies.get("csrftoken");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
 
@@ -644,17 +648,7 @@ function Calculator() {
     function Results() {
         
         const navigate = useNavigate();
-        const [data, setData] = useState([
-            {
-                "total_electricity_emissions": 123.45,
-                "total_gas_emissions": 67.89,
-                "total_water_emissions": 45.67,
-                "total_travel_emissions": 89.12,
-                "total_waste_emissions": 34.56,
-                "total_procurement_emissions": 78.90,
-                "total_carbon_emissions": 439.59
-            }
-        ]);
+        const [data, setData] = useState([]);
 
         useEffect(() => {
             if (report) {
@@ -664,10 +658,12 @@ function Calculator() {
 
         async function peekCalculations(report) {
             try {
-                const response = await fetch(`${backendUrl}calculator/Report/`, { // Change this to actual API!
+                const response = await fetch(`${backendUrl}api2/report/`, { // Change this to actual API!
                     method: 'POST',
+                    credentials: "include",
                     headers: {
                         'Content-Type': 'application/json',
+                        "X-CSRFToken": csrftoken,
                     },
                     body: JSON.stringify(report),
                 });
@@ -696,6 +692,7 @@ function Calculator() {
         return (
             <main class="ms-sm-auto px-md-4">
                 <h2>Results</h2>
+                {JSON.stringify(data, null, 2)}
                 <ResultsDisplay calculations={data} rawData={report}/>
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
