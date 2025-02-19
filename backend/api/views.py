@@ -84,20 +84,49 @@ def test_view(request):
 class ProcurementCalculatorView:
     CATEGORY_PREFIX_MAPPING = {
         "Business Services": ["AF","AH","AL","AN","AT","AU","BE","BK","BN","BS","BT","BW","BZ"
-        ,"CG","CS"],
+        ,"CG","CS","EF","EG","EZ","FJ","GC","GD","GG","GH","H","HD","HG","JF","KJ","KO","KS","KT","KU","LI"
+        ,"N", "NA", "NB", "ND", "NE", "NF", "PB", "PF", "Q", "QA", "QB", "QC", "QD", "QE", "QH", "QJ", "QL"
+        , "QM", "QR", "QS", "QT", "QZ", "R", "RA", "RB", "RC", "RD", "RE", "RG", "RI", "RJ", "RK", "RL", "RM"
+        , "RN", "RP", "RQ", "RR", "RS", "RT", "RU", "RV", "RW", "RX", "RY", "RZ", "SE", "TO", "TQ", "TR", "TS"
+        , "U", "UF", "UH", "UL", "UZ", "VD", "VE", "WD", "WE", "WG", "WH", "WI", "WK", "WL", "WM", "WN", "WT"
+        , "WU", "WV", "WW", "WZ", "X", "XE", "XH", "XK", "XP", "XQ", "XS", "XT", "XY", "XZ", "Y", "YA", "YB"
+        , "YC", "YD", "YE", "YF", "YP", "YQ", "YS"],
+        
         "Food and Catering": ["C","CA","CB","CC","CD","CE","CH","CJ","CM","CP","CQ","CT","CU"
-        ,"CU","CV","CZ"],
+        ,"CU","CV","CZ","YR"],
+        
         "Information and Communication Technologies": ["A","AA","AE","AJ","AK","AM","AP","AR"
-        ,"AZ","BI","BJ","BP","BQ","BR"],
-        "Waste and Water": [],
-        "Medical and Precision Instruments": ["D","DA","DB","DC","DD"],
-        "Other Manufactured Products": ["AB","AC","AD","AG","CF","CK","CL","CN","CR","CY","DE"],
-        "Paper Products": ["B","BA","BB","BC","BD","BF","BG","BL","BM","BL","BM","BV"],
-        "Manufactured Fuels, Chemicals and Glasses": [],
-        "Unclassified": ["AQ"],
-        "Construction": [],
-        "Other Procurement": [],
-        "Business Travel": []
+        ,"AZ","BI","BJ","BP","BQ","BR","K","KB","KC","KD","KE","KF","KG","KH","KI","KK","KL","KM","KN","KP"
+        ,"KQ","KR","KV","KW","KZ","PE", "PJ", "PK", "QG", "QN", "SG", "SK", "UJ"],
+        
+        "Waste and Water": ["JE","LY","UA", "UG", "WO", "WQ", "WS", "YG", "YH", "YJ", "YK", "YL"],
+        
+        "Medical and Precision Instruments": ["D","DA","DB","DC","DD","DF","DH","DJ","DL","EJ","ET","L","LA"
+        ,"LC","LD","LE","LF","LG","LH","LK","LL","LM","LP","LQ","LR","LS","LT","LU","LV","LW","LX","LZ","UC","UP"],
+        
+        "Other Manufactured Products": ["AB","AC","AD","AG","CF","CK","CL","CN","CR","CY","DE"
+        ,"DK","E","EA","EB","EC","ED","EH","EK","EL","EM","EN","EP","ES","F","FA","FB","FC","FE","FF","FG"
+        ,"FH","FK","FL","FN","FO","FP","FQ","FR","FS","FT","FU","FZ","GA","GB","GE","GF","GJ","HB","HC"
+        ,"HE","HF","HK","HL","HN","HP","HQ","HR","HS","HZ","LB","LJ","M","MA","MB","MC","MD","ME","MF","MG"
+        ,"MH","ML","MN","MP","MR","MS","MT","MZ","MD", "ME", "MF", "MG", "MH", "ML", "MN", "MP", "MR", "MS"
+        , "MT", "MZ", "NC", "NG", "NH", "SC", "UB", "UD", "UE", "UK", "UM", "UN", "VA", "VF", "VH", "VJ", "VK"
+        , "VL", "VM", "VR", "WA", "WF", "WJ", "WP", "WX", "WY", "XF", "XM", "YM", "YN"],
+        
+        "Paper Products": ["B","BA","BB","BC","BD","BF","BG","BL","BM","BL","BM","BV","KA","P", "PA", "PC"
+        , "PD", "PG", "PH", "PZ", "S", "SA", "SB", "SD", "SF", "SH", "SJ", "SL", "SZ"],
+        
+        "Manufactured Fuels, Chemicals and Glasses": ["HA","HH","HJ","LN"],
+        
+        "Unclassified": ["AQ","DG","DZ","ER","FM","JG","QF", "QP", "YY"],
+        
+        "Construction": ["FD","MJ","MK","MM","MQ","MJ", "MK", "MM", "MQ", "W", "WB", "WC"],
+        
+        "Other Procurement": ["G","JH","JJ"],
+        
+        "Business Travel": ["T", "TA", "TB", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN"
+        , "TP", "TT", "TU", "TZ", "V", "VC", "VZ"],
+        
+        "Scope 1 & 2 emissions":["J","JA","JB","JC","JD","JZ","TF", "VG", "WR"]
     }
 
     def calculate_procurement_emissions(self, expenses):
@@ -216,7 +245,7 @@ class ReportcalculateView:
                 water_consumption = total_area * water_amount
                 water_emission = water_consumption * water_factor * proportion  # Multiply by `proportion`
 
-                print(f"💧 Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
+                print(f" Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
 
                 total_water_emissions += water_emission
 
@@ -224,7 +253,7 @@ class ReportcalculateView:
         for mode, distance in travel.items():
             travel_factor, _ = self.get_factor("travel", mode)
             travel_emission = float(distance) * travel_factor * proportion  # Multiply by `proportion`
-            print(f"🚗 Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
+            print(f" Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
             total_travel_emissions += travel_emission
 
         # **Calculate waste emissions**
