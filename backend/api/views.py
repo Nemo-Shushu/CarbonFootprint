@@ -347,7 +347,7 @@ def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})
 
-def get_user_result_data(request):
+def Dashboard_show_user_result_data(request):
     try:
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
@@ -365,3 +365,25 @@ def get_user_result_data(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+    
+
+def get_all_report_data(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            report_id = data.get("report_id")
+            if not report_id:
+                return JsonResponse({"error": "report_id is required"}, status=400)
+            report = Result.objects.get(id=report_id)
+            response_data = {
+                "total_carbon_emissions": float(report.total_carbon_emissions),
+                "report_data": report.report_data 
+            }
+            return JsonResponse(response_data)
+        except Result.DoesNotExist:
+            return JsonResponse({"error": "Report not found"}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)

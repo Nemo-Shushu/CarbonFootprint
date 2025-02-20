@@ -7,7 +7,7 @@ Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
 Connection: keep-alive
-Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
+Cookie: csrftoken=zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T; sessionid=hbmef7tjb2b3rmocog5btpyurc0gg8j6
 Host: localhost:8000
 Origin: http://localhost:3000
 Referer: http://localhost:3000/
@@ -51,8 +51,8 @@ GET http://localhost:8000/api2/get-csrf/
 ### test report
 POST http://localhost:8000/api2/report/
 Content-Type: application/json
-Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
-X-CSRFToken: bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN
+Cookie: csrftoken=zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T; sessionid=hbmef7tjb2b3rmocog5btpyurc0gg8j6
+X-CSRFToken: zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T
 
 {
   "utilities": {
@@ -95,8 +95,8 @@ X-CSRFToken: bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN
 ### test submit
 POST http://localhost:8000/api2/submit/
 Content-Type: application/json
-Cookie: csrftoken=nXOvmko4J2tFWhoUGojywVuesdYm8RMv; sessionid=hizt00ljb1f5lgysldvmwdyx7kdwd3in
-X-CSRFToken: nXOvmko4J2tFWhoUGojywVuesdYm8RMv
+Cookie: csrftoken=zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T; sessionid=hbmef7tjb2b3rmocog5btpyurc0gg8j6
+X-CSRFToken: zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T
 
 {
   "utilities": {
@@ -137,7 +137,17 @@ X-CSRFToken: nXOvmko4J2tFWhoUGojywVuesdYm8RMv
 }
 
 ### test getresult
-POST http://localhost:8000/api2/get_user_result_data/
+POST http://localhost:8000/api2/Dashboard_show_user_result_data/
 Content-Type: application/json
-Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
-X-CSRFToken: bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN
+Cookie: csrftoken=zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T; sessionid=hbmef7tjb2b3rmocog5btpyurc0gg8j6
+X-CSRFToken: zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T
+
+### 发送 POST 请求测试 get_all_report_data API
+POST http://localhost:8000/api2/get_all_report_data/
+Content-Type: application/json
+Cookie: csrftoken=zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T; sessionid=hbmef7tjb2b3rmocog5btpyurc0gg8j6
+X-CSRFToken: zk6MlLVfSb1rfqqLEyJ9eCx3ERSRCf0T
+
+{
+  "report_id": 9
+}

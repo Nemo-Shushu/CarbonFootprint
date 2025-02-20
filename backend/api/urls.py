@@ -14,5 +14,6 @@ urlpatterns = [
     path('report/', views.report_view, name='Report'),
     path('submit/', views.submit_view, name='Submits'),
     path("get-csrf/", views.get_csrf_token, name="get-csrf-token"),
-    path("get_user_result_data/", views.get_user_result_data, name="get_user_result_data")
+    path("Dashboard_show_user_result_data/", views.Dashboard_show_user_result_data, name="Dashboard_show_user_result_data"),
+    path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data")
 ]
