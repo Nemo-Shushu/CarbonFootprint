@@ -13,8 +13,9 @@ lint-frontend:
   stage: lint
   image: node:23
   script:
+    - cd frontend
+    - npm install
     - npm install -g eslint
-    - cd frontend/
     - eslint .
 
 build-job:
