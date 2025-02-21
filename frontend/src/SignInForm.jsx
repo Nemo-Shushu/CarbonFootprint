@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -12,7 +11,10 @@ function SignInForm() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
-
+    const [showPassword, setShowPassword] = useState(false);
+    const toggleShowPassword = () => {
+        setShowPassword(prev => !prev);
+    };
     const navigate = useNavigate();
 
     const handleProtect = () => {
@@ -116,16 +118,25 @@ function SignInForm() {
                 />
                 <label htmlFor="floatingInput">Username</label>
             </div>
-            <div className="form-floating">
+            <div className="form-floating position-relative">
                 <input
-                type="password"
-                name="password"
-                className="form-control"
-                id="floatingPassword"
-                placeholder="Password"
-                onChange={handlePasswordChange}
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    className="form-control"
+                    id="floatingPassword"
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
                 />
                 <label htmlFor="floatingPassword">Password</label>
+                
+                <button 
+                    type="button"
+                    onClick={toggleShowPassword}
+                    className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
+                    style={{ textDecoration: 'none' }}
+                >
+                    {showPassword ? 'Hide' : 'Show'}
+                </button>
             </div>
             <p className="warning">{error}</p>
             <div className="form-check text-start my-3">

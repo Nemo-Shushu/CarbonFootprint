@@ -22,7 +22,7 @@ build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "https://sh14main-django2-1.onrender.com/"
+    VITE_BACKEND_URL: "http://134.209.19.90:3000/"
   script:
     - cd frontend
     - npm install

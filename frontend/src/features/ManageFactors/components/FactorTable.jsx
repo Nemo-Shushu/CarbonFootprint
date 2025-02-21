@@ -1,4 +1,10 @@
-import React from "react";
+import PropTypes from 'prop-types';
+
+FactorTable.propTypes = {
+    conversionFactors: PropTypes.array,
+    showDelete: PropTypes.func,
+    handleShowEdit: PropTypes.func
+}
 
 function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
 
@@ -21,7 +27,7 @@ function FactorTable({conversionFactors, showDelete, handleShowEdit}) {
                         <i className="bi bi-pen-fill mt-2 mb-3" style={{fontSize: "20px"}}/>
                     </a>
                     <a className="delete-icon me-5 text-danger" onClick={() => showDelete(factor.id)}>
-                        <i class="bi bi-trash3-fill" style={{fontSize: "20px"}}/>
+                        <i className="bi bi-trash3-fill" style={{fontSize: "20px"}}/>
                     </a>
                 </td>
                 </tr>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../useAuth";
 import Sidebar from "../../../Sidebar";
@@ -8,7 +8,6 @@ import Button from 'react-bootstrap/Button';
 import DeleteFactor from "./DeleteFactorModal";
 import EditFactor from "./EditFactorModal";
 import FactorTable from "./FactorTable";
-import Cookies from "js-cookie";
 import {
     getConversionFactors,
     handleUpdateSubmissionAPI,
@@ -27,8 +26,6 @@ function ManageFactors() {
     const [showUpdate, setShowUpdate] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [showCreate, setShowCreate] = useState(false);
-
-    const csrftoken = Cookies.get('csrftoken');
     
     // set title for the delete and edit modals
     const [modalTitle, setModalTitle] = useState("");
@@ -101,7 +98,7 @@ function ManageFactors() {
                         <div className="col-md-8 align-middle" style={{paddingLeft: "0px"}}>
                             <h2 className="text-start">Manage Conversion Factors</h2>
                         </div>
-                        <div class="col-6 col-md-4 text-end">
+                        <div className="col-6 col-md-4 text-end">
                         <Button onClick={handleShowCreate}>Add New Conversion Factor</Button>
                         </div>
                     </div>

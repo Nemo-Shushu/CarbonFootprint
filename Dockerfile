@@ -1,2 +1,2 @@
-FROM postgres:17
-COPY db_dump.sql /docker-entrypoint-initdb.d/
+FROM postgres:15
+COPY carbon_foot_dump.sql /docker-entrypoint-initdb.d/

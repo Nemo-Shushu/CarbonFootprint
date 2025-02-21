@@ -221,7 +221,7 @@ class HttpResponseBase:
         secure=False,
         httponly=False,
         samesite=None,
-        partitioned=False
+        partitioned=False,
     ):
         """
         Set a cookie.
@@ -285,7 +285,9 @@ class HttpResponseBase:
         value = signing.get_cookie_signer(salt=key + salt).sign(value)
         return self.set_cookie(key, value, **kwargs)
 
-    def delete_cookie(self, key, path="/", domain=None, samesite=None, partitioned=False):
+    def delete_cookie(
+        self, key, path="/", domain=None, samesite=None, partitioned=False
+    ):
         # Browsers can ignore the Set-Cookie header if the cookie doesn't use
         # the secure flag and:
         # - the cookie name starts with "__Host-" or "__Secure-", or
