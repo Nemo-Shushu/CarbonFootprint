@@ -7,11 +7,11 @@ import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+
+
 function Sidebar({ onNameClick }) {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUserName] = useState();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
 
@@ -23,32 +23,13 @@ function Sidebar({ onNameClick }) {
       setActiveItem("Dashboard");
     } else if (location.pathname === "/request-admin") {
       setActiveItem("Request Admin");
-    } else if (location.pathname === "/Manage-factors") {
+    } else if (location.pathname === "/manage-factors") {
       setActiveItem("Manage Factors");
     } else {
       setActiveItem("");
     }
-    getSession();
     getName();
   }, [location.pathname]); 
-
-  function getSession() {
-    fetch(backendUrl + "api2/session/", {
-        credentials: "include",
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        console.log(data);
-        if (data.isAuthenticated) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-  }
 
   function isResponseOk(response) {
     if (response.status >= 200 && response.status <= 299) {
@@ -80,7 +61,6 @@ function Sidebar({ onNameClick }) {
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
-      setUserName(data.username);
       setFirstName(data.forename);
       setEmail(data.email);
     })

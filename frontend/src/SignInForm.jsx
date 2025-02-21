@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from './useAuth';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 
@@ -8,7 +7,6 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 function SignInForm() {
     const [csrf, setCsrf] = useState();
     const [error, setError] = useState();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
     const [showPassword, setShowPassword] = useState(false);
@@ -30,9 +28,10 @@ function SignInForm() {
           credentials: "include",
         })
         .then((res) => {
-          let csrfToken = res.headers.get("X-CSRFToken");
+          const csrfToken = res.headers.get("X-CSRFToken");
           setCsrf(csrfToken);
-          console.log(csrfToken);
+          console.log(csrf);
+          console.log("got token!");
         })
         .catch((err) => {
           console.log(err);
@@ -47,9 +46,8 @@ function SignInForm() {
         .then((data) => {
             console.log(data);
             if (data.isAuthenticated) {
-                setIsAuthenticated(true);
+                navigate("/dashboard");
             } else {
-                setIsAuthenticated(false);
                 getCSRF();
             }
         })
@@ -74,9 +72,8 @@ function SignInForm() {
         }
     }
     
-    function login(event) {
-        event.preventDefault();
-        fetch(backendUrl + 'api2/login/', {
+    async function login() {
+        await fetch(backendUrl + 'api2/login/', {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
@@ -88,7 +85,6 @@ function SignInForm() {
         .then(isResponseOk)
         .then((data) => {
             console.log(data);
-            setIsAuthenticated(true);
             setUserName("");
             setPassword("");
             setError("");
@@ -100,11 +96,22 @@ function SignInForm() {
         });
     }
 
-    return !useAuth() ? (
+    async function handleLogin(event) {
+        event.preventDefault();
+        try {
+            await getCSRF();
+            await login(); 
+            handleProtect();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    return (
         <div>
         {/* Main Form */}
         <main className="form-signin w-100 m-auto">
-            <form onSubmit={login}>
+            <form onSubmit={handleLogin}>
             <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
             <div className="form-floating">
@@ -155,7 +162,7 @@ function SignInForm() {
             </button>
             <Link to="/register">
                 <button className="btn btn-outline-success w-100 py-2 mt-2" type="button">
-                    Don't have an account? Go to register
+                    Don&apos;t have an account? Go to register
                 </button>
             </Link>
             <button className="btn btn-outline-success w-100 py-2 mt-2" type="button">
@@ -164,8 +171,6 @@ function SignInForm() {
             </form>
         </main>
         </div>
-    ) : (
-        handleProtect()
     );
 };
 
