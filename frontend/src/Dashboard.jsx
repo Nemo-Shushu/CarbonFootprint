@@ -8,16 +8,14 @@ import "./static/RequestAdmin.css"
 import Profile from './Profile';
 
 function TableComponent() {
-    const data = [
+    const [data, setData] = useState([
         { id: 1001, institution: "University of Glasgow", field: "Computing Science", emissions: Math.floor(Math.random() * 1000), },
         { id: 1002, institution: "University of Oxford", field: "Physics", emissions: Math.floor(Math.random() * 1000), },
         { id: 1003, institution: "University of Cambridge", field: "Biology", emissions: Math.floor(Math.random() * 1000), },
         { id: 1004, institution: "Imperial College London", field: "Computer Science", emissions: Math.floor(Math.random() * 1000), },
         { id: 1005, institution: "University of Edinburgh", field: "Mathematics", emissions: Math.floor(Math.random() * 1000), },
         { id: 1006, institution: "University of Manchester", field: "Engineering", emissions: Math.floor(Math.random() * 1000), },
-      ];
-
-    const [data_api, setData] = useState([]);
+      ]);
 
     useEffect(() => {
         // http://localhost:8080/api/users/reports should return a json in format above with all available data to the user
