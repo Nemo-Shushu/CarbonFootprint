@@ -45,12 +45,12 @@ function Calculator() {
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
+            <main className="ms-sm-auto px-md-4">
                 <h2>Instructions</h2>
                 <h5>Use Calculator like that. Click "Next" to save your inputs.</h5>
                 
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Start</button>
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Start</button>
                 </div>
             </main>
         );
@@ -77,7 +77,7 @@ function Calculator() {
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
+            <main className="ms-sm-auto px-md-4">
                 {/* {JSON.stringify(utilitiesReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
@@ -183,8 +183,8 @@ function Calculator() {
                     </div>
                 </form>
 
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -215,7 +215,7 @@ function Calculator() {
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
+            <main className="ms-sm-auto px-md-4">
                 {/* {JSON.stringify(travelReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
@@ -379,9 +379,9 @@ function Calculator() {
                     </div>
                 </form>
                 
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                    <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -412,7 +412,7 @@ function Calculator() {
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
+            <main className="ms-sm-auto px-md-4">
                 {/* {JSON.stringify(wasteReport, null, 2)} */}
                 <form className="needs-validation" noValidate>
                     <div className="row g-2">
@@ -486,9 +486,9 @@ function Calculator() {
                     </div>
                 </form>
                 
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                    <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
             </main>
         );
@@ -588,7 +588,7 @@ function Calculator() {
         };
 
         return (
-            <main class="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
+            <main className="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
                 
                 {/* Header and New Row Button */}
                 <div className="d-flex justify-content-between align-items-center">
@@ -599,8 +599,8 @@ function Calculator() {
                 </div>
 
                 {/* Table */}
-                <div class="table-responsive small mt-3">
-                    <table class="table table-light table-sm">
+                <div className="table-responsive small mt-3">
+                    <table className="table table-light table-sm">
                     <thead>
                         <tr className="align-middle text-center">
                         <th scope="col">category</th>
@@ -637,7 +637,7 @@ function Calculator() {
                 </div>
                 
                 {/* Nav Buttons */}
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
                     <button type="button" className="btn btn-moss" onClick={handleRoute}>Next</button>
                 </div>
@@ -690,13 +690,13 @@ function Calculator() {
         };
 
         return (
-            <main class="ms-sm-auto px-md-4">
+            <main className="ms-sm-auto px-md-4">
                 <h2>Results</h2>
                 {JSON.stringify(data, null, 2)}
                 <ResultsDisplay calculations={data} rawData={report}/>
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
+                <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+                    <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
+                    <button type="button" className="btn btn-moss" onClick={handleRoute}>Submit</button>
                 </div>
             </main>
         );

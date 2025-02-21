@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from './useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,11 +29,11 @@ function TableComponent() {
       }, []);
 
     return (
-        <main class="ms-sm-auto px-md-4">
+        <main className="ms-sm-auto px-md-4">
 
             <h2>Available Reports</h2>
-            <div class="table-responsive small">
-                <table class="table table-striped table-sm">
+            <div className="table-responsive small">
+                <table className="table table-striped table-sm">
                 <thead>
                     <tr>
                     <th scope="col">#</th>
