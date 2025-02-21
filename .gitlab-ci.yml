@@ -10,13 +10,12 @@ lint-backend:
     - ruff check backend/
 
 lint-frontend:
-  stage: frontend
+  stage: lint
   image: node:23
   script:
     - npm i eslint
-    - pwd
-    - ls
-    - frontend/node_modules/eslint/bin/eslint.js frontend/
+    - cd frontend/
+    - node_modules/eslint/bin/eslint.js .
 
 build-job:
   stage: build

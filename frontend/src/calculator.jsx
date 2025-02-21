@@ -7,6 +7,11 @@ import "./static/dashboard.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
 import { useAuth } from './useAuth';
+import ResultsDisplay from './ResultsDisplay';
+import Cookies from "js-cookie"
+
+const csrftoken = Cookies.get("csrftoken");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
 
@@ -643,6 +648,38 @@ function Calculator() {
     function Results() {
         
         const navigate = useNavigate();
+        const [data, setData] = useState([]);
+
+        useEffect(() => {
+            if (report) {
+                peekCalculations(report);
+            }
+        }, [report]);
+
+        async function peekCalculations(report) {
+            try {
+                const response = await fetch(`${backendUrl}api2/report/`, { // Change this to actual API!
+                    method: 'POST',
+                    credentials: "include",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "X-CSRFToken": csrftoken,
+                    },
+                    body: JSON.stringify(report),
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+    
+                const responseData = await response.json();
+                console.log('Calculations received:', responseData);
+    
+                setData(responseData);
+            } catch (error) {
+                console.error('Error fetching calculations:', error);
+            }
+        }
 
         function handleBack(){
             navigate("/calculator/procurement")
@@ -655,7 +692,8 @@ function Calculator() {
         return (
             <main class="ms-sm-auto px-md-4">
                 <h2>Results</h2>
-                
+                {JSON.stringify(data, null, 2)}
+                <ResultsDisplay calculations={data} rawData={report}/>
                 <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
                     <button type="button" class="btn btn-moss" onClick={handleRoute}>Submit</button>
