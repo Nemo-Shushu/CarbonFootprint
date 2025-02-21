@@ -1,8 +1,14 @@
-import React from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import PropTypes from 'prop-types';
 
-function DeleteFactor({ showDelete, handleDelete, handleClose}) {
+DeleteFactor.propTypes = {
+    showDelete: PropTypes.func,
+    handleDelete: PropTypes.func,
+    handleClose: PropTypes.func
+}
+
+function DeleteFactor({showDelete, handleDelete, handleClose}) {
 
     return (
         <div className="deleteModal">

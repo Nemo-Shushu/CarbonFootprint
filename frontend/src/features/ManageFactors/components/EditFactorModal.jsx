@@ -1,6 +1,16 @@
-import React, {useState} from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import PropTypes from 'prop-types';
+
+EditFactor.propTypes = {
+    show: PropTypes.func,
+    handleClose: PropTypes.func,
+    modalTitle: PropTypes.string,
+    selectedFactor: PropTypes.array,
+    handleSubmit: PropTypes.func,
+    setSelectedFactor: PropTypes.func,
+    buttonContents: PropTypes.string
+}
 
 function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit, setSelectedFactor, buttonContents}) {
 
@@ -17,9 +27,9 @@ function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit
                 </Modal.Header>
                 <Modal.Body>
                 <form>
-                    <div class="input-group mb-3">
-                        <label for="basic-url" class="form-label">Activity Name</label>
-                        <div class="input-group">
+                    <div className="input-group mb-3">
+                        <label htmlFor="basic-url" className="form-label">Activity Name</label>
+                        <div className="input-group">
                             <input
                                 type="text"
                                 className="form-control"
@@ -31,19 +41,19 @@ function EditFactor({show, handleClose, modalTitle, selectedFactor, handleSubmit
                             ></input>
                         </div>
                     </div>
-                    <div class="input-group mb-3">
-                        <label for="basic-url" class="form-label">Activity Value</label>
+                    <div className="input-group mb-3">
+                        <label htmlFor="basic-url" className="form-label">Activity Value</label>
                         <div className="input-group">
                             <input
                                 type="text"
-                                class="form-control"
+                                className="form-control"
                                 placeholder={selectedFactor.value}
                                 aria-label="Recipient's username"
                                 aria-describedby="basic-addon2"
                                 name="value"
                                 onChange={handleChange}
                             ></input>
-                            <span class="input-group-text" id="basic-addon2">kg CO2e</span>
+                            <span className="input-group-text" id="basic-addon2">kg CO2e</span>
                         </div>
                     </div>
                 </form>
