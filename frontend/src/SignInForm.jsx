@@ -25,8 +25,8 @@ function SignInForm() {
         getSession();
     }, []);
 
-    function getCSRF() {
-        fetch(backendUrl + "api2/csrf/", {
+    async function getCSRF() {
+        await fetch(backendUrl + "api2/csrf/", {
           credentials: "include",
         })
         .then((res) => {
@@ -39,8 +39,8 @@ function SignInForm() {
         });
     }
     
-    function getSession() {
-        fetch(backendUrl + "api2/session/", {
+    async function getSession() {
+        await fetch(backendUrl + "api2/session/", {
             credentials: "include",
         })
         .then((res) => res.json())

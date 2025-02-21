@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import Cookies from 'js-cookie';
 import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -10,7 +11,6 @@ function Sidebar({ onNameClick }) {
 
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [csrf, setCsrf] = useState();
   const [username, setUserName] = useState();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
@@ -32,20 +32,6 @@ function Sidebar({ onNameClick }) {
     getName();
   }, [location.pathname]); 
 
-  function getCSRF() {
-    fetch(backendUrl + "api2/csrf/", {
-      credentials: "include",
-    })
-    .then((res) => {
-      let csrfToken = res.headers.get("X-CSRFToken");
-      setCsrf(csrfToken);
-      console.log(csrfToken);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }
-
   function getSession() {
     fetch(backendUrl + "api2/session/", {
         credentials: "include",
@@ -57,7 +43,6 @@ function Sidebar({ onNameClick }) {
             setIsAuthenticated(true);
         } else {
             setIsAuthenticated(false);
-        getCSRF();
         }
     })
     .catch((err) => {
@@ -74,7 +59,6 @@ function Sidebar({ onNameClick }) {
   }
 
   function handleLogout() {
-    localStorage.removeItem("userToken"); 
     fetch(backendUrl + "api2/logout", {
       credentials: "include",
     })
@@ -82,7 +66,6 @@ function Sidebar({ onNameClick }) {
     .then((data) => {
         console.log(data);
         setIsAuthenticated(false);
-        getCSRF();
         navigate("/sign-in");
     })
     .catch((err) => {
@@ -91,7 +74,6 @@ function Sidebar({ onNameClick }) {
   };
 
   function getName() {
-    localStorage.removeItem("userToken"); 
     fetch(backendUrl + "api2/whoami/", {
       credentials: "include",
     })
