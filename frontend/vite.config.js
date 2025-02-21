@@ -20,6 +20,11 @@ export default defineConfig({
     host: "localhost" 
   },
   },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/test/Setup.jsx",
+  },
 });
 
 
