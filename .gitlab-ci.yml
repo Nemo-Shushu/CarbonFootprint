@@ -1,8 +1,27 @@
+stages:
+  - lint
+  - build
+
+lint-backend:
+  stage: lint
+  image: python:3.11-slim
+  script:
+    - pip install ruff
+    - ruff check backend/
+
+lint-frontend:
+  stage: lint
+  image: node:23
+  script:
+    - npm i eslint
+    - cd frontend/
+    - node_modules/eslint/bin/eslint.js .
+
 build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "http://localhost:8000/"
+    VITE_BACKEND_URL: "https://sh14main-django2-1.onrender.com/"
   script:
     - cd frontend
     - npm install
