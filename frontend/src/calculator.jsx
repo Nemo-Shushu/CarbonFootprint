@@ -1,5 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from "react-router-dom";
 import CalculationBar from './CalculationBar';
 import Sidebar from './Sidebar';

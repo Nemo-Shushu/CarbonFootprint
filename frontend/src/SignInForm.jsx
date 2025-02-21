@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import { Link, useNavigate } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/sign-in.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;

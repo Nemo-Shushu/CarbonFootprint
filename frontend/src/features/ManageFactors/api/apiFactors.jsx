@@ -24,7 +24,7 @@ export async function getConversionFactors(setFactors) {
     });
 }
 
-export async function handleUpdateSubmissionAPI(event, selectedFactor, setSelectedFactor) {
+export async function handleUpdateSubmissionAPI(event, selectedFactor) {
     event.preventDefault();
     await fetch(backendUrl + 'api/accounts/conversion-factors/' + selectedFactor.id, {
         method: "PUT",

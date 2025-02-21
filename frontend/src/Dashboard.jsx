@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from './useAuth';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import "./static/dashboard.css";
 import Sidebar from './Sidebar';
 import "./static/Sidebar.css";
