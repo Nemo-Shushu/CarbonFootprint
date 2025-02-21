@@ -41,13 +41,13 @@ function Calculator() {
 
         function handleRoute(){
             navigate("/calculator/utilities")
+            submitReport();
         };
 
         return (
             <main className="ms-sm-auto px-md-4">
                 <h2>Instructions</h2>
-                <h5>Use Calculator like that. Click "Next" to save your inputs.</h5>
-                
+                <h5>Use Calculator like that. Click &quot;Next&quot; to save your inputs.</h5>
                 <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
                     <button type="button" className="btn btn-moss" onClick={handleRoute}>Start</button>
                 </div>
@@ -616,7 +616,7 @@ function Calculator() {
                             <select defaultValue={rowCategory[num] === null ? "default" : rowCategory[num]} className="form-select form-select-sm" aria-label=".form-select-lg example" onChange={handleCategoryChange} disabled={rowCategory[num] !== null}>
                                 <option value="default" disabled="true">Select a procurement category</option>
                                 {procurementCategories.map((category) => (
-                                    <option value={category.code} disabled={categorySelected[category.code]}>{category.code} - {category.name}{categorySelected[category.code] && category.code != rowCategory[num] ? " - SELECTED" : ''}</option>
+                                    <option key={category.code} value={category.code} disabled={categorySelected[category.code]}>{category.code} - {category.name}{categorySelected[category.code] && category.code != rowCategory[num] ? " - SELECTED" : ''}</option>
                                 ))}
                             </select>
                         </td>
