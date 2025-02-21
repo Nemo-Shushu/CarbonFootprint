@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 const Profile = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUserName] = useState();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
@@ -19,11 +18,6 @@ const Profile = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.isAuthenticated) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
       })
       .catch((err) => {
         console.error("Error fetching session:", err);
