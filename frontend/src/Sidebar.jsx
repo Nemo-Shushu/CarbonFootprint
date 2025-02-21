@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Cookies from 'js-cookie';
+import PropTypes from 'prop-types';
 import './scss/custom.scss';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-
+Sidebar.propTypes = { 
+  onNameClick: PropTypes.func 
+}
 
 function Sidebar({ onNameClick }) {
 
@@ -46,7 +48,6 @@ function Sidebar({ onNameClick }) {
     .then(isResponseOk)
     .then((data) => {
         console.log(data);
-        setIsAuthenticated(false);
         navigate("/sign-in");
     })
     .catch((err) => {

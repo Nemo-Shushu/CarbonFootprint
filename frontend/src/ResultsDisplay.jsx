@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./static/frontpage.css";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
+import PropTypes from 'prop-types';
+
+ResultsDisplay.propTypes = {
+  calculations: PropTypes.array,
+  rawData: PropTypes.object
+}
 
 export default function ResultsDisplay({ calculations, rawData }) {
   const [transformedData, setTransformedData] = useState([]);
