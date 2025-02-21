@@ -42,7 +42,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="bg-grey profile-card card mb-4 p-4" style={{ width: "100%", }}>
+    <div
+      className="bg-grey profile-card card mb-4 p-4"
+      style={{ width: "100%" }}
+    >
       <div className="row align-items-center">
         <div className="col-md-2">
           <img
@@ -52,10 +55,18 @@ const Profile = () => {
           />
         </div>
         <div className="col-md-10 text-white">
-            <p><strong>Username:</strong> {username || "Loading..."}</p>
-            <p><strong>First Name:</strong> {firstName || "Loading..."}</p>
-            <p><strong>Email:</strong> {email || "Loading..."}</p>
-            <p><strong>Institution:</strong> {institute || "Not provided"}</p>
+          <p>
+            <strong>Username:</strong> {username || "Loading..."}
+          </p>
+          <p>
+            <strong>First Name:</strong> {firstName || "Loading..."}
+          </p>
+          <p>
+            <strong>Email:</strong> {email || "Loading..."}
+          </p>
+          <p>
+            <strong>Institution:</strong> {institute || "Not provided"}
+          </p>
         </div>
       </div>
     </div>
