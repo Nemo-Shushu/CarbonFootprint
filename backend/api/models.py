@@ -22,8 +22,8 @@ class User(models.Model):
     is_verified = models.BooleanField(default=False)
 
     class Meta:
-        db_table = "accounts_user"  # 确保 Django 连接到现有表
-        managed = False  # 避免 Django 试图迁移这个表
+        db_table = "accounts_user"
+        managed = False
 
     def __str__(self):
         return self.username

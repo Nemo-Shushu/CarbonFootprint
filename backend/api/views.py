@@ -1,6 +1,5 @@
 import json
 from sqlite3 import IntegrityError
-
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
@@ -8,8 +7,8 @@ from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from calculator.models import Result, emission_factors
-from calculator.models import ProcurementData, CategoryCarbonImpact 
-from calculator.models import WasteEmission 
+from calculator.models import ProcurementData, CategoryCarbonImpact
+from calculator.models import WasteEmission
 from rest_framework import status
 from calculator.models import BenchmarkData
 from api.models import User
@@ -19,6 +18,7 @@ from rest_framework.permissions import AllowAny
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
 from .serializers import InstitutionSerializer, ResearchFieldSerializer
+
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
@@ -234,19 +234,19 @@ class ReportcalculateView:
             water_factor, water_amount = self.get_factor("water", space_type)
             if total_area > 0:
                 water_consumption = total_area * water_amount
-                water_emission = water_consumption * water_factor * proportion  # Multiply by `proportion`
+                water_emission = water_consumption * water_factor * proportion
                 print(f" Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
                 total_water_emissions += water_emission
         # **Calculate travel emissions**
         for mode, distance in travel.items():
             travel_factor, _ = self.get_factor("travel", mode)
-            travel_emission = float(distance) * travel_factor * proportion  # Multiply by `proportion`
+            travel_emission = float(distance) * travel_factor * proportion
             print(f" Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
             total_travel_emissions += travel_emission
         # **Calculate waste emissions**
         for waste_type, amount in waste.items():
             waste_factor, _ = self.get_factor("waste", waste_type)
-            waste_emission = float(amount) * waste_factor * proportion  # Multiply by `proportion`
+            waste_emission = float(amount) * waste_factor * proportion
             print(f"Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
             total_waste_emissions += waste_emission
         print(f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}")

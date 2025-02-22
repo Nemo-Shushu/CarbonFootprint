@@ -1,5 +1,4 @@
 from rest_framework import generics, status,viewsets
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -31,7 +30,7 @@ class RegisterView(generics.CreateAPIView):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-           return Response(get_ordered_errors(serializer), status=status.HTTP_400_BAD_REQUEST)
+            return Response(get_ordered_errors(serializer), status=status.HTTP_400_BAD_REQUEST)
 
 class CsrfTokenView(APIView):
     permission_classes = (AllowAny,)
