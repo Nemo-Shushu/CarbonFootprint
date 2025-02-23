@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useEffect, useState } from "react";
 import "./static/frontpage.css";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
+import PropTypes from "prop-types";
+
+ResultsDisplay.propTypes = {
+  calculations: PropTypes.array,
+  rawData: PropTypes.object,
+};
 
 export default function ResultsDisplay({ calculations, rawData }) {
   const [transformedData, setTransformedData] = useState([]);
@@ -12,20 +17,21 @@ export default function ResultsDisplay({ calculations, rawData }) {
     if (Array.isArray(calculations)) {
       let extractedCarbon = null;
 
-      const processedData = calculations.flatMap((item, index) =>
-        Object.entries(item)
-          .map(([key, value], i) => {
-            if (key === "total_carbon_emissions") {
-              extractedCarbon = value; // Capture total_carbon_emissions separately
-              return null; // Remove it from the transformed data
-            }
-            return {
-              id: index * 100 + i,
-              value: value,
-              label: formatLabel(key), // Format key to "Title Case"
-            };
-          })
-          .filter(Boolean) // Remove null values
+      const processedData = calculations.flatMap(
+        (item, index) =>
+          Object.entries(item)
+            .map(([key, value], i) => {
+              if (key === "total_carbon_emissions") {
+                extractedCarbon = value; // Capture total_carbon_emissions separately
+                return null; // Remove it from the transformed data
+              }
+              return {
+                id: index * 100 + i,
+                value: value,
+                label: formatLabel(key), // Format key to "Title Case"
+              };
+            })
+            .filter(Boolean), // Remove null values
       );
 
       setTransformedData(processedData);
@@ -38,10 +44,12 @@ export default function ResultsDisplay({ calculations, rawData }) {
       const formattedList = {};
 
       Object.entries(rawData).forEach(([category, items]) => {
-        formattedList[formatLabel(category)] = Object.entries(items).map(([key, value]) => ({
-          label: formatLabel(key), // Convert keys to Title Case
-          value: value,
-        }));
+        formattedList[formatLabel(category)] = Object.entries(items).map(
+          ([key, value]) => ({
+            label: formatLabel(key), // Convert keys to Title Case
+            value: value,
+          }),
+        );
       });
 
       setFormattedRawData(formattedList);
@@ -64,13 +72,20 @@ export default function ResultsDisplay({ calculations, rawData }) {
       )}
 
       <PieChart
-        colors={["#00843D", "#385A4F", "#7A6855", "#4F5961", "#7D2239", "#5B4D94"]}
+        colors={[
+          "#00843D",
+          "#385A4F",
+          "#7A6855",
+          "#4F5961",
+          "#7D2239",
+          "#5B4D94",
+        ]}
         series={[
           {
             data: transformedData,
             arcLabel: (item) => `${item.value}%`,
             arcLabelMinAngle: 40,
-            arcLabelRadius: '65%',
+            arcLabelRadius: "65%",
             innerRadius: 25,
             paddingAngle: 3,
             cornerRadius: 3,
@@ -81,7 +96,7 @@ export default function ResultsDisplay({ calculations, rawData }) {
         sx={{
           [`& .${pieArcLabelClasses.root}`]: {
             fill: "#FFFFFF", // Change label text color
-            fontSize: 14,    // Adjust font size
+            fontSize: 14, // Adjust font size
             fontWeight: "bold",
           },
         }}

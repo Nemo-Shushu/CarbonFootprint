@@ -1,5 +1,6 @@
 from django.db import models
-from accounts.models import *
+from accounts.models import User
+
 
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -10,6 +11,7 @@ class CalculationRecord(models.Model):
     def __str__(self):
         return f"Calculation on {self.timestamp}"
 
+
 class emission_factors(models.Model):
     category = models.CharField(max_length=255, unique=True)
     benchmark_electricity = models.FloatField(null=True, blank=True)
@@ -17,19 +19,21 @@ class emission_factors(models.Model):
 
     def __str__(self):
         return self.category
-    
+
     class Meta:
         db_table = "emission_factors"
-        
+
+
 class ProcurementData(models.Model):
     code = models.CharField(max_length=10, unique=True)
     description_dict = models.JSONField()
 
     def __str__(self):
         return self.code
-    
+
     class Meta:
         db_table = "calculate_procurement_data"
+
 
 class CategoryCarbonImpact(models.Model):
     category = models.CharField(max_length=255, unique=True)
@@ -37,9 +41,10 @@ class CategoryCarbonImpact(models.Model):
 
     def __str__(self):
         return self.category
-    
+
     class Meta:
         db_table = "calculate_category_carbon_impact"
+
 
 class Result(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -54,14 +59,19 @@ class Result(models.Model):
 
 
     class Meta:
-        db_table = 'calculate_result'
+        db_table = "calculate_result"
+
 
 class WasteEmission(models.Model):
     id = models.BigAutoField(primary_key=True)
     type_of_waste = models.CharField(max_length=50, unique=True)
     amount = models.FloatField()
-    carbon_intensity = models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)
-    total_emissions = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
+    carbon_intensity = models.DecimalField(
+        max_digits=10, decimal_places=5, null=True, blank=True
+    )
+    total_emissions = models.DecimalField(
+        max_digits=15, decimal_places=5, null=True, blank=True
+    )
     submission_id = models.BigIntegerField()
 
     class Meta:
@@ -69,7 +79,8 @@ class WasteEmission(models.Model):
 
     def __str__(self):
         return f"{self.type_of_waste}: {self.carbon_intensity}"
-    
+
+
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)
     category = models.CharField(max_length=150)
@@ -81,4 +92,4 @@ class BenchmarkData(models.Model):
     transmission_distribution = models.DecimalField(max_digits=10, decimal_places=4)
 
     class Meta:
-        db_table = 'accounts_benchmarkdata'
+        db_table = "accounts_benchmarkdata"

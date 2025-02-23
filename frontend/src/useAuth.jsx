@@ -1,47 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export function useAuth() {
-    const [csrf, setCsrf] = useState();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        getSession();
-    }, []);
+  useEffect(() => {
+    getSession();
+  }, []);
 
-    function getCSRF() {
-        fetch(backendUrl + "api2/csrf/", {
-          credentials: "include",
-        })
-        .then((res) => {
-          let csrfToken = res.headers.get("X-CSRFToken");
-          setCsrf(csrfToken);
-          console.log(csrfToken);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-        
-    function getSession() {
-        fetch(backendUrl + "api2/session/", {
-            credentials: "include",
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data);
-            if (data.isAuthenticated) {
-                setIsAuthenticated(true);
-            } else {
-                setIsAuthenticated(false);
-            getCSRF();
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }
+  function getSession() {
+    fetch(backendUrl + "api2/session/", {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.isAuthenticated) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          navigate("/sign-in");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
-    return isAuthenticated;
-};
+  return isAuthenticated;
+}
