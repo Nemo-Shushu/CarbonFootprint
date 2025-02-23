@@ -13,15 +13,16 @@ lint-frontend:
   stage: lint
   image: node:23
   script:
-    - npm i eslint
-    - cd frontend/
-    - node_modules/eslint/bin/eslint.js .
+    - cd frontend
+    - npm install
+    - npm install -g eslint
+    - eslint .
 
 build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "https://sh14main-django2-1.onrender.com/"
+    VITE_BACKEND_URL: "http://134.209.19.90:3000/"
   script:
     - cd frontend
     - npm install
