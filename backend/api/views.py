@@ -9,7 +9,6 @@ from django.views.decorators.http import require_POST
 from calculator.models import Result
 from calculator.models import ProcurementData, CategoryCarbonImpact
 from calculator.models import BenchmarkData
-from calculator.models import WasteEmission
 from api.models import User
 
 from rest_framework.decorators import api_view, permission_classes
