@@ -34,7 +34,7 @@ function Calculator() {
 
     function Instructions() {
         const navigate = useNavigate();
-        const primaryGreen = "#385A4F"; // same as sidebar green 
+        const primaryGreen = "var(--bs-moss)"; // same as sidebar green 
         const mutedOliveGreen = "#7B9E91"; // lighter green for title background 
         const cardShadow = "0 14px 32px rgba(0, 0, 0, 0.25)"; 
       
