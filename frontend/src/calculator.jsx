@@ -22,7 +22,7 @@ function Calculator() {
   }
 
   async function submitReport(report) {
-    return fetch("http://localhost:8000/api/calculator/createreport/", {
+    return fetch('http://localhost:8000/api2/submit/', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,21 +37,9 @@ function Calculator() {
   function Instructions() {
     const navigate = useNavigate();
 
-  function handleProtect() {
-    navigate("/sign-in");
-  }
-
-    async function submitReport(report) {
-        return fetch('http://localhost:8000/api2/submit/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(report),
-        })
-        .then(response => response.json())
-        .then(data => console.log('Report submitted:', data))
-        .catch(error => console.error('Error submitting report:', error));
+    function handleRoute() {
+      navigate("/calculator/utilities");
+      submitReport();
     }
 
     return (
@@ -147,196 +135,22 @@ function Calculator() {
             </div>
             <hr />
 
-        const navigate = useNavigate();
-        const [travelReport, setTravelReport] = useState({});
-        useEffect(() => {
-            if (typeof report["travel"] !== "undefined") {
-              setTravelReport(report["travel"]);
-            }
-        }, [report["travel"]]);
-
-        function handleBack(){
-            navigate("/calculator/utilities")
-        };
-
-        function handleRoute(){
-            setReport(prevReport => ({ ...prevReport, ['travel']: travelReport }));
-            navigate("/calculator/waste");
-        };
-
-        function handleChange(event){
-            const { name, value } = event.target;
-            setTravelReport(prevReport => ({ ...prevReport, [name]: value }));
-        };
-
-        return (
-            <main class="ms-sm-auto px-md-4">
-                {/* {JSON.stringify(travelReport, null, 2)} */}
-                <form className="needs-validation" noValidate>
-                    <div className="row g-2">
-
-                        <div className="mt-4 fst-italic">
-                            <strong>
-                                Air travel
-                            </strong>
-                        </div>
-                        <hr/>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Economy short-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-eco-short-UK" placeholder="Enter number of distance(km)" value={travelReport["air-eco-short-UK"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Business short-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-business-short-uk" placeholder="Enter number of distance(km)" value={travelReport["air-business-short"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Economy long-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-eco-long" placeholder="Enter number of distance(km)" value={travelReport["air-eco-long"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Business long-haul, to/from UK</strong></label>
-                                <input type="number" className="form-control" name="air-business-long" placeholder="Enter number of distance(km)" value={travelReport["air-business-long"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Economy international, to/from non-UK</strong></label>
-                                <input type="number" className="form-control" name="air-eco-inter" placeholder="Enter number of distance(km)" value={travelReport["air-eco-inter"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Business international, to/from non-UK</strong></label>
-                                <input type="number" className="form-control" name="air-business-inter" placeholder="Enter number of distance(km)" value={travelReport["air-business-inter"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 fst-italic">
-                            <strong>
-                                Sea travel
-                            </strong>
-                        </div>
-                        <hr/>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Ferry</strong></label>
-                                <input type="number" className="form-control" name="sea-ferry" placeholder="Enter number of distance(km)" value={travelReport["sea-ferry"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 fst-italic">
-                            <strong>
-                                Land travel
-                            </strong>
-                        </div>
-                        <hr/>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Car</strong></label>
-                                <input type="number" className="form-control" name="land-car" placeholder="Enter number of distance(km)" value={travelReport["land-car"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Motorbike</strong></label>
-                                <input type="number" className="form-control" name="land-motor" placeholder="Enter number of distance(km)" value={travelReport["land-motor"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Taxis</strong></label>
-                                <input type="number" className="form-control" name="land-taxis" placeholder="Enter number of distance(km)" value={travelReport["land-taxis"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Local Bus</strong></label>
-                                <input type="number" className="form-control" name="land-bus" placeholder="Enter number of distance(km)" value={travelReport["land-bus"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Coach</strong></label>
-                                <input type="number" className="form-control" name="land-coach" placeholder="Enter number of distance(km)" value={travelReport["land-coach"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row mb-2">
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>National rail</strong></label>
-                                <input type="number" className="form-control" name="land-national-rail" placeholder="Enter number of distance(km)" value={travelReport["land-national-rail"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>International rail</strong></label>
-                                <input type="number" className="form-control" name="land-inter-rail" placeholder="Enter number of distance(km)" value={travelReport["land-inter-rail"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-
-                            <div className="col-sm-4">
-                                <label htmlFor="firstName" className="form-label"><strong>Light rail and tram</strong></label>
-                                <input type="number" className="form-control" name="land-light-rail" placeholder="Enter number of distance(km)" value={travelReport["land-light-rail"]} onChange={handleChange} required />
-                                <div className="invalid-feedback">
-                                Valid number is required.
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </form>
-                
-                <div class="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-                    <button type="button" class="btn btn-outline-secondary me-2" onClick={handleBack}>Back</button>
-                    <button type="button" class="btn btn-moss" onClick={handleRoute}>Next</button>
+            <div className="row mb-2">
+              <div className="col-sm-4">
+                <label htmlFor="firstName" className="form-label">
+                  <strong>Academic laboratory</strong>
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="academic-laboratory-area"
+                  placeholder="Enter area in m²."
+                  value={utilitiesReport["academic-laboratory-area"]}
+                  onChange={handleChange}
+                  required
+                />
+                <div className="invalid-feedback">
+                  Valid number is required.
                 </div>
               </div>
 
