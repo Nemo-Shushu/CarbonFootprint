@@ -347,7 +347,7 @@ def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})
 
-def Dashboard_show_user_result_data(request):
+def dashboard_show_user_result_data(request):
     try:
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
