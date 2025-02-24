@@ -22,7 +22,7 @@ function Calculator() {
   }
 
   async function submitReport(report) {
-    return fetch("http://localhost:8000/api/calculator/createreport/", {
+    return fetch("http://localhost:8000/api2/submit/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

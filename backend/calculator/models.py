@@ -55,6 +55,8 @@ class Result(models.Model):
     total_waste_emissions = models.DecimalField(max_digits=10, decimal_places=2)
     total_procurement_emissions = models.DecimalField(max_digits=10, decimal_places=2)
     total_carbon_emissions = models.DecimalField(max_digits=10, decimal_places=2)
+    report_data = models.JSONField(null=True, blank=True)
+
 
     class Meta:
         db_table = "calculate_result"
