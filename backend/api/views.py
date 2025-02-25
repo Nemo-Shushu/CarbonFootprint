@@ -70,7 +70,10 @@ def whoami_view(request):
         'forename': user.first_name,
         'email': user.email,
         'institute': user.institute.name,
-        'research_field':user.research_field.name
+        'research_field':user.research_field.name,
+        'isAdmin': user.is_admin,
+        'isResearcher': user.is_researcher,
+        'dateJoined': user.date_joined,
     })
 
 
@@ -357,6 +360,7 @@ def dashboard_show_user_result_data(request):
             "institution": user_profile.institute_id,
             "field": user_profile.research_field_id,
             "emissions": float(Result.total_carbon_emissions),
+            "email": user_profile.email,
         }
         for Result in calculation_result
         ]
