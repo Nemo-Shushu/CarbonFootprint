@@ -24,6 +24,12 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/test/Setup.jsx",
+    coverage: {
+      reporter: ["text", "lcov"],
+      all: true,
+      include: ["src/**/*.js", "src/**/*.jsx"],
+      exclude: ["node_modules", "src/test/**", "vite.config.js", "src/features/**"]
+    }
   },
 });
 
