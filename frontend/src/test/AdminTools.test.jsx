@@ -19,21 +19,6 @@ describe("Sidebar Component", () => {
         expect(screen.getByText("Confirmation")).toBeInTheDocument();
     });
 
-    /* This should update after backend connection */
-    // test("truncates long text and expands on click", () => {
-    //     render(<AdminTool />);
-
-    //     const truncatedText = screen.getAllByText(/Please give me admin permissions/)[0];
-    //     expect(truncatedText).toBeInTheDocument();
-
-    //     fireEvent.click(truncatedText);
-    //     expect(screen.getByText("Full Request Text")).toBeInTheDocument();
-    //     expect(screen.getByText(/Please give me admin permissions/)).toBeInTheDocument();
-
-    //     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    //     expect(screen.queryByText("Full Request Text")).not.toBeInTheDocument();
-    //   });
-
     // Modal Confirm button
     test("clicking confirm button opens confirmation modal", () => {
         render(
