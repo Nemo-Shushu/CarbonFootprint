@@ -376,8 +376,15 @@ def get_all_report_data(request):
                 return JsonResponse({"error": "report_id is required"}, status=400)
             report = Result.objects.get(id=report_id)
             response_data = {
-                "total_carbon_emissions": float(report.total_carbon_emissions),
-                "report_data": report.report_data 
+                "calculations_data": {
+                    "total_electricity_emissions": float(report.total_electricity_emissions),
+                    "total_gas_emissions": float(report.total_gas_emissions),
+                    "total_water_emissions": float(report.total_water_emissions),
+                    "total_travel_emissions": float(report.total_travel_emissions),
+                    "total_waste_emissions": float(report.total_waste_emissions),
+                    "total_carbon_emissions": float(report.total_carbon_emissions),
+                },
+                "report_data": report.report_data
             }
             return JsonResponse(response_data)
         except Result.DoesNotExist:
