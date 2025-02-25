@@ -6,84 +6,119 @@ import Sidebar from "./Sidebar";
 import "./static/Sidebar.css";
 import "./static/RequestAdmin.css";
 import Profile from "./Profile";
+import Cookies from "js-cookie";
+import ResultsDisplay from "./ResultsDisplay";
+import Modal from "react-bootstrap/Modal";
+
+const csrftoken = Cookies.get("csrftoken");
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function TableComponent() {
-  const [data, setData] = useState([
-    {
-      id: 1001,
-      institution: "University of Glasgow",
-      field: "Computing Science",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-    {
-      id: 1002,
-      institution: "University of Oxford",
-      field: "Physics",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-    {
-      id: 1003,
-      institution: "University of Cambridge",
-      field: "Biology",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-    {
-      id: 1004,
-      institution: "Imperial College London",
-      field: "Computer Science",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-    {
-      id: 1005,
-      institution: "University of Edinburgh",
-      field: "Mathematics",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-    {
-      id: 1006,
-      institution: "University of Manchester",
-      field: "Engineering",
-      emissions: Math.floor(Math.random() * 1000),
-    },
-  ]);
+  const [data, setData] = useState([]);
+  const [repId, setRepId] = useState();
+  const [report, setReport] = useState([]);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // http://localhost:8080/api/users/reports should return a json in format above with all available data to the user
-    fetch("http://localhost:8000/api/users/reports")
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error("Error fetching data:", error));
+    getReports();
   }, []);
+
+  useEffect(() => {
+    if (repId !== null && repId !== undefined) {
+      getSpecificReport();
+    }
+  }, [repId]);
+
+  async function getReports() {
+    try {
+      const response = await fetch(
+        `${backendUrl}api2/dashboard_show_user_result_data/`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Reports received:", responseData);
+      setData(responseData);
+    } catch (error) {
+      console.error("Error fetching reports:", error);
+    }
+  }
+
+  async function getSpecificReport() {
+    try {
+      const response = await fetch(`${backendUrl}api2/get_all_report_data/`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({
+          report_id: repId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Report received:", responseData);
+      setReport(responseData);
+    } catch (error) {
+      console.error("Error fetching report:", error);
+    }
+  }
 
   return (
     <main className="ms-sm-auto px-md-4">
+      <Modal show={visible} onHide={() => setVisible(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Carbon Emissions Data for: Report #{repId}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ResultsDisplay
+            calculations={report.calculations_data}
+            rawData={report.report_data}
+          />
+        </Modal.Body>
+      </Modal>
       <h2>Available Reports</h2>
       <div className="table-responsive small">
-        <table className="table table-striped table-sm">
+        <table className="table table-striped table-hover table-sm">
           <thead>
             <tr>
               <th scope="col">#</th>
               <th scope="col">Academic Institution</th>
               <th scope="col">Research Field</th>
               <th scope="col">Total Emissions</th>
-              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, index) => (
-              <tr key={index} className="align-middle">
+              <tr
+                key={index}
+                className="align-middle"
+                onClick={() => {
+                  setRepId(row.id);
+                  setVisible(true);
+                }}
+              >
                 <th scope="row">{row.id}</th>
                 <td>{row.institution}</td>
                 <td>{row.field}</td>
                 <td>{row.emissions}</td>
-                <td>
-                  <button
-                    className="btn btn-outline-secondary w-30"
-                    type="button"
-                  >
-                    View & Edit
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
