@@ -1,23 +1,23 @@
 import json
-from sqlite3 import IntegrityError
 
-from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from calculator.models import Result, emission_factors
-from calculator.models import ProcurementData, CategoryCarbonImpact 
-from calculator.models import WasteEmission 
-from rest_framework import status
+from calculator.models import Result
+from calculator.models import ProcurementData, CategoryCarbonImpact
 from calculator.models import BenchmarkData
+from api.models import User
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
 from .serializers import InstitutionSerializer, ResearchFieldSerializer
+
+
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
@@ -69,9 +69,10 @@ def whoami_view(request):
         'username': user.username,
         'forename': user.first_name,
         'email': user.email,
-        'institute': user.institute,
-        'research_field': getattr(user, 'research_field', None),  
+        'institute': user.institute.name,
+        'research_field':user.research_field.name
     })
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -233,20 +234,20 @@ class ReportcalculateView:
             water_factor, water_amount = self.get_factor("water", space_type)
             if total_area > 0:
                 water_consumption = total_area * water_amount
-                water_emission = water_consumption * water_factor * proportion  # Multiply by `proportion`
+                water_emission = water_consumption * water_factor * proportion
                 print(f" Calculating water emissions: {total_area}m² × {water_amount} × {water_factor} × {proportion} = {water_emission}")
                 total_water_emissions += water_emission
         # **Calculate travel emissions**
         for mode, distance in travel.items():
             travel_factor, _ = self.get_factor("travel", mode)
-            travel_emission = float(distance) * travel_factor * proportion  # Multiply by `proportion`
+            travel_emission = float(distance) * travel_factor * proportion
             print(f" Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}")
             total_travel_emissions += travel_emission
         # **Calculate waste emissions**
         for waste_type, amount in waste.items():
             waste_factor, _ = self.get_factor("waste", waste_type)
-            waste_emission = float(amount) * waste_factor * proportion  # Multiply by `proportion`
-            print(f"🗑️ Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
+            waste_emission = float(amount) * waste_factor * proportion
+            print(f"Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}")
             total_waste_emissions += waste_emission
         print(f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}")
         return {
@@ -333,9 +334,10 @@ def submit_view(request):
                 total_travel_emissions=report_data["total_travel_emissions"],
                 total_waste_emissions=report_data["total_waste_emissions"],
                 total_procurement_emissions=total_procurement_emissions,
-                total_carbon_emissions=total_carbon_emissions
+                total_carbon_emissions=total_carbon_emissions,
+                report_data = data
             )
-        result_entry.save()            
+        result_entry.save()
         return JsonResponse({"success": True}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -344,3 +346,51 @@ def submit_view(request):
 def get_csrf_token(request):
     csrf_token = get_token(request)
     return JsonResponse({'csrftoken': csrf_token})
+
+def dashboard_show_user_result_data(request):
+    try:
+        user_id = request.user.id
+        user_profile = get_object_or_404(User, id=user_id)
+        calculation_result = Result.objects.filter(user_id=user_id)
+        data = [{
+            "id": Result.id,
+            "institution": user_profile.institute_id,
+            "field": user_profile.research_field_id,
+            "emissions": float(Result.total_carbon_emissions),
+        }
+        for Result in calculation_result
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    
+
+def get_all_report_data(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            report_id = data.get("report_id")
+            if not report_id:
+                return JsonResponse({"error": "report_id is required"}, status=400)
+            report = Result.objects.get(id=report_id)
+            response_data = {
+                "calculations_data": {
+                    "total_electricity_emissions": float(report.total_electricity_emissions),
+                    "total_gas_emissions": float(report.total_gas_emissions),
+                    "total_water_emissions": float(report.total_water_emissions),
+                    "total_travel_emissions": float(report.total_travel_emissions),
+                    "total_waste_emissions": float(report.total_waste_emissions),
+                    "total_carbon_emissions": float(report.total_carbon_emissions),
+                },
+                "report_data": report.report_data
+            }
+            return JsonResponse(response_data)
+        except Result.DoesNotExist:
+            return JsonResponse({"error": "Report not found"}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
