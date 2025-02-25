@@ -4,7 +4,7 @@ import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import PropTypes from "prop-types";
 
 ResultsDisplay.propTypes = {
-  calculations: PropTypes.array,
+  calculations: PropTypes.object,
   rawData: PropTypes.object,
 };
 
@@ -12,27 +12,38 @@ export default function ResultsDisplay({ calculations, rawData }) {
   const [transformedData, setTransformedData] = useState([]);
   const [totalCarbonEmissions, setTotalCarbonEmissions] = useState(null);
   const [formattedRawData, setFormattedRawData] = useState({});
+  const [colors] = useState([
+    "#00843D",
+    "#385A4F",
+    "#7A6855",
+    "#4F5961",
+    "#7D2239",
+    "#5B4D94",
+  ]);
 
   useEffect(() => {
-    if (Array.isArray(calculations)) {
+    if (calculations && typeof calculations === "object") {
       let extractedCarbon = null;
+      Object.entries(calculations).map(([key, value]) => {
+        if (key === "total_carbon_emissions") {
+          extractedCarbon = value;
+        }
+      });
 
-      const processedData = calculations.flatMap(
-        (item, index) =>
-          Object.entries(item)
-            .map(([key, value], i) => {
-              if (key === "total_carbon_emissions") {
-                extractedCarbon = value; // Capture total_carbon_emissions separately
-                return null; // Remove it from the transformed data
-              }
-              return {
-                id: index * 100 + i,
-                value: value,
-                label: formatLabel(key), // Format key to "Title Case"
-              };
-            })
-            .filter(Boolean), // Remove null values
-      );
+      const processedData = Object.entries(calculations)
+        .map(([key, value], i) => {
+          if (key === "total_carbon_emissions") {
+            extractedCarbon = value;
+            return null;
+          }
+          return {
+            id: i,
+            value: value,
+            label: formatLabel(key),
+            percent: ((value * 100) / extractedCarbon).toFixed(1),
+          };
+        })
+        .filter(Boolean);
 
       setTransformedData(processedData);
       setTotalCarbonEmissions(extractedCarbon);
@@ -70,39 +81,57 @@ export default function ResultsDisplay({ calculations, rawData }) {
           <h4>Total Carbon Emissions: {totalCarbonEmissions}</h4>
         </div>
       )}
-
-      <PieChart
-        colors={[
-          "#00843D",
-          "#385A4F",
-          "#7A6855",
-          "#4F5961",
-          "#7D2239",
-          "#5B4D94",
-        ]}
-        series={[
-          {
-            data: transformedData,
-            arcLabel: (item) => `${item.value}%`,
-            arcLabelMinAngle: 40,
-            arcLabelRadius: "65%",
-            innerRadius: 25,
-            paddingAngle: 3,
-            cornerRadius: 3,
-            cx: 100,
-            cy: 100,
-          },
-        ]}
-        sx={{
-          [`& .${pieArcLabelClasses.root}`]: {
-            fill: "#FFFFFF", // Change label text color
-            fontSize: 14, // Adjust font size
-            fontWeight: "bold",
-          },
-        }}
-        width={500}
-        height={200}
-      />
+      <div className="d-flex flex-row" style={{ width: "100%" }}>
+        <span style={{ alignContent: "center", width: 200 }}>
+          <PieChart
+            colors={colors}
+            series={[
+              {
+                data: transformedData,
+                arcLabel: (item) => `${item.percent}%`,
+                arcLabelMinAngle: 40,
+                innerRadius: 25,
+                outerRadius: 95,
+                paddingAngle: 3,
+                cornerRadius: 3,
+              },
+            ]}
+            slotProps={{ legend: { hidden: true } }}
+            sx={{
+              [`& .${pieArcLabelClasses.root}`]: {
+                fill: "#FFFFFF", // Change label text color
+                fontSize: 16, // Adjust font size
+                fontWeight: "bold",
+              },
+            }}
+            width={200}
+            height={200}
+            margin={{ right: 0 }}
+          />
+        </span>
+        <span style={{ alignContent: "center", paddingLeft: "1rem" }}>
+          <div className="fst-italic">
+            {transformedData.map(
+              (item, index) =>
+                item.value !== 0 && (
+                  <div key={item.id} className="p-1">
+                    <span
+                      style={{
+                        backgroundColor: colors[index],
+                        color: colors[index],
+                      }}
+                    >
+                      txt
+                    </span>
+                    <span>
+                      {item.label}: <strong>{item.value} tCO²e</strong>
+                    </span>
+                  </div>
+                ),
+            )}
+          </div>
+        </span>
+      </div>
 
       {/* Display rawData list */}
       <div className="mt-3">

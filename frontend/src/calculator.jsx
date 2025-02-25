@@ -21,17 +21,28 @@ function Calculator() {
     navigate("/sign-in");
   }
 
-  async function submitReport(report) {
-    return fetch("http://localhost:8000/api2/submit/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(report),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log("Report submitted:", data))
-      .catch((error) => console.error("Error submitting report:", error));
+  async function submitReport() {
+    try {
+      const response = await fetch(`${backendUrl}api2/submit/`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify(report),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Report saved:", responseData);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error fetching calculations:", error);
+    }
   }
 
   function Instructions() {
@@ -64,7 +75,7 @@ function Calculator() {
       if (typeof report["utilities"] !== "undefined") {
         setUtilitiesReport(report["utilities"]);
       }
-    }, [report["utilities"]]);
+    }, []);
 
     function handleRoute() {
       setReport((prevReport) => ({
@@ -143,9 +154,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="academic-laboratory-area"
+                  name="Academic Laboratory"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["academic-laboratory-area"]}
+                  value={utilitiesReport["Academic Laboratory"]}
                   onChange={handleChange}
                   required
                 />
@@ -161,9 +172,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="admin-office-area"
+                  name="Admin Office"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["admin-office-area"]}
+                  value={utilitiesReport["Admin Office"]}
                   onChange={handleChange}
                   required
                 />
@@ -179,9 +190,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="academic-office-area"
+                  name="Academic Office"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["academic-office-area"]}
+                  value={utilitiesReport["Academic Office"]}
                   onChange={handleChange}
                   required
                 />
@@ -206,9 +217,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="physical-laboratory-area"
+                  name="Physical Sciences Laboratory"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["physical-laboratory-area"]}
+                  value={utilitiesReport["Physical Sciences Laboratory"]}
                   onChange={handleChange}
                   required
                 />
@@ -224,9 +235,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="engineering-laboratory-area"
+                  name="Engineering Laboratory"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["engineering-laboratory-area"]}
+                  value={utilitiesReport["Engineering Laboratory"]}
                   onChange={handleChange}
                   required
                 />
@@ -242,9 +253,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="medical-laboratory-area"
+                  name="Medical/Life Sciences Laboratory"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["medical-laboratory-area"]}
+                  value={utilitiesReport["Medical/Life Sciences Laboratory"]}
                   onChange={handleChange}
                   required
                 />
@@ -260,9 +271,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="admin-space-area"
+                  name="Office/Admin Space"
                   placeholder="Enter area in m²."
-                  value={utilitiesReport["admin-space-area"]}
+                  value={utilitiesReport["Office/Admin Space"]}
                   onChange={handleChange}
                   required
                 />
@@ -290,7 +301,7 @@ function Calculator() {
       if (typeof report["travel"] !== "undefined") {
         setTravelReport(report["travel"]);
       }
-    }, [report["travel"]]);
+    }, []);
 
     function handleBack() {
       navigate("/calculator/utilities");
@@ -635,7 +646,7 @@ function Calculator() {
       if (typeof report["waste"] !== "undefined") {
         setWasteReport(report["waste"]);
       }
-    }, [report["waste"]]);
+    }, []);
 
     function handleBack() {
       navigate("/calculator/travel");
@@ -826,7 +837,7 @@ function Calculator() {
         setCategorySelected(newCategorySelected);
         setLoaded(true);
       }
-    }, [report["procurement"], loaded]);
+    }, [loaded]);
 
     function handleAddRow() {
       //new row is added using a new row index
@@ -1005,12 +1016,11 @@ function Calculator() {
       if (report) {
         peekCalculations(report);
       }
-    }, [report]);
+    }, []);
 
     async function peekCalculations(report) {
       try {
         const response = await fetch(`${backendUrl}api2/report/`, {
-          // Change this to actual API!
           method: "POST",
           credentials: "include",
           headers: {
@@ -1037,14 +1047,9 @@ function Calculator() {
       navigate("/calculator/procurement");
     }
 
-    function handleRoute() {
-      navigate("/dashboard");
-    }
-
     return (
       <main className="ms-sm-auto px-md-4">
         <h2>Results</h2>
-        {JSON.stringify(data, null, 2)}
         <ResultsDisplay calculations={data} rawData={report} />
         <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
           <button
@@ -1054,7 +1059,7 @@ function Calculator() {
           >
             Back
           </button>
-          <button type="button" className="btn btn-moss" onClick={handleRoute}>
+          <button type="button" className="btn btn-moss" onClick={submitReport}>
             Submit
           </button>
         </div>
