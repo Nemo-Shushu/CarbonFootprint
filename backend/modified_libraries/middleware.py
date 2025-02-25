@@ -7,6 +7,9 @@ from django.contrib.sessions.exceptions import SessionInterrupted
 from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.http import http_date
+from http import cookies
+from django.http.response import HttpResponseBase
+from django.http.request import HttpRequest
 
 
 class SessionMiddleware(MiddlewareMixin):
@@ -77,20 +80,18 @@ class SessionMiddleware(MiddlewareMixin):
                         partitioned=True,
                     )
         return response
-    
-from http import cookies
-from django.http.response import HttpResponseBase
-from django.http.request import HttpRequest
+
 
 cookies.Morsel._flags.add("partitioned")
 cookies.Morsel._reserved.setdefault("partitioned", "Partitioned")
+
 
 class CookiePartitioningMiddleware(MiddlewareMixin):
     def process_response(
         self, request: HttpRequest, response: HttpResponseBase
     ) -> HttpResponseBase:
-        if settings.SESSION_COOKIE_SECURE and 'sessionid' in response.cookies:
-            response.cookies['sessionid']['Partitioned'] = True
+        if settings.SESSION_COOKIE_SECURE and "sessionid" in response.cookies:
+            response.cookies["sessionid"]["Partitioned"] = True
 
         for name in (
             getattr(settings, f"{prefix}_COOKIE_NAME")
