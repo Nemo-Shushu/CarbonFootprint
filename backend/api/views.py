@@ -70,7 +70,10 @@ def whoami_view(request):
         'forename': user.first_name,
         'email': user.email,
         'institute': user.institute.name,
-        'research_field':user.research_field.name
+        'research_field':user.research_field.name,
+        'isAdmin': user.is_admin,
+        'isResearcher': user.is_researcher,
+        'dateJoined': user.date_joined,
     })
 
 
