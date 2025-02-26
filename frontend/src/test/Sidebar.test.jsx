@@ -11,7 +11,7 @@ const mockFetch = (isAdmin) => {
         Promise.resolve({
           forename: "Test User",
           email: "test@example.com",
-          isAdmin: isAdmin, 
+          isAdmin: isAdmin,
         }),
     }),
   );
@@ -27,7 +27,7 @@ describe("Sidebar Component", () => {
   });
 
   test("renders 'Admin Tool' when user is an admin", async () => {
-    mockFetch(true); 
+    mockFetch(true);
 
     render(
       <BrowserRouter>
@@ -43,7 +43,7 @@ describe("Sidebar Component", () => {
   });
 
   test("renders 'Request Admin' when user is not an admin", async () => {
-    mockFetch(false); 
+    mockFetch(false);
 
     render(
       <BrowserRouter>
@@ -59,7 +59,7 @@ describe("Sidebar Component", () => {
   });
 
   test("navigates to the correct page when clicking on links", async () => {
-    mockFetch(false); 
+    mockFetch(false);
 
     render(
       <BrowserRouter>
@@ -79,7 +79,7 @@ describe("Sidebar Component", () => {
   });
 
   test("does not render 'Request Admin' when user is an admin", async () => {
-    mockFetch(true); 
+    mockFetch(true);
 
     render(
       <BrowserRouter>
