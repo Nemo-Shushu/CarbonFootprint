@@ -28,7 +28,12 @@ export default defineConfig({
       reporter: ["text", "lcov"],
       all: true,
       include: ["src/**/*.js", "src/**/*.jsx"],
-      exclude: ["node_modules", "src/test/**", "vite.config.js", "src/features/**"]
-    }
+      exclude: [
+        "node_modules",
+        "src/test/**",
+        "vite.config.js",
+        "src/features/**",
+      ],
+    },
   },
 });

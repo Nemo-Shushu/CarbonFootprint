@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import CalculationBar from "../CalculationBar"; 
+import { MemoryRouter } from "react-router-dom";
+import CalculationBar from "../CalculationBar";
 import { expect, test, describe, vi } from "vitest";
 
 // Mock navigate function
@@ -18,7 +18,7 @@ describe("CalculationBar Component", () => {
     render(
       <MemoryRouter initialEntries={["/calculator/general-data-entry"]}>
         <CalculationBar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Step 1: General Data Entry")).toBeInTheDocument();
@@ -30,17 +30,19 @@ describe("CalculationBar Component", () => {
     render(
       <MemoryRouter initialEntries={["/calculator"]}>
         <CalculationBar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
-    expect(screen.queryByText("Step 1: General Data Entry")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Step 1: General Data Entry"),
+    ).not.toBeInTheDocument();
   });
 
   test("navigates when clicking a step", () => {
     render(
       <MemoryRouter initialEntries={["/calculator/general-data-entry"]}>
         <CalculationBar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByText("Step 2: Procurement"));
@@ -51,7 +53,7 @@ describe("CalculationBar Component", () => {
     render(
       <MemoryRouter initialEntries={["/calculator/general-data-entry"]}>
         <CalculationBar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Utilities")).toBeInTheDocument();
@@ -63,7 +65,7 @@ describe("CalculationBar Component", () => {
     render(
       <MemoryRouter initialEntries={["/calculator/general-data-entry"]}>
         <CalculationBar />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByText("Travel"));

@@ -127,7 +127,9 @@ function RegisterForm() {
       {/* Main Form */}
       <main className="form-signin w-100 m-auto">
         <form onSubmit={handleSubmit}>
-          <h1 className="h3 mb-3 fw-normal"  data-testid="register-title">Please register</h1>
+          <h1 className="h3 mb-3 fw-normal" data-testid="register-title">
+            Please register
+          </h1>
 
           <div className="form-floating">
             <input

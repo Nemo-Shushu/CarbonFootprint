@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./useAuth";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./static/dashboard.css";
 import Sidebar from "./Sidebar";
@@ -14,10 +14,6 @@ import Modal from "react-bootstrap/Modal";
 
 const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-// Admin Lable Test
-const isAdmin = true;
-
 
 function TableComponent() {
   const [data, setData] = useState([]);
@@ -252,7 +248,6 @@ function AdminTableComponent() {
   );
 }
 
-
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -274,29 +269,29 @@ function Dashboard() {
   }
 
   /**
-  * Toggles the visibility of the Profile.
-  */
+   * Toggles the visibility of the Profile.
+   */
   function toggleProfile() {
     setShowProfile((prev) => !prev);
     setShowDropdown(false);
-  };
+  }
 
   /**
-  * Toggles the visibility of the DropDown.
-  */
+   * Toggles the visibility of the DropDown.
+   */
   function toggleDropdown(event) {
     event.stopPropagation();
     setShowDropdown((prev) => !prev);
   }
 
   /**
-  * Closes the Profile & Dropdown when clicking outside of it.
-  */
+   * Closes the Profile & Dropdown when clicking outside of it.
+   */
   function handleClickOutside(event) {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setShowDropdown(false);
     }
-  };
+  }
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
@@ -305,62 +300,68 @@ function Dashboard() {
     };
   }, []);
 
-
   return useAuth() ? (
-    <div style={{ display: "flex", height: "100vh" }} onClick={handleClickOutside}>
+    <div
+      style={{ display: "flex", height: "100vh" }}
+      onClick={handleClickOutside}
+    >
+      {/* SideBar */}
+      <Sidebar
+        style={{ flex: "0 0 17%" }}
+        onAdminStatusChange={handleAdminStatusChange}
+      />
 
-        {/* SideBar */}
-        <Sidebar style={{ flex: "0 0 17%",}} onAdminStatusChange={handleAdminStatusChange}/>
+      {/* Main Content */}
+      <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
+        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 className="h2">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
 
-        {/* Main Content */}
-        <main style={{ flex: "1", padding: "1rem", overflowY: "auto",}} >
-                <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 className="h2">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
+          {/* Setting */}
+          <div className="position-relative" ref={dropdownRef}>
+            <i
+              className="bi bi-person-circle h2"
+              alt="Settings"
+              style={{ width: "30px", cursor: "pointer" }}
+              onClick={toggleDropdown}
+            ></i>
 
-                    {/* Setting */}
-                    <div className="position-relative" ref={dropdownRef}>
-                    <i class="bi bi-person-circle h2"  
-                        alt="Settings"
-                        style={{ width: "30px", cursor: "pointer" }}
-                        onClick={toggleDropdown}
-                        >
-                    </i>
+            {/* Dropdown */}
+            {showDropdown && (
+              <ul className="dropdown-menu show position-absolute end-0">
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      toggleProfile();
+                      setShowDropdown(false);
+                    }}
+                  >
+                    Profile
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" onClick={""}>
+                    Settings
+                  </button>
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
 
-                    {/* Dropdown */}
-                    {showDropdown && (
-                        <ul className="dropdown-menu show position-absolute end-0">
-                            <li>
-                            <button className="dropdown-item" onClick={() => {
-                                toggleProfile();
-                                setShowDropdown(false);
-                            }}>
-                                    Profile
-                                </button>
-                            </li>
-                            <li>
-                                <button className="dropdown-item" onClick={""}>
-                                    Settings
-                                </button>
-                            </li>
-                        </ul>
-                    )}
-                    </div>
-                </div>
-                
-                {/* Profile */}
-                {showProfile && (
-                <div ref={profileRef}>
-                    <Profile />
-                </div>
-                )}
+        {/* Profile */}
+        {showProfile && (
+          <div ref={profileRef}>
+            <Profile />
+          </div>
+        )}
 
-            {isAdmin ? <AdminTableComponent /> : <TableComponent />}
-        </main>
+        {isAdmin ? <AdminTableComponent /> : <TableComponent />}
+      </main>
     </div>
-) : (
+  ) : (
     handleProtect()
-);
-
+  );
 }
 
 export { Dashboard, TableComponent };

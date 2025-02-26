@@ -14,7 +14,7 @@ const mockFetch = (isAdmin) => {
           email: "test@example.com",
           isAdmin: isAdmin, // ✅ 这里控制返回的 isAdmin 值
         }),
-    })
+    }),
   );
 };
 
@@ -33,11 +33,13 @@ describe("Sidebar Component", () => {
     render(
       <BrowserRouter>
         <Sidebar />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     // ✅ 等待组件渲染完成
-    await waitFor(() => expect(screen.getByText("Admin Tool")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Admin Tool")).toBeInTheDocument(),
+    );
 
     // ✅ 确保 Request Admin 不渲染
     expect(screen.queryByText("Request Admin")).toBeNull();
@@ -49,11 +51,13 @@ describe("Sidebar Component", () => {
     render(
       <BrowserRouter>
         <Sidebar />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     // ✅ 等待组件渲染完成
-    await waitFor(() => expect(screen.getByText("Request Admin")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Request Admin")).toBeInTheDocument(),
+    );
 
     // ✅ 确保 Admin Tool 不渲染
     expect(screen.queryByText("Admin Tool")).toBeNull();
@@ -65,11 +69,13 @@ describe("Sidebar Component", () => {
     render(
       <BrowserRouter>
         <Sidebar />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     // ✅ 等待 "Request Admin" 出现
-    await waitFor(() => expect(screen.getByText("Request Admin")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Request Admin")).toBeInTheDocument(),
+    );
 
     fireEvent.click(screen.getByText("Dashboard"));
     expect(window.location.pathname).toBe("/dashboard");
@@ -84,11 +90,13 @@ describe("Sidebar Component", () => {
     render(
       <BrowserRouter>
         <Sidebar />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     // ✅ 等待 "Admin Tool" 渲染
-    await waitFor(() => expect(screen.getByText("Admin Tool")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Admin Tool")).toBeInTheDocument(),
+    );
 
     // ✅ 确保 "Request Admin" 不出现
     expect(screen.queryByText("Request Admin")).toBeNull();

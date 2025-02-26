@@ -1,10 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { vi, test, expect } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import RegisterForm from "../RegisterForm"; 
-import { useAuth } from "../useAuth"; 
+import RegisterForm from "../RegisterForm";
+import { useAuth } from "../useAuth";
 
-// Mock useAuth 
+// Mock useAuth
 vi.mock("../useAuth", () => ({
   useAuth: vi.fn(),
 }));
@@ -29,7 +29,7 @@ describe("RegisterForm Component", () => {
     render(
       <MemoryRouter>
         <RegisterForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByTestId("register-title")).toBeInTheDocument();
 
@@ -37,7 +37,7 @@ describe("RegisterForm Component", () => {
     render(
       <MemoryRouter>
         <RegisterForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(mockNavigate).toHaveBeenCalledWith("/sign-in");
   });

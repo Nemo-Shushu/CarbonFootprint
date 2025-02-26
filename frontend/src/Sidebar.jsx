@@ -28,7 +28,7 @@ function Sidebar({ onAdminStatusChange }) {
     } else if (location.pathname === "/manage-factors") {
       setActiveItem("Manage Factors");
     } else if (location.pathname === "/admin-tool") {
-      setActiveItem("AdminTool")
+      setActiveItem("AdminTool");
     } else {
       setActiveItem("");
     }
@@ -91,8 +91,8 @@ function Sidebar({ onAdminStatusChange }) {
   }
 
   function handleAdminTool() {
-    navigate("/admin-tool"); 
-  };
+    navigate("/admin-tool");
+  }
 
   return (
     <div
@@ -101,9 +101,7 @@ function Sidebar({ onAdminStatusChange }) {
     >
       <div className="m-2">
         <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
-          <span style={{ cursor: "pointer" }} >
-            {firstName}{" "}
-          </span>
+          <span style={{ cursor: "pointer" }}>{firstName} </span>
           <img
             src="/images/logout.png"
             alt="Logout Icon"
@@ -185,10 +183,15 @@ function Sidebar({ onAdminStatusChange }) {
                 style={{ cursor: "pointer", width: "90%" }}
               >
                 <div className="p-1 text-center">
-                  <i className="bi bi-database-fill-gear align-middle" style={{ fontSize: "18px" }}></i>
+                  <i
+                    className="bi bi-database-fill-gear align-middle"
+                    style={{ fontSize: "18px" }}
+                  ></i>
                 </div>
                 <div>
-                  <p className="mb-0 ms-2 text-start">Manage Conversion Factors</p>
+                  <p className="mb-0 ms-2 text-start">
+                    Manage Conversion Factors
+                  </p>
                 </div>
               </div>
             </>
@@ -216,9 +219,6 @@ function Sidebar({ onAdminStatusChange }) {
               </div>
             </>
           )}
-
-
-
         </nav>
       </div>
     </div>
