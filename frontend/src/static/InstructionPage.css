@@ -1,0 +1,131 @@
+/* InstructionPage.css */
+:root {
+  --primary-green: #385a4f;
+  --muted-olive-green: #7b9e91;
+  --text-color: #4f7a6a;
+  --card-shadow: 0 14px 32px rgba(0, 0, 0, 0.25);
+}
+
+.instructions-container {
+  background: linear-gradient(to bottom, #f5f5f5, #e2e8f0);
+  padding: 1rem 2rem;
+  min-height: 100vh;
+  padding-bottom: 6rem;
+}
+
+.header-section {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.university-logo {
+  width: 6rem;
+  height: auto;
+}
+
+.main-heading {
+  color: var(--primary-green);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.intro-text {
+  color: var(--text-color);
+  text-align: center;
+  margin: 0 auto 2rem;
+  max-width: 80rem;
+  font-size: 0.875rem;
+}
+
+.steps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+.step-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 30px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.step-card:hover {
+  transform: scale(1.02);
+}
+
+.title-container {
+  background-color: var(--muted-olive-green);
+  border-radius: 30px 30px 0 0;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.step-title {
+  color: var(--primary-green);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.content-container {
+  color: var(--text-color);
+  font-size: 0.875rem;
+  flex-grow: 1;
+  padding: 0 1rem;
+}
+
+.step-list {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.start-button-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+  z-index: 10;
+}
+
+.btn-moss {
+  background-color: var(--primary-green);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.btn-moss:hover {
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .instructions-container {
+    padding: 1rem 4rem;
+  }
+  
+  .main-heading {
+    font-size: 1.875rem;
+  }
+  
+  .steps-grid {
+    padding: 0 1rem;
+  }
+}
