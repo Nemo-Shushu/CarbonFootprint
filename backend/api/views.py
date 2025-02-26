@@ -360,7 +360,6 @@ def dashboard_show_user_result_data(request):
             "institution": user_profile.institute_id,
             "field": user_profile.research_field_id,
             "emissions": float(Result.total_carbon_emissions),
-            "email": user_profile.email,
         }
         for Result in calculation_result
         ]
