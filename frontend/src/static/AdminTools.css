@@ -1,0 +1,21 @@
+.Main-context {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.ellipsis-text {
+  color: black;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 50px;
+  cursor: pointer;
+}
+
+.centered-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

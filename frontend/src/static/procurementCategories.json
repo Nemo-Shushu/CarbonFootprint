@@ -1,0 +1,639 @@
+[
+  { "code": "A", "name": "Audio Visual & Multimedia Supplies and Services" },
+  { "code": "AA", "name": "Audio Visual Equipment purchase" },
+  { "code": "AB", "name": "Display and Projection Equipment and Consumables" },
+  { "code": "AC", "name": "AV Learning and Training Packs" },
+  { "code": "AD", "name": "Music Instruments, Scores, Purchase, Maintenance" },
+  { "code": "AE", "name": "Photographic Equipment Supplies and Services" },
+  { "code": "AF", "name": "Studio Hire and Running Costs" },
+  {
+    "code": "AG",
+    "name": "Theatre Production Consumables (scenery, lighting, props, costumes)"
+  },
+  {
+    "code": "AH",
+    "name": "Video Equipment Purchase hire and Maintenance and repair"
+  },
+  { "code": "AJ", "name": "Audio Visual Consumables, Accessories" },
+  { "code": "AK", "name": "Photographic Consumables, Accessories etc" },
+  {
+    "code": "AL",
+    "name": "Digital Imaging Equipment Purchase, Maintenance, Repair and Consumables"
+  },
+  {
+    "code": "AM",
+    "name": "Commercial and Graphic Art Equipment Purchase and Maintenance and Consumables"
+  },
+  {
+    "code": "AN",
+    "name": "External Production Services (Performances, Tours)"
+  },
+  { "code": "AP", "name": "Tape Machines, Video Interviewing Equipment" },
+  { "code": "AQ", "name": "Website Design and Services SUSPENDED" },
+  {
+    "code": "AR",
+    "name": "Fine and Creative Arts, Equipment Purchase, Maintenance, Consumables"
+  },
+  { "code": "AT", "name": "Audio-Visual Equipment Hire" },
+  { "code": "AU", "name": "Audio visual Equipment Maintenance and Services" },
+  { "code": "AZ", "name": "Other and General Audio-Visual Aids" },
+  { "code": "B", "name": "Library & Publications" },
+  { "code": "BA", "name": "Book Binding Services" },
+  { "code": "BB", "name": "Books Hardcopy" },
+  { "code": "BC", "name": "Inter-Library Loans" },
+  { "code": "BD", "name": "Journals Hardcopy" },
+  { "code": "BE", "name": "Library Subscriptions" },
+  { "code": "BF", "name": "Manuscripts Hardcopy" },
+  { "code": "BG", "name": "Newspapers and Periodicals Hardcopy" },
+  { "code": "BI", "name": "Manuscripts Electronic" },
+  { "code": "BJ", "name": "Microfiche equipment and consumables" },
+  { "code": "BK", "name": "Electronic Publications, Media and Music" },
+  { "code": "BL", "name": "Manuals; Computer, Workshop, Training" },
+  {
+    "code": "BM",
+    "name": "Tickets and Tokens (including electronic tickets and book tokens)"
+  },
+  {
+    "code": "BN",
+    "name": "Library Equipment and Services (e.g. book tagging) including maintenance, repair and hire"
+  },
+  { "code": "BP", "name": "Books Electronic" },
+  { "code": "BQ", "name": "Journal Electronics" },
+  { "code": "BR", "name": "Newspapers and Periodicals Electronic" },
+  {
+    "code": "BS",
+    "name": "Library Licences, Royalties, Open Access Charges, Author Fees"
+  },
+  { "code": "BT", "name": "Library Materials Restoration" },
+  { "code": "BV", "name": "Maps Electronic or Hardcopy" },
+  { "code": "BW", "name": "Sheet Music" },
+  { "code": "BZ", "name": "Other and General Library" },
+  { "code": "C", "name": "Catering Supplies & Services" },
+  { "code": "CA", "name": "Alcoholic drinks" },
+  { "code": "CB", "name": "Bakery Products" },
+  { "code": "CC", "name": "Dairy Produce" },
+  { "code": "CD", "name": "Frozen Foods" },
+  { "code": "CE", "name": "Groceries" },
+  {
+    "code": "CF",
+    "name": "Catering and Bar Equipment and Accessories purchases"
+  },
+  { "code": "CG", "name": "Catering and Bar Equipment Maintenance and Repair" },
+  { "code": "CH", "name": "Meat, Poultry, Offal" },
+  { "code": "CJ", "name": "Non-alcoholic drinks" },
+  {
+    "code": "CK",
+    "name": "Tableware, Crockery, Cutlery, Table Coverings etc. Inc. Disposables"
+  },
+  { "code": "CL", "name": "Vending Equipment, Consumables and Charges" },
+  { "code": "CM", "name": "Fresh Fruit and Vegetables" },
+  { "code": "CN", "name": "Table and Room Decorations" },
+  { "code": "CP", "name": "Fish and Seafood" },
+  { "code": "CQ", "name": "Confectionary" },
+  { "code": "CR", "name": "Watercooler Equipment, Services and Consumables" },
+  { "code": "CS", "name": "Catering Entertainments" },
+  {
+    "code": "CT",
+    "name": "Catering Services, Outsourced, incl Pre-prepared Meals"
+  },
+  { "code": "CU", "name": "Catering Hospitality" },
+  { "code": "CV", "name": "Liquor Licences" },
+  { "code": "CY", "name": "Tobacco" },
+  { "code": "CZ", "name": "Other and General Catering" },
+  {
+    "code": "D",
+    "name": "Medical, Surgical, Nursing, Dentistry Supplies & Services"
+  },
+  { "code": "DA", "name": "Medical Capital Equipment" },
+  {
+    "code": "DB",
+    "name": "Medical, Small Apparatus, Equipment and Instruments"
+  },
+  { "code": "DC", "name": "Medical, Consumables and Disposables" },
+  { "code": "DD", "name": "Medical, Surgical, Nursing, Dressing and Bandages" },
+  { "code": "DE", "name": "Medical, Specialist Clothing" },
+  { "code": "DF", "name": "Medical Equipment Maintenance and Repair" },
+  { "code": "DG", "name": "Waste Disposal Clinical SUSPENDED" },
+  {
+    "code": "DH",
+    "name": "Medical Patient Diagnostic Services and Clinical Trials"
+  },
+  { "code": "DJ", "name": "Medical Teaching materials and aids" },
+  {
+    "code": "DK",
+    "name": "Physiotherapy and Sports Science Equipment and Consumables"
+  },
+  { "code": "DL", "name": "Medicinal Drugs - Non Veterinary" },
+  { "code": "DZ", "name": "Other and General" },
+  {
+    "code": "E",
+    "name": "Agricultural/ Fisheries/ Forestry/ Horticultural/ Oceanographic Supplies & Services"
+  },
+  {
+    "code": "EA",
+    "name": "Livestock and Animal Purchase, Services and Supplies"
+  },
+  { "code": "EB", "name": "Livestock, Animal and Farm Feeds" },
+  {
+    "code": "EC",
+    "name": "Agricultural, Fisheries, Forestry, Oceanographic Capital Equipment"
+  },
+  {
+    "code": "ED",
+    "name": "Agricultural, Fisheries, Forestry, Oceanographic, Small Equipment and Tools"
+  },
+  { "code": "EF", "name": "Agricultural Equipment Maintenance and Repair" },
+  { "code": "EG", "name": "Agricultural Equipment Hire" },
+  { "code": "EH", "name": "Purchase of Plants, Crops, Trees etc." },
+  { "code": "EJ", "name": "Animal Welfare services" },
+  { "code": "EK", "name": "Fertilisers, Pesticides, Composts, Soils" },
+  {
+    "code": "EL",
+    "name": "Agricultural Fencing Supplies and Associated Services"
+  },
+  { "code": "EM", "name": "Horticultural Consumables (Pots, Seed, Trays)" },
+  { "code": "EN", "name": "Oceanographic Supplies and Services" },
+  {
+    "code": "EP",
+    "name": "Housing - Kennels, Catteries, Stabling, bedding and tackle Supplies and Services"
+  },
+  { "code": "ER", "name": "Spare" },
+  { "code": "ES", "name": "Pasturage maintenance" },
+  { "code": "ET", "name": "Medicinal Products - Drugs Veterinary" },
+  {
+    "code": "EZ",
+    "name": "Agricultural, Fisheries, Forestry, Horticultural, Oceanographic, Geology: Other and General"
+  },
+  { "code": "F", "name": "Furniture, Furnishings & textiles" },
+  {
+    "code": "FA",
+    "name": "Electrical White Goods and Domestic Kitchen Equipment"
+  },
+  { "code": "FB", "name": "Laboratory Furniture - Fixed and Free-standing" },
+  { "code": "FC", "name": "Furniture - Office" },
+  { "code": "FD", "name": "Floor Coverings" },
+  { "code": "FE", "name": "Textiles, Fabrics, Soft and Loose Furnishings" },
+  { "code": "FF", "name": "Furniture - Residential" },
+  { "code": "FG", "name": "Window Coverings" },
+  {
+    "code": "FH",
+    "name": "Sports, Recreational and Nursery Materials and Equipment"
+  },
+  { "code": "FJ", "name": "Furniture - Removal and Storage" },
+  { "code": "FK", "name": "Furniture - Repairs" },
+  { "code": "FL", "name": "Furniture - Classroom and Lecture Theatre" },
+  { "code": "FM", "name": "Drama Production Requisites" },
+  {
+    "code": "FN",
+    "name": "General Storage, Racking, Shelving (incl. Library excl Labs)"
+  },
+  { "code": "FO", "name": "Boards, Notice, Pin, Chalk, Easels, Mirrors" },
+  { "code": "FP", "name": "Security Furniture (Inc. Safes)" },
+  { "code": "FQ", "name": "Clocks and Timepieces" },
+  { "code": "FR", "name": "Office Seating" },
+  {
+    "code": "FS",
+    "name": "Hair and Beauty Equipment, services, suppliers Purchase, maintenance and repair"
+  },
+  { "code": "FT", "name": "Outdoor furniture" },
+  { "code": "FU", "name": "Furniture and Furnishings Purchase - Specialist" },
+  {
+    "code": "FZ",
+    "name": "Other and General Furniture, Furnishings and Textiles"
+  },
+  { "code": "G", "name": "Sports, Sports Science and Recreation" },
+  { "code": "GA", "name": "Sports and Recreational Equipment Purchase" },
+  { "code": "GB", "name": "Sports Capital Purchases" },
+  { "code": "GC", "name": "Sports Equipment - Maintenance & Repair" },
+  { "code": "GD", "name": "Sports Equipment - Hire & Lease" },
+  {
+    "code": "GE",
+    "name": "Sports Equipment - Consumables and accessories purchase"
+  },
+  { "code": "GF", "name": "Sports Clothing" },
+  { "code": "GG", "name": "Sports Services (incl. coaching)" },
+  {
+    "code": "GH",
+    "name": "Sports Science Equipment Hire maintenance and Service"
+  },
+  {
+    "code": "GJ",
+    "name": "Sports Science Equipment, accessories and consumables Purchase"
+  },
+  { "code": "H", "name": "Janitorial & Domestic Supplies & Services" },
+  { "code": "HA", "name": "Detergents" },
+  { "code": "HB", "name": "Cleaning Machines and Maintenance" },
+  { "code": "HC", "name": "Gloves, Cleaning and Industrial" },
+  {
+    "code": "HD",
+    "name": "Washroom Services and Vending Supplies and Services"
+  },
+  { "code": "HE", "name": "Paper Disposables" },
+  { "code": "HF", "name": "Protective Clothing and Safety Workwear" },
+  { "code": "HG", "name": "Laundry and Dry Cleaning Services and Equipment" },
+  { "code": "HH", "name": "Washroom and Cleaning Consumables" },
+  { "code": "HJ", "name": "Janitorial and Domestic: Washing Materials" },
+  { "code": "HK", "name": "Janitorial and Domestic: Waste Sacks and Bags" },
+  { "code": "HL", "name": "Disinfectants" },
+  { "code": "HN", "name": "Soaps" },
+  {
+    "code": "HP",
+    "name": "Dusting and Polishing Consumables (Rags, Brushes, Mops)"
+  },
+  { "code": "HQ", "name": "Window Cleaning" },
+  {
+    "code": "HR",
+    "name": "Janitorial Clothing and Tailoring Supplies and Services"
+  },
+  { "code": "HS", "name": "Footwear Supplies" },
+  { "code": "HZ", "name": "Other and General Cleaning and Janitorial" },
+  { "code": "JF", "name": "Steam Trading" },
+  { "code": "JG", "name": "Carbon Emissions Trading" },
+  { "code": "JH", "name": "CHP plant maintenance" },
+  { "code": "JJ", "name": "Renewable Energy (Fit,Rhi) Equipment" },
+  { "code": "JZ", "name": "Other/General Utilities" },
+  { "code": "K", "name": "Computer Supplies & Services" },
+  { "code": "KB", "name": "Printer Purchase, Maintenance and repair" },
+  { "code": "KC", "name": "Printer Consumables, Toners, Ink, Ribbons etc" },
+  {
+    "code": "KD",
+    "name": "Magnetic Media and Storage, Optical Media and Storage"
+  },
+  {
+    "code": "KE",
+    "name": "IT Software including Bespoke Licences Maintenance"
+  },
+  {
+    "code": "KF",
+    "name": "Workstation and Mini-computer Purchase and Maintenance"
+  },
+  { "code": "KG", "name": "Server, Storage and Networking equipment Purchase" },
+  { "code": "KH", "name": "Desktop, Laptop, Tablet Purchase inc. Apple" },
+  { "code": "KI", "name": "EPOS and PDQ machines" },
+  {
+    "code": "KJ",
+    "name": "Server and Networking Equipment Installation and Maintenance"
+  },
+  {
+    "code": "KK",
+    "name": "Portable and Laptop Computer Purchase and Maintenance"
+  },
+  { "code": "KL", "name": "Plotter and Scanner Purchase and Maintenance" },
+  { "code": "KM", "name": "Computer Consumables & Peripherals" },
+  { "code": "KN", "name": "Software-as-a-service including Hosting" },
+  { "code": "KO", "name": "Website design and Services" },
+  { "code": "KP", "name": "Computer Teaching Aids and Materials" },
+  {
+    "code": "KQ",
+    "name": "Apple Mac Desk Top Computer Purchase, Maintenance, repair, hire"
+  },
+  {
+    "code": "KR",
+    "name": "Sun/Unix Equipment Purchasing, maintenance, repair and hire"
+  },
+  { "code": "KS", "name": "IT Managed Services" },
+  { "code": "KT", "name": "IT Hardware support & maintenance" },
+  { "code": "KU", "name": "IT Hire & Rental" },
+  { "code": "KV", "name": "Scanning Equipment" },
+  { "code": "KW", "name": "IT Software Development" },
+  { "code": "KZ", "name": "Other and General Computer" },
+  { "code": "L", "name": "Laboratory/Animal House Supplies & Services" },
+  {
+    "code": "LA",
+    "name": "Laboratory Support Equipment Accommodation Accessories"
+  },
+  { "code": "LB", "name": "Laboratory Animals" },
+  {
+    "code": "LC",
+    "name": "Laboratory Small Apparatus and Equipment Purchase and Hire"
+  },
+  {
+    "code": "LD",
+    "name": "Other Sciences (Astronomy, Sports Science, etc) Supplies and Services"
+  },
+  {
+    "code": "LE",
+    "name": "Laboratory Blood Products Human Organs, Tissue, Body parts and Cadavers"
+  },
+  { "code": "LF", "name": "Laboratory Bonded Alcohol" },
+  { "code": "LG", "name": "Laboratory Capital Equipment" },
+  { "code": "LH", "name": "Laboratory Chemicals" },
+  { "code": "LI", "name": "Laboratory Research Services" },
+  { "code": "LJ", "name": "Laboratory Clothing" },
+  {
+    "code": "LK",
+    "name": "Laboratory Consumables and Sundries incl. Disposables"
+  },
+  {
+    "code": "LL",
+    "name": "Laboratory Diagnostic Testing and Calibration Services"
+  },
+  { "code": "LM", "name": "Laboratory Equipment Maintenance and Repair" },
+  {
+    "code": "LN",
+    "name": "Laboratory Gases and Refrigerants and Associated Rentals"
+  },
+  { "code": "LP", "name": "Laboratory Glassware" },
+  { "code": "LQ", "name": "Pharmaceuticals - Non-veterinary" },
+  { "code": "LR", "name": "Pharmaceuticals, Veterinary" },
+  { "code": "LS", "name": "Laboratory Plasticware" },
+  { "code": "LT", "name": "Laboratory Controlled Chemicals & Drugs" },
+  { "code": "LU", "name": "Laboratory Refrigerants include Liquid Nitrogen" },
+  { "code": "LV", "name": "Scintillation Fluids" },
+  { "code": "LW", "name": "Stable Isotopes and Radiochemicals" },
+  { "code": "LX", "name": "Tissue Culture and Bacteriological Media" },
+  { "code": "LZ", "name": "Other and General Laboratory" },
+  {
+    "code": "M",
+    "name": "Workshop & Maintenance Supplies (including Engineering)"
+  },
+  { "code": "MA", "name": "Batteries" },
+  { "code": "MB", "name": "Electrical Sundries and Components" },
+  { "code": "MC", "name": "Fasteners inc. Nuts, Bolts, Rivets etc" },
+  { "code": "MD", "name": "Hand Tools" },
+  {
+    "code": "ME",
+    "name": "Handling and Storage Equipment Purchase Maintenance Repair and Hire"
+  },
+  { "code": "MF", "name": "Hand & Power Tools and Accessories" },
+  {
+    "code": "MG",
+    "name": "Workshop Equipment and Tool Maintenance and Repair"
+  },
+  { "code": "MH", "name": "Mechanical Components and Spare Parts" },
+  { "code": "MJ", "name": "Workshop Metals" },
+  { "code": "MK", "name": "Raw Materials inc. Lubricants and Road Salt" },
+  { "code": "ML", "name": "Workshop Plastics Glass and Ceramics" },
+  { "code": "MM", "name": "Workshop Wood" },
+  {
+    "code": "MN",
+    "name": "Electronic Components and Test Equipment Purchase Maintenance repair and hire"
+  },
+  { "code": "MP", "name": "Workshop Plumbing Sundries" },
+  {
+    "code": "MQ",
+    "name": "Workshop, Ironmongery, Door Furniture, Locksmiths Supplies and Services"
+  },
+  { "code": "MR", "name": "Adhesives, Fillers and Sealants" },
+  { "code": "MS", "name": "Workshop Consumables" },
+  { "code": "MT", "name": "Workshop Teaching Aids and Materials" },
+  { "code": "MZ", "name": "Other General Workshop and Maintenance Supplies" },
+  { "code": "N", "name": "Museums and Art" },
+  { "code": "NA", "name": "Art Exhibits and Museum Collections" },
+  {
+    "code": "NB",
+    "name": "Hire & Rental of Art Exhibits and Museum Collections"
+  },
+  { "code": "NC", "name": "Conservation & Restoration Materials" },
+  { "code": "ND", "name": "Conservation & Restoration Services" },
+  {
+    "code": "NE",
+    "name": "Commercial and Graphic Art Equipment Purchase and Maintenance and Consumables"
+  },
+  {
+    "code": "NF",
+    "name": "Arts Equipment Purchase and Maintenance and Consumables"
+  },
+  {
+    "code": "NG",
+    "name": "Fashion & Textile Design - Equipment Purchase and Maintenance & Consumables"
+  },
+  { "code": "NH", "name": "Museum Specialist Furniture" },
+  { "code": "P", "name": "Printing, Reprographics and Photocopying" },
+  { "code": "PA", "name": "Printing, Binding and Finishing Services" },
+  { "code": "PB", "name": "External or Outsourced Printing" },
+  { "code": "PC", "name": "Printing Consumables, Toners and Inks" },
+  { "code": "PD", "name": "Printing - External Design and Artwork" },
+  {
+    "code": "PE",
+    "name": "Printing Equipment Purchase, Lease, Hire and Maintenance"
+  },
+  { "code": "PF", "name": "External Typesetting, Colour Separation etc" },
+  {
+    "code": "PG",
+    "name": "Printing Paper and Specials (NOT PHOTOCOPY PAPER - SEE S)"
+  },
+  { "code": "PH", "name": "Printing Card and Board" },
+  { "code": "PJ", "name": "Printing Equipment Purchase & Maintenance" },
+  { "code": "PK", "name": "Printing - Managed Print Services" },
+  { "code": "PZ", "name": "Other and General Printing" },
+  { "code": "Q", "name": "Telecommunications" },
+  { "code": "QA", "name": "Mail Services" },
+  { "code": "QB", "name": "Mail Room Equipment Purchase, Lease & Maintenance" },
+  { "code": "QC", "name": "Courier Services" },
+  { "code": "QD", "name": "Freight, Carriage & Haulage Services" },
+  { "code": "QE", "name": "Mail Services Overseas/International" },
+  { "code": "QF", "name": "Spare" },
+  { "code": "QG", "name": "Telephony Capital Purchase" },
+  { "code": "QH", "name": "Telephony Maintenance" },
+  {
+    "code": "QJ",
+    "name": "Telecoms Transmission Equipment Purchase & Maintenance"
+  },
+  { "code": "QL", "name": "Radios, Mobile, Encrypted" },
+  { "code": "QM", "name": "Phone Cards, Swipe Cards, Equipment & Supplies" },
+  { "code": "QN", "name": "Communications Equipment & Accessories" },
+  { "code": "QP", "name": "Freight Carriage & Haulage Services (SUSPENDED)" },
+  { "code": "QR", "name": "Telephony Land & Mobile Line Rental Call Charges" },
+  {
+    "code": "QS",
+    "name": "Telephony - Mobile Line Rental, Call Charges, Equipment"
+  },
+  { "code": "QT", "name": "Data Telecommunications Services" },
+  { "code": "QZ", "name": "Other Postal & Telecommunications" },
+  {
+    "code": "R",
+    "name": "Professional & Bought-in Services including Consultancy"
+  },
+  { "code": "RA", "name": "Advertising Services" },
+  { "code": "RB", "name": "Conferences & Meetings (Event Management)" },
+  { "code": "RC", "name": "Data Information Services" },
+  { "code": "RD", "name": "Accountancy Services e.g. Audit Consultancy" },
+  { "code": "RE", "name": "Consultancy including IT excluding Estates" },
+  { "code": "RF", "name": "Insurance Services" },
+  { "code": "RG", "name": "Legal & Tax Services" },
+  { "code": "RH", "name": "Banking Services" },
+  { "code": "RI", "name": "Financial Investment Services" },
+  { "code": "RJ", "name": "Patents IPR Trademarks Royalties Copyright" },
+  {
+    "code": "RK",
+    "name": "Temporary & Recruitment Employment Agencies (Staff)"
+  },
+  {
+    "code": "RL",
+    "name": "Promotions & Publicity (incl Exhibitions and Fairs)"
+  },
+  { "code": "RM", "name": "Speakers & Presenters" },
+  { "code": "RN", "name": "Subscriptions (Learned Society Professional etc.)" },
+  { "code": "RO", "name": "Graduation Services" },
+  { "code": "RP", "name": "Training Courses" },
+  { "code": "RQ", "name": "Marketing & Student Recruitment Services" },
+  { "code": "RR", "name": "Debt Collection Services" },
+  { "code": "RS", "name": "Market Research Services" },
+  { "code": "RT", "name": "Auction Services" },
+  {
+    "code": "RU",
+    "name": "Translation Interpreter Transcription & Procedural Writing Services"
+  },
+  { "code": "RV", "name": "Archival and Storage Services including EDM" },
+  { "code": "RW", "name": "Student Placement Programmes Costs and Expenses" },
+  { "code": "RX", "name": "Branding and Media Services" },
+  { "code": "RY", "name": "Artistes and Conductors" },
+  { "code": "RZ", "name": "Other/General Professional & Bought-in Services" },
+  { "code": "S", "name": "Stationery & Office Supplies" },
+  { "code": "SA", "name": "Envelopes" },
+  { "code": "SB", "name": "Files, Filing Folders, Binders" },
+  {
+    "code": "SC",
+    "name": "Office Equipment Purchase, Lease, Hire and Maintenance"
+  },
+  { "code": "SD", "name": "Diaries, Calendars" },
+  { "code": "SE", "name": "Spare" },
+  { "code": "SF", "name": "Papers" },
+  {
+    "code": "SG",
+    "name": "Photocopying - Rental, Lease, Purchase, Maintenance, Charges"
+  },
+  { "code": "SH", "name": "Pre-printed Stationery" },
+  { "code": "SJ", "name": "General Stationery" },
+  { "code": "SK", "name": "Desktop Sundries (SUSPENDED)" },
+  {
+    "code": "SL",
+    "name": "Education Packs and Materials Specific to Teaching and Learning"
+  },
+  { "code": "SZ", "name": "Other and General Stationery and Office Supplies" },
+  {
+    "code": "T",
+    "name": "Travel & Transport (incl. Vehicle Hire & Subsistence)"
+  },
+  { "code": "TA", "name": "Accommodation & Hotels (Direct)" },
+  { "code": "TO", "name": "Storage & Warehouse Services" },
+  { "code": "TP", "name": "Student Travel Arrangements" },
+  { "code": "TQ", "name": "Conferences, Meetings, and Room Bookings" },
+  { "code": "TR", "name": "Re-location and Household Removal Expenses" },
+  { "code": "TS", "name": "Spare" },
+  { "code": "TT", "name": "Package Travel, Field Trips" },
+  { "code": "TU", "name": "Travel & Subsistence (Non Employees)" },
+  { "code": "TZ", "name": "Other/General Travel & Transport" },
+  { "code": "U", "name": "Health & Safety & Security" },
+  {
+    "code": "UB",
+    "name": "Fire Protection/Fire Fighting Equipment & Services"
+  },
+  { "code": "UC", "name": "First Aid Supplies" },
+  { "code": "UD", "name": "Safety & Personal Protection Equipment" },
+  { "code": "UE", "name": "Security Equipment & Consumables" },
+  { "code": "UF", "name": "Security Services" },
+  { "code": "UH", "name": "Occupational Health Supplies & Services" },
+  {
+    "code": "UJ",
+    "name": "Surveillance Equipment, Installation & Maintenance (CCTV, Intercom)"
+  },
+  { "code": "UK", "name": "Access Control, Keys, Security Passes" },
+  { "code": "UL", "name": "Counselling Services" },
+  {
+    "code": "UM",
+    "name": "Alarms (including Fire, Smoke, Gas, Intruder) purchase, maintenance, repair and hire"
+  },
+  {
+    "code": "UN",
+    "name": "Special Needs/DDA Suppliers, Services Equipment purchase, maintenance, repair and hire"
+  },
+  { "code": "UP", "name": "Allied Health Professions" },
+  { "code": "UZ", "name": "Other/General Safety & Security" },
+  {
+    "code": "V",
+    "name": "Vehicles, Fleet Management (Purchase, Lease, Contract Hire)"
+  },
+  { "code": "VA", "name": "Vehicle Purchase" },
+  { "code": "VB", "name": "Motoring Association Charges (excl Road Tax)" },
+  { "code": "VC", "name": "Vehicle Lease / Hire / Rental Long Term" },
+  { "code": "VD", "name": "Vehicle Tax" },
+  { "code": "VE", "name": "Vehicle Maintenance & MOT" },
+  { "code": "VF", "name": "Tyres" },
+  { "code": "VG", "name": "Fuels" },
+  { "code": "VH", "name": "Vehicle Parts & Accessories" },
+  { "code": "VJ", "name": "Garage Equipment" },
+  {
+    "code": "VK",
+    "name": "Specialist Vehicle Purchase - Motor Cycle & Bicycles"
+  },
+  { "code": "VL", "name": "Specialist Vehicle Purchase - Marine Craft" },
+  {
+    "code": "VM",
+    "name": "Specialist Vehicle Purchase - Aircraft & Helicopters"
+  },
+  { "code": "VP", "name": "Vehicle Storage" },
+  { "code": "VR", "name": "Vehicle Accessories" },
+  { "code": "VZ", "name": "Other/General Vehicle Purchase & Lease Hire" },
+  { "code": "W", "name": "Estates & Buildings" },
+  { "code": "WA", "name": "Building, Repair and Maintenance Materials" },
+  { "code": "WB", "name": "Capital Projects" },
+  { "code": "WC", "name": "Decoration Materials, Works & Services" },
+  { "code": "WD", "name": "Conservation Projects" },
+  { "code": "WE", "name": "Electricity Supply & Services (SUSPENDED)" },
+  { "code": "WF", "name": "Fencing - Property & Specialist" },
+  { "code": "WG", "name": "Gas Supply & Services (SUSPENDED)" },
+  { "code": "WH", "name": "Building Repairs & Maintenance Service" },
+  {
+    "code": "WI",
+    "name": "Specialist Building Services (Scaffolding, Plumbing, Carpentry, Roofing)"
+  },
+  { "code": "WJ", "name": "Grounds Maintenance Equipment" },
+  { "code": "WK", "name": "Ground Maintenance, Supplies & Services" },
+  { "code": "WL", "name": "Testing & Calibration Services (Non Scientific)" },
+  { "code": "WM", "name": "TBC" },
+  { "code": "WN", "name": "Plant Purchase, Hire & Maintenance" },
+  { "code": "WP", "name": "Temporary & Mobile Buildings, Hire & Purchase" },
+  { "code": "WR", "name": "Solid Fuel" },
+  { "code": "WT", "name": "Cleaning Services" },
+  { "code": "WU", "name": "Building Related Professional Services" },
+  { "code": "WV", "name": "Pest & Vermin Control Services" },
+  { "code": "WW", "name": "Estates Tool & Plant Hire" },
+  { "code": "WX", "name": "Signs & Signposting" },
+  { "code": "WY", "name": "Tent & Marquee Purchase, Hire & Maintenance" },
+  { "code": "WZ", "name": "Other/General Estates & Buildings" },
+  { "code": "X", "name": "Non Influenceable Spend" },
+  { "code": "XA", "name": "Fees, Lecturing, Examining, Moderating" },
+  { "code": "XB", "name": "Credit Card Charges" },
+  { "code": "XC", "name": "Customs & Excise - VAT" },
+  { "code": "XD", "name": "Fees - Students" },
+  {
+    "code": "XE",
+    "name": "Hospitality/Entertainment/Courtesy Expenses (Non employees)"
+  },
+  { "code": "XF", "name": "Works of Art" },
+  {
+    "code": "XG",
+    "name": "Building/Premises/Land - Rent, Lease, Hire, Feu Duties"
+  },
+  { "code": "XH", "name": "Welfare" },
+  { "code": "XJ", "name": "Other Educational Establishments" },
+  { "code": "XK", "name": "Other Public Bodies" },
+  { "code": "XL", "name": "Rates" },
+  { "code": "XM", "name": "Awards, Gifts, Trophies, Souvenirs" },
+  { "code": "XN", "name": "Bursaries, Scholarships, Endowments, Donations" },
+  { "code": "XP", "name": "Purchase Card Purchases" },
+  { "code": "XQ", "name": "Identity Access Cards (SUSPENDED)" },
+  { "code": "XR", "name": "Interdepartmental Trading" },
+  { "code": "XS", "name": "Student Related Charges Excluding Fees" },
+  { "code": "XT", "name": "Professional Associations" },
+  { "code": "XU", "name": "Salary Sacrifice Schemes" },
+  { "code": "XY", "name": "Other/General Unclassified" },
+  { "code": "XZ", "name": "Other/General Miscellaneous" },
+  { "code": "Y", "name": "Facilities Operations" },
+  { "code": "YA", "name": "Mail Services Including Fulfilment" },
+  { "code": "YB", "name": "Mail Room Equipment Purchase Lease & Maintenance" },
+  { "code": "YC", "name": "Courier Services" },
+  { "code": "YD", "name": "Freight Carriage & Haulage Services" },
+  { "code": "YE", "name": "Furniture - Office Removal and Storage" },
+  { "code": "YF", "name": "Warehouse and Storage" },
+  { "code": "YG", "name": "Agric/Hortic Disposal Services" },
+  { "code": "YM", "name": "Clothing and Tailoring Supplies and Services" },
+  { "code": "YN", "name": "Watercooler Equipment Services and Consumables" },
+  { "code": "YP", "name": "Cleaning Services Including Window Cleaning" },
+  { "code": "YQ", "name": "Pest & Vermin Control Services" },
+  { "code": "YR", "name": "Catering Services Outsourced at a Fixed Site" },
+  { "code": "YS", "name": "Specialist Removals and Storage" },
+  { "code": "YY", "name": "Not Relevant to Purchasing, Procurement" }
+]

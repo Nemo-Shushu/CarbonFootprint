@@ -1,0 +1,28 @@
+# Build stage
+FROM node:23-alpine
+
+WORKDIR /app
+
+# Added required environment variables
+ENV VITE_BACKEND_URL=https://sh14main-django2-1.onrender.com/
+
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Install the serve package
+RUN npm i -g serve
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the React app
+RUN npm run build
+
+# Expose port 3000
+EXPOSE 3000
+
+# Start Serve
+CMD [ "serve", "-s", "dist" ]
