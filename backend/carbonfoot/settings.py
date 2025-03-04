@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "api.apps.ApiConfig",
-    "calculator",
 ]
 
 REST_FRAMEWORK = {
