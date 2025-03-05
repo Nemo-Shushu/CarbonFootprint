@@ -17,8 +17,7 @@ function Frontpage() {
           Carbon Footprint Calculator{" "}
         </h1>
         <p>
-          Welcome to the Carbon Footprint Calculator, please Register or login
-          to get started.
+          Welcome to the Carbon Footprint Calculator, please register or sign in to get started.
         </p>
         {/* Buttons */}
         <div className="d-grid gap-2 d-sm-flex">
