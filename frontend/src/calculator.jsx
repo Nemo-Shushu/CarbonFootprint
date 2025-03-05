@@ -7,19 +7,13 @@ import Sidebar from "./Sidebar";
 import "./static/dashboard.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
-import { useAuth } from "./useAuth";
 
-const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
   const [report, setReport] = useState({});
 
   const navigate = useNavigate();
-
-  function handleProtect() {
-    navigate("/sign-in");
-  }
 
   async function submitReport() {
     try {
@@ -28,7 +22,7 @@ function Calculator() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
+          "X-CSRFToken": Cookies.get("csrftoken"),
         },
         body: JSON.stringify(report),
       });
@@ -1168,7 +1162,7 @@ function Calculator() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken,
+            "X-CSRFToken": Cookies.get("csrftoken"),
           },
           body: JSON.stringify(report),
         });
@@ -1210,7 +1204,7 @@ function Calculator() {
     );
   }
 
-  return useAuth() ? (
+  return (
     <div style={{ display: "flex", height: "100vh" }}>
       <Sidebar style={{ flex: "0 0 17%" }} />
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
@@ -1226,8 +1220,6 @@ function Calculator() {
         </Routes>
       </main>
     </div>
-  ) : (
-    handleProtect()
   );
 }
 
