@@ -5,7 +5,11 @@ function Frontpage() {
   return (
     <main className="front-page">
       <div className="overlay"></div>
-
+      <img 
+      src="/images/UniLogo.png"
+      alt="university of glagow logo"
+      className="logo"
+      />
       <div className="text-container">
         <h1>
           University of Glasgow

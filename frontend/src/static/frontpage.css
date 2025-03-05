@@ -71,3 +71,13 @@
   background: var(--bs-moss);
   color: white;
 }
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 188px;
+  height: auto;
+  z-index: 10;
+}
+
