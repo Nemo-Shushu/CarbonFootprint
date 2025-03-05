@@ -321,6 +321,7 @@ function Dashboard() {
             <i
               className="bi bi-person-circle h2"
               alt="Settings"
+              data-testid="profile-icon"
               style={{ width: "30px", cursor: "pointer" }}
               onClick={toggleDropdown}
             ></i>
@@ -335,12 +336,16 @@ function Dashboard() {
                       toggleProfile();
                       setShowDropdown(false);
                     }}
+                    data-testid="profile-btn"
                   >
                     Profile
                   </button>
                 </li>
                 <li>
-                  <button className="dropdown-item" onClick={""}>
+                  <button 
+                    className="dropdown-item" onClick={""}
+                    data-testid="setting-btn"
+                  >
                     Settings
                   </button>
                 </li>
