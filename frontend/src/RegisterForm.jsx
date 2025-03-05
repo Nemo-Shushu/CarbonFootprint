@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "./useAuth";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -132,162 +132,143 @@ function RegisterForm() {
   };
 
   return (
-    <div>
-      {/* Main Form */}
-      <main className="form-signin w-100 m-auto">
-        <form onSubmit={handleSubmit}>
-          <h1 className="h3 mb-3 fw-normal" data-testid="register-title">
-            Please register
-          </h1>
+    <div className="sign-in-wrapper">
+      <div className="sign-in-container">
+        {/* Left Side of contaiiner- Registration Form */}
+        <div className="sign-in-form">
+          <h2>Create an Account</h2>
+          <p>Please fill in the details below to register.</p>
 
-          <div className="form-floating">
-            <input
-              type="email"
-              name="email"
-              className="form-control"
-              id="floatingInputEmail"
-              placeholder="Email"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingInputEmail">Email</label>
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <input
+                type="email"
+                name="email"
+                className="input-field"
+                placeholder="Email"
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="form-floating">
-            <input
-              type="text"
-              name="username"
-              className="form-control"
-              id="floatingInputUsername"
-              placeholder="Username"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingInputUsername">Username</label>
-          </div>
+            <div className="input-group">
+              <input
+                type="text"
+                name="username"
+                className="input-field"
+                placeholder="Username"
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="form-floating">
-            <input
-              type="text"
-              name="first_name"
-              className="form-control"
-              id="floatingInputFirstName"
-              placeholder="First Name"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingInputFirstName">First Name</label>
-          </div>
+            <div className="input-group">
+              <input
+                type="text"
+                name="first_name"
+                className="input-field"
+                placeholder="First Name"
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="form-floating">
-            <input
-              type="text"
-              name="last_name"
-              className="form-control"
-              id="floatingInputLastName"
-              placeholder="Last Name"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingInputLastName">Last Name</label>
-          </div>
+            <div className="input-group">
+              <input
+                type="text"
+                name="last_name"
+                className="input-field"
+                placeholder="Last Name"
+                onChange={handleChange}
+              />
+            </div>
 
-          <div className="form-floating">
-            <select
-              name="institute"
-              className="form-select form-select-lg mb-3"
-              id="floatingInputInstitute"
-              value={user.institute}
-              onChange={handleInstitutionsChange}
-              style={{ fontSize: "12px" }}
-            >
-              <option value="" disabled>
-                Select an institution
-              </option>
-              {institutions.map((inst, index) => (
-                <option key={index} value={inst.name}>
-                  {inst.name}
+            {/* Dropdown for Academic Institution, not searchable at the moment  */}
+            <div className="input-group">
+              <select
+                name="institute"
+                className="input-field"
+                value={user.institute}
+                onChange={handleInstitutionsChange}
+              >
+                <option value="" disabled>
+                  Select an institution
                 </option>
-              ))}
-            </select>
+                {institutions.map((inst, index) => (
+                  <option key={index} value={inst.name}>
+                    {inst.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <label htmlFor="floatingInputInstitute">Academic Institution</label>
-          </div>
-
-          <div className="form-floating">
-            <select
-              name="research_field"
-              className="form-select form-select-lg mb-3"
-              id="floatingInputResearch"
-              value={user.research_field}
-              style={{ fontSize: "12px" }}
-              onChange={handleFieldsChange}
-            >
-              <option value="" disabled>
-                Select a Research Field
-              </option>
-              {fields.map((inst, index) => (
-                <option key={index} value={inst.name}>
-                  {inst.name}
+            {/* Dropdown for Research Field, need to be updated */}
+            <div className="input-group">
+              <select
+                name="research_field"
+                className="input-field"
+                value={user.research_field}
+                onChange={handleFieldsChange}
+              >
+                <option value="" disabled>
+                  Select a Research Field
                 </option>
-              ))}
-            </select>
-            <label htmlFor="floatingInputResearch">Research Field</label>
-          </div>
+                {fields.map((inst, index) => (
+                  <option key={index} value={inst.name}>
+                    {inst.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="form-floating position-relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              className="form-control"
-              id="floatingPassword"
-              placeholder="Password"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingPassword">Password</label>
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="input-field"
+                placeholder="Password"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="show-password"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
 
-            <button
-              type="button"
-              onClick={toggleShowPassword}
-              className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-              style={{ textDecoration: "none" }}
-            >
-              {showPassword ? "Hide" : "Show"}
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password2"
+                className="input-field"
+                placeholder="Confirm Password"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="show-password"
+              >
+                {showPassword ? "Hide" : "Show"}s
+              </button>
+            </div>
+
+            {error && <p className="warning">{error}</p>}
+
+            <button className="sign-in-button" type="submit">
+              Register
             </button>
-          </div>
 
-          <div className="form-floating position-relative mt-3">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password2"
-              className="form-control"
-              id="floatingPasswordConfirm"
-              placeholder="Confirm Password"
-              onChange={handleChange}
-            />
-            <label htmlFor="floatingPasswordConfirm">Confirm Password</label>
-            <button
-              type="button"
-              onClick={toggleShowPassword}
-              className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-              style={{ textDecoration: "none" }}
-            >
-              {showPassword ? "Hide" : "Show"}
-            </button>
-          </div>
+            <p className="register-link">
+              Already have an account? <Link to="/sign-in">Sign in</Link>
+            </p>
+          </form>
+        </div>
 
-          <p className="warning">{error}</p>
-
-          <button className="btn btn-success w-100 py-2" type="submit">
-            Register
-          </button>
-
-          <Link to="/sign-in">
-            <button
-              className="btn btn-outline-success w-100 py-2 mt-2"
-              type="button"
-            >
-              Already registered? Go to Sign In
-            </button>
-          </Link>
-        </form>
-      </main>
+        {/* Right Side of the container- added imaged with overlay*/}
+        <div className="register-image">
+          <div className="overlay-text">Carbon Footprint Calculator</div>
+        </div>
+      </div>
     </div>
   );
 }
