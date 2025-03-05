@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "./useAuth";
+import { useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./static/dashboard.css";
@@ -12,7 +11,6 @@ import Cookies from "js-cookie";
 import ResultsDisplay from "./ResultsDisplay";
 import Modal from "react-bootstrap/Modal";
 
-const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function TableComponent() {
@@ -40,7 +38,7 @@ function TableComponent() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken,
+            "X-CSRFToken": Cookies.get("csrftoken"),
           },
         },
       );
@@ -64,7 +62,7 @@ function TableComponent() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
+          "X-CSRFToken": Cookies.get("csrftoken"),
         },
         body: JSON.stringify({
           report_id: repId,
@@ -156,7 +154,7 @@ function AdminTableComponent() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken,
+            "X-CSRFToken": Cookies.get("csrftoken"),
           },
         },
       );
@@ -180,7 +178,7 @@ function AdminTableComponent() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
+          "X-CSRFToken": Cookies.get("csrftoken"),
         },
         body: JSON.stringify({
           report_id: repId,
@@ -249,7 +247,6 @@ function AdminTableComponent() {
 }
 
 function Dashboard() {
-  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [showProfile, setShowProfile] = useState(
@@ -262,10 +259,6 @@ function Dashboard() {
 
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
-  }
-
-  function handleProtect() {
-    navigate("/sign-in");
   }
 
   /**
@@ -300,7 +293,7 @@ function Dashboard() {
     };
   }, []);
 
-  return useAuth() ? (
+  return (
     <div
       style={{ display: "flex", height: "100vh" }}
       onClick={handleClickOutside}
@@ -359,8 +352,6 @@ function Dashboard() {
         {isAdmin ? <AdminTableComponent /> : <TableComponent />}
       </main>
     </div>
-  ) : (
-    handleProtect()
   );
 }
 
