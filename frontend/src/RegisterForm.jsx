@@ -48,6 +48,7 @@ function RegisterForm() {
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -82,6 +83,14 @@ function RegisterForm() {
         console.error("Error fetching fields:", err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        handleProtect();
+      }
+    }
+  }, [isAuthenticated, loading]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -119,10 +128,10 @@ function RegisterForm() {
     setUser((prevUser) => ({ ...prevUser, research_field: selectedField }));
   };
   const handleProtect = () => {
-    navigate("/sign-in");
+    navigate("/dashboard");
   };
 
-  return !useAuth() ? (
+  return (
     <div>
       {/* Main Form */}
       <main className="form-signin w-100 m-auto">
@@ -280,8 +289,6 @@ function RegisterForm() {
         </form>
       </main>
     </div>
-  ) : (
-    handleProtect()
   );
 }
 

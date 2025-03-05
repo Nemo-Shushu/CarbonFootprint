@@ -1,60 +1,33 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useAuth } from "./useAuth";
 import "./static/sign-in.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SignInForm() {
-  const [csrf, setCsrf] = useState();
   const [error, setError] = useState();
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        handleProtect();
+      }
+    }
+  }, [isAuthenticated, loading]);
+
   const handleProtect = () => {
     navigate("/dashboard");
   };
-
-  useEffect(() => {
-    getSession();
-  }, []);
-
-  async function getCSRF() {
-    await fetch(backendUrl + "api2/csrf/", {
-      credentials: "include",
-    })
-      .then((res) => {
-        const csrfToken = res.headers.get("X-CSRFToken");
-        setCsrf(csrfToken);
-        console.log(csrf);
-        console.log("got token!");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  async function getSession() {
-    await fetch(backendUrl + "api2/session/", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.isAuthenticated) {
-          navigate("/dashboard");
-        } else {
-          getCSRF();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
@@ -77,7 +50,7 @@ function SignInForm() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrf,
+        "X-CSRFToken": Cookies.get("csrftoken"),
       },
       credentials: "include",
       body: JSON.stringify({ username: username, password: password }),
@@ -99,7 +72,6 @@ function SignInForm() {
   async function handleLogin(event) {
     event.preventDefault();
     try {
-      await getCSRF();
       await login();
       handleProtect();
     } catch (err) {
