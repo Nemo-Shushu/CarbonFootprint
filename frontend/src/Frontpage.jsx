@@ -5,10 +5,10 @@ function Frontpage() {
   return (
     <main className="front-page">
       <div className="overlay"></div>
-      <img 
-      src="/images/UniLogo.png"
-      alt="university of glagow logo"
-      className="logo"
+      <img
+        src="/images/UniLogo.png"
+        alt="university of glagow logo"
+        className="logo"
       />
       <div className="text-container">
         <h1>
@@ -17,7 +17,8 @@ function Frontpage() {
           Carbon Footprint Calculator{" "}
         </h1>
         <p>
-          Welcome to the Carbon Footprint Calculator, please register or sign in to get started.
+          Welcome to the Carbon Footprint Calculator, please register or sign in
+          to get started.
         </p>
         {/* Buttons */}
         <div className="d-grid gap-2 d-sm-flex">
