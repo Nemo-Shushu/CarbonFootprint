@@ -49,7 +49,7 @@ function Calculator() {
       {
         title: "Step 1 - General Data Entry",
         content: (
-          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2">
+          <ul className="text-sm text-[#4F7A6A] list-none pl-5 space-y-2 pb-4">
             <li>
               <strong>Utilities:</strong> Enter FTE staff numbers and GIA data.
             </li>
@@ -68,7 +68,7 @@ function Calculator() {
       {
         title: "Step 2 - Procurement",
         content: (
-          <p className="text-sm text-[#4F7A6A]">
+          <p className="text-sm text-[#4F7A6A] pb-4">
             Please enter project-related procurement expenses. Add a new line
             for each category. For reference, this section is taken directly
             from the Higher Education Supply Chain Emission Tool (HESCET)
@@ -87,7 +87,7 @@ function Calculator() {
       {
         title: "Step 3 - Results",
         content: (
-          <p className="text-sm text-[#4F7A6A]">
+          <p className="text-sm text-[#4F7A6A] pb-4">
             View a comprehensive summary and visual representations of your
             project&rsquo;s annual carbon footprint. This section includes
             detailed charts and graphs, allowing you to easily interpret your
@@ -99,7 +99,7 @@ function Calculator() {
       {
         title: "Help & Tips",
         content: (
-          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2">
+          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2 pb-4">
             <li>
               <strong>&lsquo;Next&rsquo; Button:</strong> Click to save progress
               on each page.
@@ -133,12 +133,12 @@ function Calculator() {
           <img
             src="/images/UniLogo.png"
             alt="University of Glasgow Logo"
-            className="w-24 h-auto"
+            className="w-16 h-auto"
           />
 
           {/* Main Heading */}
           <h2
-            className="text-2xl md:text-3xl font-bold text-center"
+            className="text-4xl md:text-5xl font-extrabold text-center"
             style={{ color: primaryGreen }}
           >
             Carbon Footprint Calculator
