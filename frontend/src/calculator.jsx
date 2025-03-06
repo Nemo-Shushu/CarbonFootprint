@@ -62,10 +62,7 @@ function Calculator() {
             <li>
               <strong>Waste:</strong> Estimate project waste.{" "}
               <em>
-
-        Tip: Multiply weekly waste by 52 to get the annual figure.
-
-
+                Tip: Multiply weekly waste by 52 to get the annual figure.
               </em>
             </li>
           </ul>
@@ -127,7 +124,7 @@ function Calculator() {
         ),
       },
     ];
-    
+
     return (
       <main className="instructions-container">
         <div className="instructions-header">
