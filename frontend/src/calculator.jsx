@@ -5,6 +5,7 @@ import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
 import "./static/dashboard.css";
+import "./static/Instruction.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
 
@@ -41,10 +42,6 @@ function Calculator() {
 
   function Instructions() {
     const navigate = useNavigate();
-    const primaryGreen = "var(--bs-moss)"; // same as sidebar green
-    const mutedOliveGreen = "#7B9E91"; // lighter green for title background
-    const cardShadow = "0 14px 32px rgba(0, 0, 0, 0.25)";
-
     const steps = [
       {
         title: "Step 1 - General Data Entry",
@@ -123,30 +120,18 @@ function Calculator() {
     ];
 
     return (
-      <main
-        className="px-4 md:px-8 py-4 max-w-7xl mx-auto min-h-screen pb-24"
-        style={{ background: "linear-gradient(to bottom, #F5F5F5, #E2E8F0)" }}
-      >
-        {/* Header Section with Centered Logo and Title */}
-        <div className="flex flex-col items-center mb-6 space-y-2">
-          {/* University of Glasgow Logo */}
+      <main className="instructions-container">
+        <div className="instructions-header">
           <img
             src="/images/UniLogo.png"
             alt="University of Glasgow Logo"
-            className="w-16 h-auto"
+            className="instructions-logo"
           />
-
-          {/* Main Heading */}
-          <h2
-            className="text-4xl md:text-5xl font-extrabold text-center"
-            style={{ color: primaryGreen }}
-          >
-            Carbon Footprint Calculator
-          </h2>
+          <h2 className="instructions-title">Carbon Footprint Calculator</h2>
         </div>
 
         {/* Introduction Text */}
-        <p className="text-center text-[#4F7A6A] mb-8 max-w-3xl mx-auto text-sm">
+        <p className="instructions-intro">
           Welcome to the Academic Carbon Footprint Calculator. This tool is
           designed to help you estimate and better understand the annual carbon
           footprint of your research activities. By following the steps below,
@@ -155,44 +140,19 @@ function Calculator() {
           sustainability decisions.
         </p>
 
-        {/* Cards Grid with Fully Rounded Edges and Left-Aligned Titles */}
+        {/* Cards Grid */}
         <div className="flex flex-col gap-10 mb-12 px-4">
           {steps.map(({ title, content }, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-3xl shadow-lg transition-transform hover:scale-[1.02] flex flex-col justify-start"
-              style={{
-                boxShadow: cardShadow,
-                borderRadius: "30px",
-                height: "100%",
-              }}
-            >
-              <div
-                className="w-full px-4 py-2 mb-4"
-                style={{
-                  backgroundColor: mutedOliveGreen,
-                  borderTopLeftRadius: "30px",
-                  borderTopRightRadius: "30px",
-                }}
-              >
-                <h3
-                  className="text-xs font-medium text-left"
-                  style={{ color: primaryGreen }}
-                >
-                  {title}
-                </h3>
+            <div key={index} className="instructions-card">
+              <div className="instructions-card-header">
+                <h3 className="instructions-card-title">{title}</h3>
               </div>
-              <div className="text-sm text-[#4F7A6A] flex-grow flex items-start px-4">
-                {content}
-              </div>
+              <div className="instructions-card-content">{content}</div>
             </div>
           ))}
         </div>
 
-        <div
-          className="d-flex justify-content-end fixed bottom-0 end-0 p-3"
-          style={{ zIndex: 10 }}
-        >
+        <div className="instructions-footer">
           <button
             type="button"
             className="btn btn-moss"
@@ -951,6 +911,7 @@ function Calculator() {
     const [loaded, setLoaded] = useState(false);
     const [rowCategory, setRowCategory] = useState({});
     const [categorySelected, setCategorySelected] = useState({});
+    const [searchText, setSearchText] = useState(""); // Tracks search input
 
     useEffect(() => {
       /* 
@@ -1069,6 +1030,16 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
+                    {/* Search Input for Filtering Dropdown Options */}
+                    <input
+                      type="text"
+                      placeholder="Search category..."
+                      className="form-control form-control-sm mb-1"
+                      onChange={(event) =>
+                        setSearchText(event.target.value.toLowerCase())
+                      }
+                    />
+
                     <select
                       defaultValue={
                         rowCategory[num] === null ? "default" : rowCategory[num]
@@ -1078,24 +1049,31 @@ function Calculator() {
                       onChange={handleCategoryChange}
                       disabled={rowCategory[num] !== null}
                     >
-                      <option value="default" disabled="true">
+                      <option value="default" disabled>
                         Select a procurement category
                       </option>
-                      {procurementCategories.map((category) => (
-                        <option
-                          key={category.code}
-                          value={category.code}
-                          disabled={categorySelected[category.code]}
-                        >
-                          {category.code} - {category.name}
-                          {categorySelected[category.code] &&
-                          category.code != rowCategory[num]
-                            ? " - SELECTED"
-                            : ""}
-                        </option>
-                      ))}
+                      {procurementCategories
+                        .filter(
+                          (category) =>
+                            category.name.toLowerCase().includes(searchText) ||
+                            category.code.includes(searchText),
+                        )
+                        .map((category) => (
+                          <option
+                            key={category.code}
+                            value={category.code}
+                            disabled={categorySelected[category.code]}
+                          >
+                            {category.code} - {category.name}
+                            {categorySelected[category.code] &&
+                            category.code !== rowCategory[num]
+                              ? " - SELECTED"
+                              : ""}
+                          </option>
+                        ))}
                     </select>
                   </td>
+
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
                       <span style={{ fontSize: "1rem", fontWeight: "600" }}>
