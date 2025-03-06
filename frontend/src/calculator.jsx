@@ -48,7 +48,6 @@ function Calculator() {
 
   function Instructions() {
     const navigate = useNavigate();
-  
     const steps = [
       {
         title: "Step 1 - General Data Entry",
@@ -62,7 +61,12 @@ function Calculator() {
             </li>
             <li>
               <strong>Waste:</strong> Estimate project waste.{" "}
-              <em>Tip: Multiply weekly waste by 52 to get the annual figure.</em>
+              <em>
+
+        Tip: Multiply weekly waste by 52 to get the annual figure.
+
+
+              </em>
             </li>
           </ul>
         ),
@@ -71,10 +75,10 @@ function Calculator() {
         title: "Step 2 - Procurement",
         content: (
           <p className="text-sm text-[#4F7A6A] pb-4">
-            Please enter project-related procurement expenses. Add a new line for
-            each category. For reference, this section is taken directly from the
-            Higher Education Supply Chain Emission Tool (HESCET) created by the
-            Higher Education Procurement Association (HEPA).{" "}
+            Please enter project-related procurement expenses. Add a new line
+            for each category. For reference, this section is taken directly
+            from the Higher Education Supply Chain Emission Tool (HESCET)
+            created by the Higher Education Procurement Association (HEPA).{" "}
             <a
               href="https://www.hepa.ac.uk/"
               target="_blank"
@@ -123,7 +127,7 @@ function Calculator() {
         ),
       },
     ];
-  
+    
     return (
       <main className="instructions-container">
         <div className="instructions-header">
@@ -134,17 +138,17 @@ function Calculator() {
           />
           <h2 className="instructions-title">Carbon Footprint Calculator</h2>
         </div>
-  
+
         {/* Introduction Text */}
         <p className="instructions-intro">
           Welcome to the Academic Carbon Footprint Calculator. This tool is
           designed to help you estimate and better understand the annual carbon
-          footprint of your research activities. By following the steps below, you
-          will be guided through the process of data entry, procurement details,
-          and the interpretation of results to support informed sustainability
-          decisions.
+          footprint of your research activities. By following the steps below,
+          you will be guided through the process of data entry, procurement
+          details, and the interpretation of results to support informed
+          sustainability decisions.
         </p>
-  
+
         {/* Cards Grid */}
         <div className="flex flex-col gap-10 mb-12 px-4">
           {steps.map(({ title, content }, index) => (
@@ -156,7 +160,7 @@ function Calculator() {
             </div>
           ))}
         </div>
-  
+
         <div className="instructions-footer">
           <button
             type="button"
@@ -169,7 +173,6 @@ function Calculator() {
       </main>
     );
   }
-  
 
   function Utilities() {
     const navigate = useNavigate();
@@ -919,7 +922,6 @@ function Calculator() {
     const [categorySelected, setCategorySelected] = useState({});
     const [searchText, setSearchText] = useState(""); // Tracks search input
 
-
     useEffect(() => {
       /* 
             this useEffect is responsible for reloading saved procurement data:
@@ -1037,44 +1039,49 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
-  {/* Search Input for Filtering Dropdown Options */}
-  <input
-    type="text"
-    placeholder="Search category..."
-    className="form-control form-control-sm mb-1"
-    onChange={(event) => setSearchText(event.target.value.toLowerCase())}
-  />
+                    {/* Search Input for Filtering Dropdown Options */}
+                    <input
+                      type="text"
+                      placeholder="Search category..."
+                      className="form-control form-control-sm mb-1"
+                      onChange={(event) =>
+                        setSearchText(event.target.value.toLowerCase())
+                      }
+                    />
 
-  <select
-    defaultValue={rowCategory[num] === null ? "default" : rowCategory[num]}
-    className="form-select form-select-sm"
-    aria-label=".form-select-lg example"
-    onChange={handleCategoryChange}
-    disabled={rowCategory[num] !== null}
-  >
-    <option value="default" disabled>
-      Select a procurement category
-    </option>
-    {procurementCategories
-      .filter(
-        (category) =>
-          category.name.toLowerCase().includes(searchText) ||
-          category.code.includes(searchText)
-      )
-      .map((category) => (
-        <option
-          key={category.code}
-          value={category.code}
-          disabled={categorySelected[category.code]}
-        >
-          {category.code} - {category.name}
-          {categorySelected[category.code] && category.code !== rowCategory[num]
-            ? " - SELECTED"
-            : ""}
-        </option>
-      ))}
-  </select>
-</td>
+                    <select
+                      defaultValue={
+                        rowCategory[num] === null ? "default" : rowCategory[num]
+                      }
+                      className="form-select form-select-sm"
+                      aria-label=".form-select-lg example"
+                      onChange={handleCategoryChange}
+                      disabled={rowCategory[num] !== null}
+                    >
+                      <option value="default" disabled>
+                        Select a procurement category
+                      </option>
+                      {procurementCategories
+                        .filter(
+                          (category) =>
+                            category.name.toLowerCase().includes(searchText) ||
+                            category.code.includes(searchText),
+                        )
+                        .map((category) => (
+                          <option
+                            key={category.code}
+                            value={category.code}
+                            disabled={categorySelected[category.code]}
+                          >
+                            {category.code} - {category.name}
+                            {categorySelected[category.code] &&
+                            category.code !== rowCategory[num]
+                              ? " - SELECTED"
+                              : ""}
+                          </option>
+                        ))}
+                    </select>
+                  </td>
 
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
