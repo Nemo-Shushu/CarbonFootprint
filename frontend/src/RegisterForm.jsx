@@ -34,12 +34,64 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE
+  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(user),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw errorData;
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      throw error;
+    });
+}
+
+async function sendCode(user) {
+  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw errorData;
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      throw error;
+    });
+}
+
+async function verifyCode(code) {
+  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(code),
   })
     .then((response) => {
       if (!response.ok) {
@@ -71,6 +123,8 @@ function RegisterForm() {
     research_field: "",
   });
   const [error, setError] = useState();
+  const [code, setCode] = useState("");
+  const [errorVerification, setErrorVerification] = useState(false);
   const [institutions, setInstitutions] = useState([]);
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
@@ -122,22 +176,25 @@ function RegisterForm() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    createUser(user)
+    verifyCode(code)
       .then((data) => {
-        console.log("User created:", data);
+        console.log("Code verified:", data);
         setError("");
-        navigate("/sign-in");
+        createUser(user)
+          .then((data) => {
+            console.log("User created:", data);
+            setError("");
+            navigate("/sign-in");
+          })
+          .catch((err) => {
+            console.error("Error creating user:", err);
+            const errorKeys = Object.keys(err);
+            setError("An unknown error occurred.");
+          });
       })
       .catch((err) => {
-        console.error("Error creating user:", err);
-        const errorKeys = Object.keys(err);
-        if (errorKeys.length > 0) {
-          const firstKey = errorKeys[0];
-          const firstMessage = err[firstKey][0];
-          setError(firstMessage);
-        } else {
-          setError("An unknown error occurred.");
-        }
+        console.error("Error verifying code:", err);
+        setErrorVerification(true);
       });
   };
 
@@ -156,6 +213,10 @@ function RegisterForm() {
     setUser((prevUser) => ({ ...prevUser, research_field: selectedField }));
   };
 
+  const handleCodeChange = (event) => {
+    setCode(event.target.value);
+  };
+
   const handleProtect = () => {
     navigate("/dashboard");
   };
@@ -166,6 +227,7 @@ function RegisterForm() {
     .then((data) => {
       console.log("User valid:", data);
       setError("");
+      sendCode(user);
       setVisible(true);
     })
     .catch((err) => {
@@ -189,25 +251,31 @@ function RegisterForm() {
           <Modal.Title>Enter Confirmation Code</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={() => handleSubmit()}>
-            <div className="sign-in-form">
-              <p>Please check your email for a verification code:</p>
-
+          <div className="sign-in-form">
+            <form onSubmit={handleSubmit}>
+            
+              <p>Please enter the code emailed to you below:</p>
+              <p>{code}</p>
               <input
                 type="text"
                 name="email-verify"
                 className="input-field"
                 placeholder="Enter the code here"
-                onChange={handleChange}
+                onChange={handleCodeChange}
               />
 
-              {error && <p className="warning">Incorrect verification code. <a onClick={() => alert("Verification code resent")}>Resend code</a></p>}
+              {errorVerification && 
+              <p className="warning">
+                Your code is incorrect. <Link onClick={() => sendCode(user)}>Resend code</Link>
+              </p>
+              }
+              <hr/>
 
               <button className="sign-in-button" type="submit">
                 Verify my Email
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </Modal.Body>
       </Modal>
       <div className="sign-in-container">
