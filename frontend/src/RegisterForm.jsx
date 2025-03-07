@@ -3,11 +3,38 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 import { useAuth } from "./useAuth";
+import Modal from "react-bootstrap/Modal";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function createUser(user) {
   return fetch(backendUrl + "api/accounts/register/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw errorData;
+        });
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      throw error;
+    });
+}
+
+async function validateUser(user) {
+  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,6 +75,7 @@ function RegisterForm() {
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [visible, setVisible] = useState(false);
   const { isAuthenticated, loading } = useAuth();
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -127,19 +155,68 @@ function RegisterForm() {
     const selectedField = event.target.value;
     setUser((prevUser) => ({ ...prevUser, research_field: selectedField }));
   };
+
   const handleProtect = () => {
     navigate("/dashboard");
   };
 
+  const handleModal = (event) => {
+    event.preventDefault();
+    validateUser(user)
+    .then((data) => {
+      console.log("User valid:", data);
+      setError("");
+      setVisible(true);
+    })
+    .catch((err) => {
+      console.error("Error validating new user details:", err);
+      const errorKeys = Object.keys(err);
+      if (errorKeys.length > 0) {
+        const firstKey = errorKeys[0];
+        const firstMessage = err[firstKey][0];
+        setError(firstMessage);
+      } else {
+        setError("An unknown error occurred.");
+      }
+      setVisible(true);
+    });
+  };
+
   return (
     <div className="sign-in-wrapper">
+      <Modal show={visible} centered size="lg">
+        <Modal.Header>
+          <Modal.Title>Enter Confirmation Code</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={() => handleSubmit()}>
+            <div className="sign-in-form">
+              <p>Please check your email for a verification code:</p>
+
+              <input
+                type="text"
+                name="email-verify"
+                className="input-field"
+                placeholder="Enter the code here"
+                onChange={handleChange}
+              />
+
+              {error && <p className="warning">Incorrect verification code. <a onClick={() => alert("Verification code resent")}>Resend code</a></p>}
+
+              <button className="sign-in-button" type="submit">
+                Verify my Email
+              </button>
+            </div>
+          </form>
+        </Modal.Body>
+      </Modal>
       <div className="sign-in-container">
         {/* Left Side of contaiiner- Registration Form */}
         <div className="sign-in-form">
           <h2>Create an Account</h2>
           <p>Please fill in the details below to register.</p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleModal}>
             <div className="input-group">
               <input
                 type="email"
