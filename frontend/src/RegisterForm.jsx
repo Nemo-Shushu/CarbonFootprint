@@ -34,7 +34,7 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT
+  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -122,9 +122,10 @@ function RegisterForm() {
     institute: "",
     research_field: "",
   });
-  const [error, setError] = useState();
   const [code, setCode] = useState("");
-  const [errorVerification, setErrorVerification] = useState(false);
+  const [error, setError] = useState();
+  const [modalError, setModalError] = useState(false);
+  const [verificationError, setVerificationError] = useState(false);
   const [institutions, setInstitutions] = useState([]);
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
@@ -175,6 +176,11 @@ function RegisterForm() {
   }, [isAuthenticated, loading]);
 
   const handleSubmit = (event) => {
+    // when user has received their code, they paste it into the text box and press "Verify my Email". Then this function attempts to verify the verification code.
+    // if verifyCode is successful, the function attempts to create the account with createUser.
+    // If createUser succeeds, user is routed to sign-in. 
+    // If createUser doesn't succeed, modalError is set in the modal. It is expected that by this point - user details have been verified by validateUser, and createUser shouldn't fail.
+    // if verifyCode is not successful, verificationError is set in the modal
     event.preventDefault();
     verifyCode(code)
       .then((data) => {
@@ -183,19 +189,44 @@ function RegisterForm() {
         createUser(user)
           .then((data) => {
             console.log("User created:", data);
-            setError("");
+            setModalError("");
             navigate("/sign-in");
           })
           .catch((err) => {
             console.error("Error creating user:", err);
-            const errorKeys = Object.keys(err);
-            setError("An unknown error occurred.");
+            setModalError(true);
           });
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
-        setErrorVerification(true);
+        setVerificationError(true);
       });
+  };
+
+  const handleModal = (event) => {
+    // when the user submits their details, handleModal first tries to validate user details,
+    // and make sure that when the user next submits their request to create an account, there will be no errors.
+    // if the new user's details could not be verified, error messages are displayed, to instruct the user on what went wrong.
+    // if the new user's details are verified successfuly, the confirmation code is sent to the user through sendCode backend API call, and the modal is set visible
+    event.preventDefault();
+    validateUser(user)
+    .then((data) => {
+      console.log("User valid:", data);
+      setError("");
+      sendCode(user);
+      setVisible(true);
+    })
+    .catch((err) => {
+      console.error("Error validating new user details:", err);
+      const errorKeys = Object.keys(err);
+      if (errorKeys.length > 0) {
+        const firstKey = errorKeys[0];
+        const firstMessage = err[firstKey][0];
+        setError(firstMessage);
+      } else {
+        setError("An unknown error occurred.");
+      }
+    });
   };
 
   const handleChange = (event) => {
@@ -221,32 +252,10 @@ function RegisterForm() {
     navigate("/dashboard");
   };
 
-  const handleModal = (event) => {
-    event.preventDefault();
-    validateUser(user)
-    .then((data) => {
-      console.log("User valid:", data);
-      setError("");
-      sendCode(user);
-      setVisible(true);
-    })
-    .catch((err) => {
-      console.error("Error validating new user details:", err);
-      const errorKeys = Object.keys(err);
-      if (errorKeys.length > 0) {
-        const firstKey = errorKeys[0];
-        const firstMessage = err[firstKey][0];
-        setError(firstMessage);
-      } else {
-        setError("An unknown error occurred.");
-      }
-      setVisible(true);
-    });
-  };
-
   return (
     <div className="sign-in-wrapper">
       <Modal show={visible} centered size="lg">
+        {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
         <Modal.Header>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
         </Modal.Header>
@@ -255,7 +264,6 @@ function RegisterForm() {
             <form onSubmit={handleSubmit}>
             
               <p>Please enter the code emailed to you below:</p>
-              <p>{code}</p>
               <input
                 type="text"
                 name="email-verify"
@@ -263,13 +271,19 @@ function RegisterForm() {
                 placeholder="Enter the code here"
                 onChange={handleCodeChange}
               />
-
-              {errorVerification && 
+              
+              <hr/>
+              {/* verificationError is displayed if the code by user could not be verified, modalError is displayed if the user could not be created for any reason */}
+              {verificationError && 
               <p className="warning">
                 Your code is incorrect. <Link onClick={() => sendCode(user)}>Resend code</Link>
               </p>
               }
-              <hr/>
+              {modalError && 
+              <p className="warning">
+                An unknown error occurred.
+              </p>
+              }
 
               <button className="sign-in-button" type="submit">
                 Verify my Email
