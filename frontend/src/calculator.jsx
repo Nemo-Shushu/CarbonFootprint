@@ -1,25 +1,20 @@
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import CalculationBar from "./CalculationBar";
+import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
 import "./static/dashboard.css";
+import "./static/Instruction.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
-import { useAuth } from "./useAuth";
-import ResultsDisplay from "./ResultsDisplay";
-import Cookies from "js-cookie";
 
-const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
   const [report, setReport] = useState({});
 
   const navigate = useNavigate();
-
-  function handleProtect() {
-    navigate("/sign-in");
-  }
 
   async function submitReport() {
     try {
@@ -28,7 +23,7 @@ function Calculator() {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrftoken,
+          "X-CSRFToken": Cookies.get("csrftoken"),
         },
         body: JSON.stringify(report),
       });
@@ -47,20 +42,122 @@ function Calculator() {
 
   function Instructions() {
     const navigate = useNavigate();
-
-    function handleRoute() {
-      navigate("/calculator/utilities");
-      submitReport();
-    }
+    const steps = [
+      {
+        title: "Step 1 - General Data Entry",
+        content: (
+          <ul className="text-sm text-[#4F7A6A] list-none pl-5 space-y-2 pb-4">
+            <li>
+              <strong>Utilities:</strong> Enter FTE staff numbers and GIA data.
+            </li>
+            <li>
+              <strong>Travel:</strong> Input travel distances by transport type.
+            </li>
+            <li>
+              <strong>Waste:</strong> Estimate project waste.{" "}
+              <em>
+                Tip: Multiply weekly waste by 52 to get the annual figure.
+              </em>
+            </li>
+          </ul>
+        ),
+      },
+      {
+        title: "Step 2 - Procurement",
+        content: (
+          <p className="text-sm text-[#4F7A6A] pb-4">
+            Please enter project-related procurement expenses. Add a new line
+            for each category. For reference, this section is taken directly
+            from the Higher Education Supply Chain Emission Tool (HESCET)
+            created by the Higher Education Procurement Association (HEPA).{" "}
+            <a
+              href="https://www.hepa.ac.uk/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#385A4F] underline"
+            >
+              Visit HEPA Website
+            </a>
+          </p>
+        ),
+      },
+      {
+        title: "Step 3 - Results",
+        content: (
+          <p className="text-sm text-[#4F7A6A] pb-4">
+            View a comprehensive summary and visual representations of your
+            project&rsquo;s annual carbon footprint. This section includes
+            detailed charts and graphs, allowing you to easily interpret your
+            data. Use the results to identify key emission sources and explore
+            opportunities for reducing your carbon footprint.
+          </p>
+        ),
+      },
+      {
+        title: "Help & Tips",
+        content: (
+          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2 pb-4">
+            <li>
+              <strong>&lsquo;Next&rsquo; Button:</strong> Click to save progress
+              on each page.
+            </li>
+            <li>
+              <strong>Final Submission:</strong> Review all data before
+              submitting.
+            </li>
+            <li>
+              Need help?{" "}
+              <a
+                href="mailto:sustainable-solutions@glasgow.ac.uk"
+                className="text-[#385A4F] underline"
+              >
+                Contact us
+              </a>
+            </li>
+          </ul>
+        ),
+      },
+    ];
 
     return (
-      <main className="ms-sm-auto px-md-4">
-        <h2>Instructions</h2>
-        <h5>
-          Use Calculator like that. Click &quot;Next&quot; to save your inputs.
-        </h5>
-        <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-          <button type="button" className="btn btn-moss" onClick={handleRoute}>
+      <main className="instructions-container">
+        <div className="instructions-header">
+          <img
+            src="/images/UniLogo.png"
+            alt="University of Glasgow Logo"
+            className="instructions-logo"
+          />
+          <h2 className="instructions-title">Carbon Footprint Calculator</h2>
+        </div>
+
+        {/* Introduction Text */}
+        <p className="instructions-intro">
+          Welcome to the Academic Carbon Footprint Calculator. This tool is
+          designed to help you estimate and better understand the annual carbon
+          footprint of your research activities. By following the steps below,
+          you will be guided through the process of data entry, procurement
+          details, and the interpretation of results to support informed
+          sustainability decisions.
+        </p>
+
+        {/* Cards Grid */}
+        <div className="flex flex-col gap-10 mb-12 px-4">
+          {steps.map(({ title, content }, index) => (
+            <div key={index} className="instructions-card">
+              <div className="instructions-card-header">
+                <h3 className="instructions-card-title">{title}</h3>
+              </div>
+              <div className="instructions-card-content">{content}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="instructions-footer">
+          <button
+            type="button"
+            className="btn btn-moss"
+            onClick={() => navigate("/calculator/utilities")}
+          >
             Start
           </button>
         </div>
@@ -814,6 +911,7 @@ function Calculator() {
     const [loaded, setLoaded] = useState(false);
     const [rowCategory, setRowCategory] = useState({});
     const [categorySelected, setCategorySelected] = useState({});
+    const [searchText, setSearchText] = useState(""); // Tracks search input
 
     useEffect(() => {
       /* 
@@ -932,6 +1030,16 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
+                    {/* Search Input for Filtering Dropdown Options */}
+                    <input
+                      type="text"
+                      placeholder="Search category..."
+                      className="form-control form-control-sm mb-1"
+                      onChange={(event) =>
+                        setSearchText(event.target.value.toLowerCase())
+                      }
+                    />
+
                     <select
                       defaultValue={
                         rowCategory[num] === null ? "default" : rowCategory[num]
@@ -941,24 +1049,31 @@ function Calculator() {
                       onChange={handleCategoryChange}
                       disabled={rowCategory[num] !== null}
                     >
-                      <option value="default" disabled="true">
+                      <option value="default" disabled>
                         Select a procurement category
                       </option>
-                      {procurementCategories.map((category) => (
-                        <option
-                          key={category.code}
-                          value={category.code}
-                          disabled={categorySelected[category.code]}
-                        >
-                          {category.code} - {category.name}
-                          {categorySelected[category.code] &&
-                          category.code != rowCategory[num]
-                            ? " - SELECTED"
-                            : ""}
-                        </option>
-                      ))}
+                      {procurementCategories
+                        .filter(
+                          (category) =>
+                            category.name.toLowerCase().includes(searchText) ||
+                            category.code.includes(searchText),
+                        )
+                        .map((category) => (
+                          <option
+                            key={category.code}
+                            value={category.code}
+                            disabled={categorySelected[category.code]}
+                          >
+                            {category.code} - {category.name}
+                            {categorySelected[category.code] &&
+                            category.code !== rowCategory[num]
+                              ? " - SELECTED"
+                              : ""}
+                          </option>
+                        ))}
                     </select>
                   </td>
+
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
                       <span style={{ fontSize: "1rem", fontWeight: "600" }}>
@@ -1025,7 +1140,7 @@ function Calculator() {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrftoken,
+            "X-CSRFToken": Cookies.get("csrftoken"),
           },
           body: JSON.stringify(report),
         });
@@ -1067,7 +1182,7 @@ function Calculator() {
     );
   }
 
-  return useAuth() ? (
+  return (
     <div style={{ display: "flex", height: "100vh" }}>
       <Sidebar style={{ flex: "0 0 17%" }} />
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
@@ -1083,8 +1198,6 @@ function Calculator() {
         </Routes>
       </main>
     </div>
-  ) : (
-    handleProtect()
   );
 }
 

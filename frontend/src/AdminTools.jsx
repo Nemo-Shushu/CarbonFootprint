@@ -71,7 +71,7 @@ function AdminTool() {
                 <th style={{ width: "5%" }}>Id</th>
                 <th style={{ width: "25%" }}>Email</th>
                 <th style={{ width: "50%" }}>Request Admin</th>
-                <th style={{ width: "20%" }}>Confirmaction</th>
+                <th style={{ width: "20%" }}>Confirmation</th>
               </tr>
             </thead>
             <tbody>
@@ -192,14 +192,14 @@ function AdminTool() {
                       className="btn btn-secondary"
                       onClick={closeConfirmationPopUp}
                     >
-                      Cancel
+                      cancel
                     </button>
                     <button
                       type="button"
                       className="btn btn-primary"
                       onClick={confirmAction}
                     >
-                      Confirm
+                      confirm
                     </button>
                   </div>
                 </div>

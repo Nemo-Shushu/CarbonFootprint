@@ -6,9 +6,9 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from calculator.models import Result
-from calculator.models import ProcurementData, CategoryCarbonImpact
-from calculator.models import BenchmarkData
+from api.models import Result
+from api.models import ProcurementData, CategoryCarbonImpact
+from api.models import BenchmarkData
 from api.models import User
 
 from rest_framework.decorators import api_view, permission_classes
@@ -70,7 +70,10 @@ def whoami_view(request):
         'forename': user.first_name,
         'email': user.email,
         'institute': user.institute.name,
-        'research_field':user.research_field.name
+        'research_field':user.research_field.name,
+        'isAdmin': user.is_admin,
+        'isResearcher': user.is_researcher,
+        'dateJoined': user.date_joined,
     })
 
 

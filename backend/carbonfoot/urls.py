@@ -28,5 +28,4 @@ urlpatterns = [
     path("api/accounts/", include("accounts.urls")),
     path("api2/", include("api.urls")),
     path("api/serializer", include(router.urls)),
-    path("api/calculator/", include("calculator.urls")),
 ]
