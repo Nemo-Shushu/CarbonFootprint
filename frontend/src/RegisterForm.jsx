@@ -34,7 +34,8 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
+  return fetch(backendUrl + "api/accounts/???/", {
+    // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +61,8 @@ async function validateUser(user) {
 }
 
 async function sendCode(user) {
-  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
+  return fetch(backendUrl + "api/accounts/???/", {
+    // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,7 +88,8 @@ async function sendCode(user) {
 }
 
 async function verifyCode(code) {
-  return fetch(backendUrl + "api/accounts/???/", { // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
+  return fetch(backendUrl + "api/accounts/???/", {
+    // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -178,7 +181,7 @@ function RegisterForm() {
   const handleSubmit = (event) => {
     // when user has received their code, they paste it into the text box and press "Verify my Email". Then this function attempts to verify the verification code.
     // if verifyCode is successful, the function attempts to create the account with createUser.
-    // If createUser succeeds, user is routed to sign-in. 
+    // If createUser succeeds, user is routed to sign-in.
     // If createUser doesn't succeed, modalError is set in the modal. It is expected that by this point - user details have been verified by validateUser, and createUser shouldn't fail.
     // if verifyCode is not successful, verificationError is set in the modal
     event.preventDefault();
@@ -210,23 +213,23 @@ function RegisterForm() {
     // if the new user's details are verified successfuly, the confirmation code is sent to the user through sendCode backend API call, and the modal is set visible
     event.preventDefault();
     validateUser(user)
-    .then((data) => {
-      console.log("User valid:", data);
-      setError("");
-      sendCode(user);
-      setVisible(true);
-    })
-    .catch((err) => {
-      console.error("Error validating new user details:", err);
-      const errorKeys = Object.keys(err);
-      if (errorKeys.length > 0) {
-        const firstKey = errorKeys[0];
-        const firstMessage = err[firstKey][0];
-        setError(firstMessage);
-      } else {
-        setError("An unknown error occurred.");
-      }
-    });
+      .then((data) => {
+        console.log("User valid:", data);
+        setError("");
+        sendCode(user);
+        setVisible(true);
+      })
+      .catch((err) => {
+        console.error("Error validating new user details:", err);
+        const errorKeys = Object.keys(err);
+        if (errorKeys.length > 0) {
+          const firstKey = errorKeys[0];
+          const firstMessage = err[firstKey][0];
+          setError(firstMessage);
+        } else {
+          setError("An unknown error occurred.");
+        }
+      });
   };
 
   const handleChange = (event) => {
@@ -262,7 +265,6 @@ function RegisterForm() {
         <Modal.Body>
           <div className="sign-in-form">
             <form onSubmit={handleSubmit}>
-            
               <p>Please enter the code emailed to you below:</p>
               <input
                 type="text"
@@ -271,19 +273,18 @@ function RegisterForm() {
                 placeholder="Enter the code here"
                 onChange={handleCodeChange}
               />
-              
-              <hr/>
+
+              <hr />
               {/* verificationError is displayed if the code by user could not be verified, modalError is displayed if the user could not be created for any reason */}
-              {verificationError && 
-              <p className="warning">
-                Your code is incorrect. <Link onClick={() => sendCode(user)}>Resend code</Link>
-              </p>
-              }
-              {modalError && 
-              <p className="warning">
-                An unknown error occurred.
-              </p>
-              }
+              {verificationError && (
+                <p className="warning">
+                  Your code is incorrect.{" "}
+                  <Link onClick={() => sendCode(user)}>Resend code</Link>
+                </p>
+              )}
+              {modalError && (
+                <p className="warning">An unknown error occurred.</p>
+              )}
 
               <button className="sign-in-button" type="submit">
                 Verify my Email
