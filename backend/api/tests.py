@@ -19,7 +19,6 @@ from api.views import (
 import json
 from unittest.mock import patch, MagicMock
 from api.models import Result
-from django.http import JsonResponse
 
 
 # Mock Utilities
