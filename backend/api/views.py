@@ -397,3 +397,4 @@ def get_all_report_data(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
