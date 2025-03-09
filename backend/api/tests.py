@@ -1,10 +1,6 @@
 from django.test import SimpleTestCase, RequestFactory
-from unittest.mock import patch
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.auth import authenticate
 from api.views import get_csrf, login_view, logout_view
 import json
-from django.test import SimpleTestCase, RequestFactory
 from unittest.mock import patch, MagicMock
 
 
