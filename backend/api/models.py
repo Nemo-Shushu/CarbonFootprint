@@ -84,26 +84,6 @@ class Result(models.Model):
     class Meta:
         db_table = "calculate_result"
 
-
-class WasteEmission(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    type_of_waste = models.CharField(max_length=50, unique=True)
-    amount = models.FloatField()
-    carbon_intensity = models.DecimalField(
-        max_digits=10, decimal_places=5, null=True, blank=True
-    )
-    total_emissions = models.DecimalField(
-        max_digits=15, decimal_places=5, null=True, blank=True
-    )
-    submission_id = models.BigIntegerField()
-
-    class Meta:
-        db_table = "accounts_wasteemission"
-
-    def __str__(self):
-        return f"{self.type_of_waste}: {self.carbon_intensity}"
-
-
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)
     category = models.CharField(max_length=150)
