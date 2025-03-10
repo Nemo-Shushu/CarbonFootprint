@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "./useAuth";
 import PropTypes from "prop-types";
 import "./scss/custom.scss";
 
@@ -13,6 +14,7 @@ Sidebar.propTypes = {
 
 function Sidebar({ onAdminStatusChange }) {
   const [activeItem, setActiveItem] = useState("Dashboard");
+  const { isAuthenticated, loading } = useAuth();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
   const [isAdmin, setIsAdmin] = useState(true); //isAdmin Status
@@ -34,6 +36,14 @@ function Sidebar({ onAdminStatusChange }) {
     }
     getName();
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated) {
+        handleProtect();
+      }
+    }
+  }, [isAuthenticated, loading]);
 
   function isResponseOk(response) {
     if (response.status >= 200 && response.status <= 299) {
@@ -93,6 +103,10 @@ function Sidebar({ onAdminStatusChange }) {
   function handleAdminTool() {
     navigate("/admin-tool");
   }
+
+  const handleProtect = () => {
+    navigate("/sign-in");
+  };
 
   return (
     <div

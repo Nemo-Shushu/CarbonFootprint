@@ -1,60 +1,33 @@
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
+import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SignInForm() {
-  const [csrf, setCsrf] = useState();
   const [error, setError] = useState();
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        handleProtect();
+      }
+    }
+  }, [isAuthenticated, loading]);
+
   const handleProtect = () => {
     navigate("/dashboard");
   };
-
-  useEffect(() => {
-    getSession();
-  }, []);
-
-  async function getCSRF() {
-    await fetch(backendUrl + "api2/csrf/", {
-      credentials: "include",
-    })
-      .then((res) => {
-        const csrfToken = res.headers.get("X-CSRFToken");
-        setCsrf(csrfToken);
-        console.log(csrf);
-        console.log("got token!");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  async function getSession() {
-    await fetch(backendUrl + "api2/session/", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.isAuthenticated) {
-          navigate("/dashboard");
-        } else {
-          getCSRF();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
@@ -77,7 +50,7 @@ function SignInForm() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrf,
+        "X-CSRFToken": Cookies.get("csrftoken"),
       },
       credentials: "include",
       body: JSON.stringify({ username: username, password: password }),
@@ -99,7 +72,6 @@ function SignInForm() {
   async function handleLogin(event) {
     event.preventDefault();
     try {
-      await getCSRF();
       await login();
       handleProtect();
     } catch (err) {
@@ -108,74 +80,68 @@ function SignInForm() {
   }
 
   return (
-    <div>
-      {/* Main Form */}
-      <main className="form-signin w-100 m-auto">
-        <form onSubmit={handleLogin}>
-          <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+    <div className="sign-in-wrapper">
+      <div className="sign-in-container">
+        {/* Left Side - Form */}
+        <div className="sign-in-form">
+          <h2>Welcome Back</h2>
+          <p>Please sign in to continue.</p>
 
-          <div className="form-floating">
-            <input
-              type="text"
-              name="username"
-              className="form-control"
-              id="floatingInput"
-              placeholder="Username"
-              onChange={handleUserNameChange}
-            />
-            <label htmlFor="floatingInput">Username</label>
-          </div>
-          <div className="form-floating position-relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              className="form-control"
-              id="floatingPassword"
-              placeholder="Password"
-              onChange={handlePasswordChange}
-            />
-            <label htmlFor="floatingPassword">Password</label>
+          <form onSubmit={handleLogin}>
+            <div className="input-group">
+              <input
+                type="text"
+                name="username"
+                className="input-field"
+                placeholder="Email Address"
+                value={username}
+                onChange={handleUserNameChange}
+              />
+            </div>
 
-            <button
-              type="button"
-              onClick={toggleShowPassword}
-              className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
-              style={{ textDecoration: "none" }}
-            >
-              {showPassword ? "Hide" : "Show"}
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="input-field"
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="show-password"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            {error && <p className="warning">{error}</p>}
+
+            <div className="remember-me">
+              <input type="checkbox" id="remember" />
+              <label htmlFor="remember"> Remember me</label>
+              <Link to="/forgot-password" className="forgot-password">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button className="sign-in-button" type="submit">
+              Login
             </button>
-          </div>
-          <p className="warning">{error}</p>
-          <div className="form-check text-start my-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value="remember-me"
-              id="flexCheckDefault"
-            />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Remember me
-            </label>
-          </div>
-          <button className="btn btn-success w-100 py-2" type="submit">
-            Sign in
-          </button>
-          <Link to="/register">
-            <button
-              className="btn btn-outline-success w-100 py-2 mt-2"
-              type="button"
-            >
-              Don&apos;t have an account? Go to register
-            </button>
-          </Link>
-          <button
-            className="btn btn-outline-success w-100 py-2 mt-2"
-            type="button"
-          >
-            Fogot your password?
-          </button>
-        </form>
-      </main>
+
+            <p className="register-link">
+              Don&apos;t have an account? <Link to="/register">Sign up</Link>
+            </p>
+          </form>
+        </div>
+
+        {/* Right Side - Background Image */}
+        <div className="sign-in-image">
+          <div className="overlay-text">Carbon Footprint Calculator</div>
+        </div>
+      </div>
     </div>
   );
 }
