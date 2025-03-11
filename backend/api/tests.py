@@ -207,7 +207,6 @@ class InstitutionFieldTests(SimpleTestCase):
         self.factory = RequestFactory()
 
     def mock_serializer(self, data):
-        """模拟序列化器的 .data 属性"""
         mock_serializer = MagicMock()
         mock_serializer.data = data
         return mock_serializer
