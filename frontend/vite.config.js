@@ -32,6 +32,7 @@ export default defineConfig({
         "node_modules",
         "vite.config.js",
         "src/features/**",
+        "setupTest.jsx"
       ],
     },
   },
