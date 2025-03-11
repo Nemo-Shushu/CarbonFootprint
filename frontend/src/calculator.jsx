@@ -912,7 +912,6 @@ function Calculator() {
     const [loaded, setLoaded] = useState(false);
     const [rowCategory, setRowCategory] = useState({});
     const [categorySelected, setCategorySelected] = useState({});
-    const [searchText, setSearchText] = useState(""); // Tracks search input
 
     useEffect(() => {
       /* 
@@ -950,7 +949,7 @@ function Calculator() {
 
     function handleCategoryChange(selectedOption, { name }) {
       if (!selectedOption) return;
-      
+
       const rowNum = name;
 
       //remove previously seleted category
@@ -1049,43 +1048,41 @@ function Calculator() {
                       type="text"
                       placeholder="Search category..."
                       className="form-control form-control-sm mb-1"
-                      onChange={(event) =>
-                        setSearchText(event.target.value.toLowerCase())
-                      }
                     />
-
-                <Select
-                    options={procurementCategories.map((category) => ({
-                      value: category.code,
-                      label: `${category.code} - ${category.name}`,
-                      isDisabled: categorySelected[category.code], // Disable already selected categories
-                    })) || []}
-                    value={
-                      rowCategory[num]
-                        ? {
-                            value: rowCategory[num],
-                            label:
-                              procurementCategories.find(
-                                (c) => c.code === rowCategory[num]
-                              )?.name || rowCategory[num],
-                          }
-                        : null
-                    }
-                    onChange={handleCategoryChange}
-                    name={num} // Pass row number to track category selection
-                    placeholder="Select or search a category..."
-                    isSearchable // enables typing inside the dropdown to search
-                    menuPortalTarget={document.body}
-                    styles = {{
-                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                      menu: (base) => ({
-                        ...base,
-                        maxHeight:"600px",
-                        overflowY: "auto",
-                      })
-                    }}
-                  />
-                </td>
+                    <Select
+                      options={
+                        procurementCategories.map((category) => ({
+                          value: category.code,
+                          label: `${category.code} - ${category.name}`,
+                          isDisabled: categorySelected[category.code], // Disable already selected categories
+                        })) || []
+                      }
+                      value={
+                        rowCategory[num]
+                          ? {
+                              value: rowCategory[num],
+                              label:
+                                procurementCategories.find(
+                                  (c) => c.code === rowCategory[num],
+                                )?.name || rowCategory[num],
+                            }
+                          : null
+                      }
+                      onChange={handleCategoryChange}
+                      name={num} // Pass row number to track category selection
+                      placeholder="Select or search a category..."
+                      isSearchable // enables typing inside the dropdown to search
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        menu: (base) => ({
+                          ...base,
+                          maxHeight: "600px",
+                          overflowY: "auto",
+                        }),
+                      }}
+                    />
+                  </td>
 
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
@@ -1096,7 +1093,7 @@ function Calculator() {
                         type="number"
                         className="form-control form-control-sm ms-2"
                         disabled={rowCategory[num] === null}
-                        id={'amount-${num}'}
+                        id={"amount-${num}"}
                         name={rowCategory[num]}
                         placeholder="Expenses, GBP"
                         value={procurementReport[rowCategory[num]] ?? ""}
