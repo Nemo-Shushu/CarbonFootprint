@@ -1,10 +1,9 @@
-
 .front-page {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom, #4F7A6A, #7B9E91);
+  background: linear-gradient(to bottom, #4f7a6a, #7b9e91);
   position: relative;
 }
 
@@ -14,7 +13,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, #4F7A6A, #7B9E91);
+  background: linear-gradient(to bottom, #4f7a6a, #7b9e91);
 }
 
 .text-container {
@@ -52,7 +51,7 @@
 }
 
 .primary-button:hover {
-  background:  #3A5E50
+  background: #3a5e50;
 }
 
 .secondary-button {
@@ -80,4 +79,3 @@
   height: auto;
   z-index: 10;
 }
-

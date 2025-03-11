@@ -383,7 +383,12 @@ function Calculator() {
         </form>
 
         <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-          <button type="button" className="btn btn-moss" onClick={handleRoute} data-testid="utilities-next-button">
+          <button
+            type="button"
+            className="btn btn-moss"
+            onClick={handleRoute}
+            data-testid="utilities-next-button"
+          >
             Next
           </button>
         </div>

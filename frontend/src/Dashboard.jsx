@@ -335,8 +335,9 @@ function Dashboard() {
                   </button>
                 </li>
                 <li>
-                  <button 
-                    className="dropdown-item" onClick={""}
+                  <button
+                    className="dropdown-item"
+                    onClick={""}
                     data-testid="setting-btn"
                   >
                     Settings

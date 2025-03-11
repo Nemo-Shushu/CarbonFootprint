@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import RequestAdmin from "../RequestAdmin";
-import { useAuth } from "../useAuth"; 
+import { useAuth } from "../useAuth";
 
 // Mock `useAuth`
 vi.mock("../useAuth", () => ({
@@ -29,11 +29,15 @@ describe("RequestAdmin Component", () => {
     render(
       <MemoryRouter>
         <RequestAdmin />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
-    expect(screen.getByRole("heading", { level: 1, name: /request admin/i })).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter your reason")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: /request admin/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter your reason"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
   });
@@ -44,7 +48,7 @@ describe("RequestAdmin Component", () => {
     render(
       <MemoryRouter>
         <RequestAdmin />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -58,19 +62,21 @@ describe("RequestAdmin Component", () => {
     render(
       <MemoryRouter>
         <RequestAdmin />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-    expect(global.alert).toHaveBeenCalledWith("Your request has been submitted!");
+    expect(global.alert).toHaveBeenCalledWith(
+      "Your request has been submitted!",
+    );
   });
 
   it("navigates to dashboard when Back button is clicked", () => {
     render(
       <MemoryRouter>
         <RequestAdmin />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /back/i }));

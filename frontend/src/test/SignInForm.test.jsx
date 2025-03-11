@@ -40,7 +40,7 @@ describe("SignInForm Component", () => {
     render(
       <MemoryRouter>
         <SignInForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const usernameInput = screen.getByPlaceholderText("Email Address");
@@ -53,7 +53,7 @@ describe("SignInForm Component", () => {
     fireEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/dashboard"); 
+      expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
     });
   });
 
@@ -62,13 +62,13 @@ describe("SignInForm Component", () => {
       Promise.resolve({
         status: 401,
         json: () => Promise.reject(new Error("Unauthorized")),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <SignInForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const usernameInput = screen.getByPlaceholderText("Email Address");
@@ -81,7 +81,9 @@ describe("SignInForm Component", () => {
     fireEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Wrong username or password")).toBeInTheDocument();
+      expect(
+        screen.getByText("Wrong username or password"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -89,12 +91,11 @@ describe("SignInForm Component", () => {
     render(
       <MemoryRouter>
         <SignInForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const passwordInput = screen.getByPlaceholderText("Password");
     const toggleButton = screen.getByRole("button", { name: "Show" });
-
 
     expect(passwordInput.type).toBe("password");
     fireEvent.click(toggleButton);

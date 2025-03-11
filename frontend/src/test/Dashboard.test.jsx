@@ -11,9 +11,9 @@ vi.mock("../useAuth", () => ({
 
 // Mock React Bootstrap Modal
 vi.mock("react-bootstrap/Modal", () => ({
-    default: ({ show, children }) => (show ? <div data-testid="modal">{children}</div> : null),
+  default: ({ show, children }) =>
+    show ? <div data-testid="modal">{children}</div> : null,
 }));
-  
 
 // Before each test, reset mocks
 beforeEach(() => {
@@ -26,12 +26,16 @@ describe("Dashboard Component", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { level: 1, name: /dashboard/i })).toBeInTheDocument();
-      expect(screen.getAllByText("Available Reports").length).toBeGreaterThan(0);
+      expect(
+        screen.getByRole("heading", { level: 1, name: /dashboard/i }),
+      ).toBeInTheDocument();
+      expect(screen.getAllByText("Available Reports").length).toBeGreaterThan(
+        0,
+      );
     });
   });
 });
@@ -39,17 +43,27 @@ describe("Dashboard Component", () => {
 describe("Dashboard component - Table headers", () => {
   it("renders the table headers for normal users", async () => {
     const mockSetState = vi.fn();
-    vi.spyOn(require("react"), "useState").mockReturnValue([false, mockSetState]);
+    vi.spyOn(require("react"), "useState").mockReturnValue([
+      false,
+      mockSetState,
+    ]);
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
-      const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
-      expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions"]);
+      const headers = screen
+        .getAllByRole("columnheader")
+        .map((th) => th.textContent);
+      expect(headers).toEqual([
+        "#",
+        "Academic Institution",
+        "Research Field",
+        "Total Emissions",
+      ]);
     });
 
     expect(screen.queryByText("Email")).not.toBeInTheDocument();
@@ -60,18 +74,25 @@ describe("Dashboard component - Table headers", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ isAdmin: true }),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
-      const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
-      expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions"]);
+      const headers = screen
+        .getAllByRole("columnheader")
+        .map((th) => th.textContent);
+      expect(headers).toEqual([
+        "#",
+        "Academic Institution",
+        "Research Field",
+        "Total Emissions",
+      ]);
     });
 
     expect(screen.queryByText("Email")).toBeInTheDocument();
@@ -88,7 +109,7 @@ describe("Dashboard Component - Authentication", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {

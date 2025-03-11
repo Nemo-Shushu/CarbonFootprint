@@ -54,7 +54,7 @@ describe("RegisterForm Component", () => {
     render(
       <MemoryRouter>
         <RegisterForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Create an Account")).toBeInTheDocument();
@@ -66,14 +66,9 @@ describe("RegisterForm Component", () => {
     render(
       <MemoryRouter>
         <RegisterForm />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
   });
-
-  
-  
-
-  
 });

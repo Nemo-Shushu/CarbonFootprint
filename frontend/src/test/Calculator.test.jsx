@@ -3,372 +3,413 @@ import { describe, it, expect, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { Calculator } from "../calculator";
 
-
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
-    const actual = await vi.importActual("react-router-dom");
-    return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-    };
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
 });
 
 vi.mock("../Sidebar", () => ({ default: () => <div data-testid="sidebar" /> }));
-vi.mock("../CalculationBar", () => ({ default: () => <div data-testid="calculation-bar" /> }));
-
+vi.mock("../CalculationBar", () => ({
+  default: () => <div data-testid="calculation-bar" />,
+}));
 
 describe("Calculator Component", () => {
-    it("renders the Calculator component with sidebar and calculation bar", () => {
-        render(
-            <MemoryRouter>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("renders the Calculator component with sidebar and calculation bar", () => {
+    render(
+      <MemoryRouter>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
+    expect(screen.getByTestId("sidebar")).toBeInTheDocument();
+    expect(screen.getByTestId("calculation-bar")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /carbon footprint calculator/i }),
+    ).toBeInTheDocument();
+  });
 
-        expect(screen.getByTestId("sidebar")).toBeInTheDocument();
-        expect(screen.getByTestId("calculation-bar")).toBeInTheDocument();
-        expect(screen.getByRole("heading", { name: /carbon footprint calculator/i })).toBeInTheDocument();
+  it("navigates to the Utilities page when clicking Start", async () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /carbon footprint calculator/i }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("navigates through all steps correctly", async () => {
+    render(
+      <MemoryRouter initialEntries={["/utilities"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText((content) => content.includes("Personnel")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes(
+            "Type of space (for calculation of electricity and gas consumption)",
+          ),
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes(
+            "ype of space (for calculation of water consumption)",
+          ),
+        ),
+      ).toBeInTheDocument();
     });
 
-    it("navigates to the Utilities page when clicking Start", async () => {
-        render(
-            <MemoryRouter initialEntries={["/"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByRole("heading", { name: /carbon footprint calculator/i })).toBeInTheDocument();
-        });
-
+    render(
+      <MemoryRouter initialEntries={["/travel"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText((content) => content.includes("Air travel")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("Sea travel")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("Land travel")),
+      ).toBeInTheDocument();
     });
 
-    it("navigates through all steps correctly", async () => {
-        render(
-            <MemoryRouter initialEntries={["/utilities"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Personnel"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("Type of space (for calculation of electricity and gas consumption)"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("ype of space (for calculation of water consumption)"))).toBeInTheDocument();
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/travel"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Air travel"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("Sea travel"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("Land travel"))).toBeInTheDocument();
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/waste"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Recycling"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("Waste"))).toBeInTheDocument();
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Procurement"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("category"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("value"))).toBeInTheDocument();
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(screen.getByText((content) => content.includes("Results"))).toBeInTheDocument();
-            expect(screen.getByText((content) => content.includes("Data contributing to emissions"))).toBeInTheDocument();
-        });
+    render(
+      <MemoryRouter initialEntries={["/waste"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText((content) => content.includes("Recycling")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("Waste")),
+      ).toBeInTheDocument();
     });
 
-    it("navigates utilities", async () => {
-        render(
-            <MemoryRouter>
-                <Calculator />
-            </MemoryRouter>
-        );
-        fireEvent.click(screen.getByRole("button", { name: /start/i }));
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/utilities");
-        });
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText((content) => content.includes("Procurement")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("category")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => content.includes("value")),
+      ).toBeInTheDocument();
     });
 
-    it("navigates travels", async () => {
-        render(
-            <MemoryRouter initialEntries={["/utilities"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        fireEvent.click(screen.getByRole("button", { name: /next/i }));
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/travel");
-        });
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    await waitFor(() => {
+      expect(
+        screen.getByText((content) => content.includes("Results")),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("Data contributing to emissions"),
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("navigates utilities", async () => {
+    render(
+      <MemoryRouter>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /start/i }));
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/utilities");
+    });
+  });
+
+  it("navigates travels", async () => {
+    render(
+      <MemoryRouter initialEntries={["/utilities"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/travel");
+    });
+  });
+
+  it("navigates waste", async () => {
+    render(
+      <MemoryRouter initialEntries={["/travel"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+  });
+
+  it("submits the report and navigates to dashboard", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ message: "Report saved successfully" }),
+      }),
+    );
+
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /submit/i }),
+      ).toBeInTheDocument();
     });
 
-    it("navigates waste", async () => {
-        render(
-            <MemoryRouter initialEntries={["/travel"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
-        fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("api2/submit/"),
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+          }),
+        }),
+      );
     });
 
-    it("submits the report and navigates to dashboard", async () => {
-        global.fetch = vi.fn(() =>
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ message: "Report saved successfully" }),
-            })
-        );
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
+    });
+  });
 
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("navigates back from travel to utilities", async () => {
+    render(
+      <MemoryRouter initialEntries={["/travel"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        await waitFor(() => {
-            expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByRole("button", { name: /submit/i }));
-
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith(
-                expect.stringContaining("api2/submit/"),
-                expect.objectContaining({
-                    method: "POST",
-                    headers: expect.objectContaining({ "Content-Type": "application/json" }),
-                })
-            );
-        });
-
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
-        });
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
     });
 
-    it("navigates back from travel to utilities", async () => {
-        render(
-            <MemoryRouter initialEntries={["/travel"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    fireEvent.click(screen.getByRole("button", { name: /back/i }));
 
-        await waitFor(() => {
-            expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByRole("button", { name: /back/i }));
-
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/utilities");
-        });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/utilities");
     });
+  });
 
-    it("handles fetch error on submitReport", async () => {
-        global.fetch = vi.fn(() => Promise.reject(new Error("Network error")));
+  it("handles fetch error on submitReport", async () => {
+    global.fetch = vi.fn(() => Promise.reject(new Error("Network error")));
 
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(screen.getByRole("button", { name: /submit/i }));
-
-    });
-
+    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+  });
 });
 
 describe("Procurement Component", () => {
-    it("renders the Procurement component correctly", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("renders the Procurement component correctly", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        await waitFor(() => {
-            expect(screen.getByRole("heading", { name: /procurement/i })).toBeInTheDocument();
-        });
-
-        expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /procurement/i }),
+      ).toBeInTheDocument();
     });
 
-    it("adds a new row when clicking + button", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+  });
 
-        const addRowButton = screen.getByRole("button", { name: "+" });
+  it("adds a new row when clicking + button", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(addRowButton);
+    const addRowButton = screen.getByRole("button", { name: "+" });
 
-        await waitFor(() => {
-            expect(screen.getAllByRole("textbox")).toHaveLength(1);
-        });
+    fireEvent.click(addRowButton);
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("textbox")).toHaveLength(1);
+    });
+  });
+
+  it("allows selecting a category from the dropdown", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "+" }));
+    await waitFor(() => {
+      expect(screen.getAllByRole("textbox")).toHaveLength(1);
     });
 
-    it("allows selecting a category from the dropdown", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    const selectElement = screen.getByRole("combobox");
+    fireEvent.change(selectElement, { target: { value: "A" } });
 
-        fireEvent.click(screen.getByRole("button", { name: "+" }));
-        await waitFor(() => {
-            expect(screen.getAllByRole("textbox")).toHaveLength(1);
-        });
+    expect(selectElement.value).toBe("A");
+  });
 
-        const selectElement = screen.getByRole("combobox");
-        fireEvent.change(selectElement, { target: { value: "A" } });
+  it("deletes a row when clicking Delete", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        expect(selectElement.value).toBe("A");
+    fireEvent.click(screen.getByRole("button", { name: "+" }));
+    await waitFor(() => {
+      expect(screen.getAllByRole("textbox")).toHaveLength(1);
     });
 
-    it("deletes a row when clicking Delete", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    fireEvent.click(deleteButton);
 
-        fireEvent.click(screen.getByRole("button", { name: "+" }));
-        await waitFor(() => {
-            expect(screen.getAllByRole("textbox")).toHaveLength(1);
-        });
-
-        const deleteButton = screen.getByRole("button", { name: /delete/i });
-        fireEvent.click(deleteButton);
-
-        await waitFor(() => {
-            expect(screen.queryByRole("textbox")).toBeNull();
-        });
+    await waitFor(() => {
+      expect(screen.queryByRole("textbox")).toBeNull();
     });
+  });
 
-    it("navigates to results when Next is clicked", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("navigates to results when Next is clicked", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(screen.getByRole("button", { name: /next/i }));
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/results");
-        });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/results");
     });
+  });
 
-    it("navigates back to waste when Back is clicked", async () => {
-        render(
-            <MemoryRouter initialEntries={["/procurement"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("navigates back to waste when Back is clicked", async () => {
+    render(
+      <MemoryRouter initialEntries={["/procurement"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(screen.getByRole("button", { name: /back/i }));
+    fireEvent.click(screen.getByRole("button", { name: /back/i }));
 
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/waste");
-        });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/waste");
     });
-
+  });
 });
 
 describe("Results Component", () => {
-    it("renders the Results component correctly", async () => {
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("renders the Results component correctly", async () => {
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        await waitFor(() => {
-            expect(screen.getByRole("heading", { name: /results/i })).toBeInTheDocument();
-        });
-        expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /results/i }),
+      ).toBeInTheDocument();
     });
+    expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
+  });
 
-    it("fetches calculation data and updates the state", async () => {
-        global.fetch = vi.fn(() =>
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ total_emissions: 500 }),
-            })
-        );
+  it("fetches calculation data and updates the state", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ total_emissions: 500 }),
+      }),
+    );
 
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith(
-                expect.stringContaining("api2/report/"),
-                expect.objectContaining({
-                    method: "POST",
-                    headers: expect.objectContaining({ "Content-Type": "application/json" }),
-                })
-            );
-        });
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("api2/report/"),
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+          }),
+        }),
+      );
     });
+  });
 
-    it("navigates back to procurement when Back is clicked", async () => {
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("navigates back to procurement when Back is clicked", async () => {
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(screen.getByRole("button", { name: /back/i }));
+    fireEvent.click(screen.getByRole("button", { name: /back/i }));
 
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/calculator/procurement");
-        });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/calculator/procurement");
     });
+  });
 
-    const mockSubmitReport = vi.fn();
-    vi.mock("../submitReport", () => ({ default: mockSubmitReport }));
+  const mockSubmitReport = vi.fn();
+  vi.mock("../submitReport", () => ({ default: mockSubmitReport }));
 
-    it("calls submitReport when Submit is clicked", async () => {
-        render(
-            <MemoryRouter initialEntries={["/results"]}>
-                <Calculator />
-            </MemoryRouter>
-        );
+  it("calls submitReport when Submit is clicked", async () => {
+    render(
+      <MemoryRouter initialEntries={["/results"]}>
+        <Calculator />
+      </MemoryRouter>,
+    );
 
-        fireEvent.click(screen.getByRole("button", { name: /submit/i }));
-    });
-
-
-
-
+    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+  });
 });

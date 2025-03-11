@@ -11,12 +11,12 @@ describe("ResultsDisplay Component", () => {
   it("renders total carbon emissions title", async () => {
     const mockCalculations = {
       total_carbon_emissions: 95426.8,
-      total_electricity_emissions:8467.08,
+      total_electricity_emissions: 8467.08,
       total_gas_emissions: 123124,
       total_water_emissions: 329.59,
       total_travel_emissions: 45.1,
       total_waste_emissions: 75039.53,
-      total_procurement_emissions: 24.18
+      total_procurement_emissions: 24.18,
     };
 
     render(<ResultsDisplay calculations={mockCalculations} rawData={{}} />);
@@ -27,7 +27,9 @@ describe("ResultsDisplay Component", () => {
       expect(screen.getByText(/Total Water Emissions/i)).toBeInTheDocument();
       expect(screen.getByText(/Total Travel Emissions/i)).toBeInTheDocument();
       expect(screen.getByText(/Total Waste Emissions/i)).toBeInTheDocument();
-      expect(screen.getByText(/Total Procurement Emissions/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Total Procurement Emissions/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -57,7 +59,7 @@ describe("ResultsDisplay Component", () => {
         "Mixed-Recycle": 321,
       },
       Procurement: {
-        "AA": 321,
+        AA: 321,
       },
     };
 
