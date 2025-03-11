@@ -44,10 +44,7 @@ describe("Dashboard Component", () => {
 describe("Dashboard component - Table headers", () => {
   it("renders the table headers for normal users", async () => {
     const mockSetState = vi.fn();
-    vi.spyOn(useState, "useState").mockReturnValue([
-      false,
-      mockSetState,
-    ]);
+    vi.spyOn(useState, "useState").mockReturnValue([false, mockSetState]);
 
     render(
       <MemoryRouter>
