@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
-import { useState } from "react";
+import React from "react";
 
 // Mock useAuth
 vi.mock("../useAuth", () => ({
@@ -44,7 +44,7 @@ describe("Dashboard Component", () => {
 describe("Dashboard component - Table headers", () => {
   it("renders the table headers for normal users", async () => {
     const mockSetState = vi.fn();
-    vi.spyOn(useState, "useState").mockReturnValue([false, mockSetState]);
+    vi.spyOn(React, "useState").mockImplementation((initialValue) => [ initialValue, mockSetState ]);
 
     render(
       <MemoryRouter>
