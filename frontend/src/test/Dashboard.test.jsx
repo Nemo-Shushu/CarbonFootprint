@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
+import * as React from "react";
 
 // Mock useAuth
 vi.mock("../useAuth", () => ({
