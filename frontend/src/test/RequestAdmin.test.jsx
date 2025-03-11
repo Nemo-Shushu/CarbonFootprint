@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import RequestAdmin from "../RequestAdmin";
+import { useAuth } from "../useAuth"; 
 
 // Mock `useAuth`
 vi.mock("../useAuth", () => ({
@@ -21,12 +22,10 @@ vi.mock("react-router-dom", async () => {
 describe("RequestAdmin Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useAuth.mockReturnValue({ isAuthenticated: true, loading: false });
   });
 
   it("renders the Request Admin page when authenticated", () => {
-    // Mock useAuth = true
-    vi.mocked(require("../useAuth").useAuth).mockReturnValue(true);
-
     render(
       <MemoryRouter>
         <RequestAdmin />
@@ -40,8 +39,7 @@ describe("RequestAdmin Component", () => {
   });
 
   it("redirects to sign-in when not authenticated", async () => {
-    // Mock useAuth = false
-    vi.mocked(require("../useAuth").useAuth).mockReturnValue(false);
+    useAuth.mockReturnValue({ isAuthenticated: false, loading: false });
 
     render(
       <MemoryRouter>
@@ -55,7 +53,6 @@ describe("RequestAdmin Component", () => {
   });
 
   it("shows an alert when Submit button is clicked", () => {
-    vi.mocked(require("../useAuth").useAuth).mockReturnValue(true);
     global.alert = vi.fn(); // Mock alert
 
     render(
@@ -70,8 +67,6 @@ describe("RequestAdmin Component", () => {
   });
 
   it("navigates to dashboard when Back button is clicked", () => {
-    vi.mocked(require("../useAuth").useAuth).mockReturnValue(true);
-
     render(
       <MemoryRouter>
         <RequestAdmin />

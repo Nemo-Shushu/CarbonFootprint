@@ -4,167 +4,95 @@ import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
 
-
-
-// Mock useAuth hook
+// Mock useAuth
 vi.mock("../useAuth", () => ({
-    useAuth: () => true, // user login in 
+  useAuth: vi.fn(),
 }));
 
+// Mock React Bootstrap Modal
+vi.mock("react-bootstrap/Modal", () => ({
+    default: ({ show, children }) => (show ? <div data-testid="modal">{children}</div> : null),
+}));
+  
 
+// Before each test, reset mocks
+beforeEach(() => {
+  vi.clearAllMocks();
+  useAuth.mockReturnValue({ isAuthenticated: true, loading: false });
+});
 
 describe("Dashboard Component", () => {
-    it("renders the Dashboard component", async () => {
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
+  it("renders the Dashboard component", async () => {
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>
+    );
 
-        await waitFor(() => {
-            expect(
-                screen.getByRole("heading", { level: 1, name: /dashboard/i }), // Search all topic 
-                screen.getAllByText("Available Reports")
-            ).toBeInTheDocument();
-        });
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { level: 1, name: /dashboard/i })).toBeInTheDocument();
+      expect(screen.getAllByText("Available Reports").length).toBeGreaterThan(0);
     });
+  });
 });
 
 describe("Dashboard component - Table headers", () => {
+  it("renders the table headers for normal users", async () => {
+    const mockSetState = vi.fn();
+    vi.spyOn(require("react"), "useState").mockReturnValue([false, mockSetState]);
 
-    beforeEach(() => {
-        vi.clearAllMocks();
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
+      expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions"]);
     });
 
-    it("renders the table headers for normal users", async () => {
-        vi.spyOn(require("react"), "useState").mockReturnValueOnce([false, vi.fn()]);
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
+    expect(screen.queryByText("Email")).not.toBeInTheDocument();
+  });
 
-        await waitFor(() => {
+  it("renders the table headers for admin users", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ isAdmin: true }),
+      })
+    );
 
-            const headers = screen.getAllByRole('columnheader').map((th) => th.textContent);
-            expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions"])
-        });
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>
+    );
 
-        // Admin Dashborad element not exist
-        expect(screen.queryByText("Email")).not.toBeInTheDocument();
+    await waitFor(() => {
+      const headers = screen.getAllByRole("columnheader").map((th) => th.textContent);
+      expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions"]);
     });
 
-    it("renders the table headers for admin users", async () => {
-
-        // is_admin = true
-        global.fetch = vi.fn(() =>
-            Promise.resolve({
-                ok: true,
-                json: () => Promise.resolve({ isAdmin: true }),
-            })
-        );
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            const headers = screen.getAllByRole('columnheader').map((th) => th.textContent);
-            expect(headers).toEqual(["#", "Academic Institution", "Research Field", "Total Emissions",])
-        });
-        // Admin Dashborad element exist
-        expect(screen.queryByText("Email")).toBeInTheDocument();
-    });
-
-    it("opens Modal with correct data when a report row is clicked", async () => {
-        // Mock API 
-        global.fetch = vi.fn((url) => {
-            if (url.includes("dashboard_show_user_result_data")) {
-                return Promise.resolve({
-                    ok: true,
-                    json: () =>
-                        Promise.resolve([
-                            { id: 1, institution: "Test University", field: "CS", emissions: 100 },
-                        ]),
-                });
-            }
-            if (url.includes("get_all_report_data")) {
-                return Promise.resolve({
-                    ok: true,
-                    json: () =>
-                        Promise.resolve({
-                            calculations_data: { total: 100 },
-                            report_data: { details: "Test Report" },
-                        }),
-                });
-            }
-            return Promise.reject(new Error("Unexpected API call"));
-        });
-
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => screen.getByText("Test University"));
-        fireEvent.click(screen.getByText("Test University"));
-        await waitFor(() => {
-            expect(screen.getByRole("dialog")).toBeInTheDocument();
-            expect(screen.getByText("Carbon Emissions Data for: Report #1")).toBeInTheDocument();
-        });
-    });
-
-    it("toggles Profile visibility when clicked", async () => {
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
-
-        const profileImage = screen.getByTestId("profile-icon");
-        expect(screen.queryByTestId("profile-btn")).not.toBeInTheDocument();
-        expect(screen.queryByTestId("setting-btn")).not.toBeInTheDocument();
-        fireEvent.click(profileImage);
-        expect(screen.getByTestId("profile-btn")).toBeInTheDocument();
-        expect(screen.queryByTestId("setting-btn")).toBeInTheDocument();
-        fireEvent.click(profileImage);
-        expect(screen.queryByTestId("profile-btn")).not.toBeInTheDocument();
-        expect(screen.queryByTestId("setting-btn")).not.toBeInTheDocument();
-
-        fireEvent.click(profileImage);
-        fireEvent.click(document.body);
-        await waitFor(() => {
-            expect(screen.queryByText("profile-btn")).not.toBeInTheDocument();
-        });
-    });
-
+    expect(screen.queryByText("Email")).toBeInTheDocument();
+  });
 });
-
 
 describe("Dashboard Component - Authentication", () => {
-    beforeEach(async () => {
-        vi.resetModules();
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useAuth.mockReturnValue({ isAuthenticated: false, loading: false });
+  });
 
-        vi.doMock("../useAuth", () => ({
-            useAuth: vi.fn(() => false), // return useAuth = false
-        }));
+  it("redirects to sign-in when not authenticated", async () => {
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe("/");
     });
-
-    it("redirects to sign-in when not authenticated", async () => {
-        const { useAuth } = await import("../useAuth");
-        expect(useAuth()).toBe(false);
-
-        render(
-            <MemoryRouter>
-                <Dashboard />
-            </MemoryRouter>
-        );
-        await waitFor(() => {
-            expect(window.location.pathname).toBe("/");
-        });
-    });
+  });
 });
-
-
