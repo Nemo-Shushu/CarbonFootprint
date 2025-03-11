@@ -1,7 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { vi, test, describe, beforeEach, expect } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 import RegisterForm from "../RegisterForm";
 import { useAuth } from "../useAuth";
 
