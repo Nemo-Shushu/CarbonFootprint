@@ -34,19 +34,6 @@ class CalculationRecord(models.Model):
     def __str__(self):
         return f"Calculation on {self.timestamp}"
 
-
-class emission_factors(models.Model):
-    category = models.CharField(max_length=255, unique=True)
-    benchmark_electricity = models.FloatField(null=True, blank=True)
-    benchmark_gas = models.FloatField(null=True, blank=True)
-
-    def __str__(self):
-        return self.category
-
-    class Meta:
-        db_table = "emission_factors"
-
-
 class ProcurementData(models.Model):
     code = models.CharField(max_length=10, unique=True)
     description_dict = models.JSONField()
@@ -83,26 +70,6 @@ class Result(models.Model):
 
     class Meta:
         db_table = "calculate_result"
-
-
-class WasteEmission(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    type_of_waste = models.CharField(max_length=50, unique=True)
-    amount = models.FloatField()
-    carbon_intensity = models.DecimalField(
-        max_digits=10, decimal_places=5, null=True, blank=True
-    )
-    total_emissions = models.DecimalField(
-        max_digits=15, decimal_places=5, null=True, blank=True
-    )
-    submission_id = models.BigIntegerField()
-
-    class Meta:
-        db_table = "accounts_wasteemission"
-
-    def __str__(self):
-        return f"{self.type_of_waste}: {self.carbon_intensity}"
-
 
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)

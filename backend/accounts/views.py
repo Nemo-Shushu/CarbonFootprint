@@ -24,7 +24,7 @@ class RegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         print(request.data)
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)  
         if serializer.is_valid():
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
