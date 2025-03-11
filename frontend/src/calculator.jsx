@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
@@ -947,20 +948,33 @@ function Calculator() {
       }));
     }
 
-    function handleCategoryChange(event) {
-      //when a new category is selected, it's added to categorySelected and the row is updated with that category
-      const selectedValue = event.target.value;
-      const rowNum = event.target.closest("tr").id;
+    function handleCategoryChange(selectedOption, { name }) {
+      if (!selectedOption) return;
+      
+      const rowNum = name;
+
+      //remove previously seleted category
+      const prevCategory = rowCategory[rowNum];
+      if (prevCategory) {
+        setCategorySelected((prev) => ({ ...prev, [prevCategory]: false }));
+      }
 
       setRowCategory((prevRowCategory) => ({
         ...prevRowCategory,
-        [rowNum]: selectedValue,
+        [rowNum]: selectedOption.value,
       }));
 
       setCategorySelected((prevCategorySelected) => ({
         ...prevCategorySelected,
-        [selectedValue]: true,
+        [selectedOption.value]: true,
       }));
+
+      setTimeout(() => {
+        const amountInput = document.getElementById(`amount-${rowNum}`);
+        if (amountInput) {
+          amountInput.focus();
+        }
+      }, 100);
     }
 
     function handleBack() {
@@ -1040,39 +1054,38 @@ function Calculator() {
                       }
                     />
 
-                    <select
-                      defaultValue={
-                        rowCategory[num] === null ? "default" : rowCategory[num]
-                      }
-                      className="form-select form-select-sm"
-                      aria-label=".form-select-lg example"
-                      onChange={handleCategoryChange}
-                      disabled={rowCategory[num] !== null}
-                    >
-                      <option value="default" disabled>
-                        Select a procurement category
-                      </option>
-                      {procurementCategories
-                        .filter(
-                          (category) =>
-                            category.name.toLowerCase().includes(searchText) ||
-                            category.code.includes(searchText),
-                        )
-                        .map((category) => (
-                          <option
-                            key={category.code}
-                            value={category.code}
-                            disabled={categorySelected[category.code]}
-                          >
-                            {category.code} - {category.name}
-                            {categorySelected[category.code] &&
-                            category.code !== rowCategory[num]
-                              ? " - SELECTED"
-                              : ""}
-                          </option>
-                        ))}
-                    </select>
-                  </td>
+                <Select
+                    options={procurementCategories.map((category) => ({
+                      value: category.code,
+                      label: `${category.code} - ${category.name}`,
+                      isDisabled: categorySelected[category.code], // Disable already selected categories
+                    })) || []}
+                    value={
+                      rowCategory[num]
+                        ? {
+                            value: rowCategory[num],
+                            label:
+                              procurementCategories.find(
+                                (c) => c.code === rowCategory[num]
+                              )?.name || rowCategory[num],
+                          }
+                        : null
+                    }
+                    onChange={handleCategoryChange}
+                    name={num} // Pass row number to track category selection
+                    placeholder="Select or search a category..."
+                    isSearchable // enables typing inside the dropdown to search
+                    menuPortalTarget={document.body}
+                    styles = {{
+                      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      menu: (base) => ({
+                        ...base,
+                        maxHeight:"600px",
+                        overflowY: "auto",
+                      })
+                    }}
+                  />
+                </td>
 
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
@@ -1083,6 +1096,7 @@ function Calculator() {
                         type="number"
                         className="form-control form-control-sm ms-2"
                         disabled={rowCategory[num] === null}
+                        id={'amount-${num}'}
                         name={rowCategory[num]}
                         placeholder="Expenses, GBP"
                         value={procurementReport[rowCategory[num]] ?? ""}
