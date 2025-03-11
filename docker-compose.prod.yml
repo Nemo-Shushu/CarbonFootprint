@@ -45,12 +45,6 @@ services:
       - my-network
     ports:
       - "5432:5432"
-    secrets:
-      - db_password
-    
-secrets:
-  db_password:
-    file: ./db_password.txt
 
 volumes:
   db_data:
