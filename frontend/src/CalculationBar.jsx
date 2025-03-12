@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import "./static/CalculationBar.css";
 
-const CalculationBar = () => {
+function CalculationBar() {
   const location = useLocation();
 
   const showBar = location.pathname !== "/calculator";
@@ -19,7 +19,7 @@ const CalculationBar = () => {
     location.pathname.startsWith("/calculator/travel") ||
     location.pathname.startsWith("/calculator/waste");
 
-  const getCurrentStepTitle = () => {
+  function getCurrentStepTitle() {
     if (location.pathname === "/calculator/utilities") {
       return "Step 1: General Data Entry - Utilities";
     }
@@ -36,7 +36,7 @@ const CalculationBar = () => {
       return "Step 3: Results";
     }
     return "Step 1: General Data Entry";
-  };
+  }
 
   if (!showBar) {
     return null;
@@ -67,6 +67,6 @@ const CalculationBar = () => {
       )}
     </div>
   );
-};
+}
 
 export default CalculationBar;

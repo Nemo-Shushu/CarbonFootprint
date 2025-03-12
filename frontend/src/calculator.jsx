@@ -1044,12 +1044,6 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
-                    {/* Search Input for Filtering Dropdown Options */}
-                    <input
-                      type="text"
-                      placeholder="Search category..."
-                      className="form-control form-control-sm mb-1"
-                    />
                     <Select
                       options={
                         procurementCategories.map((category) => ({
