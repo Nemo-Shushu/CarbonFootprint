@@ -26,7 +26,7 @@ function FactorTable({ tableName, conversionFactors }) {
   const filteredFactors = editedFactors.filter((factor) =>
     `${factor.category} ${factor.consumption_type}`
       .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+      .includes(searchQuery.toLowerCase()),
   );
 
   const sortedFactors = [...filteredFactors].sort((a, b) => {
@@ -45,7 +45,6 @@ function FactorTable({ tableName, conversionFactors }) {
   function toggleEditMode() {
     setEditing(!editing);
   }
-    
 
   function handleInputChange(id, field, value) {
     if (field === "intensity") {
@@ -53,14 +52,14 @@ function FactorTable({ tableName, conversionFactors }) {
       if (value !== "" && !/^-?\d*\.?\d*$/.test(value)) {
         return; // Reject non-numeric input
       }
-      
+
       // Update the value in state
       setEditedFactors((prev) =>
         prev.map((factor) =>
-          factor.id === id ? { ...factor, [field]: value } : factor
-        )
+          factor.id === id ? { ...factor, [field]: value } : factor,
+        ),
       );
-      
+
       // Validate and set errors
       if (value === "" || isNaN(parseFloat(value))) {
         setErrors((prev) => ({ ...prev, [id]: "Must be a valid number" }));
@@ -72,24 +71,24 @@ function FactorTable({ tableName, conversionFactors }) {
         });
       }
     }
-  };  
-  
+  }
+
   async function handleBulkSave(event) {
     if (Object.keys(errors).length > 0) {
       alert("Please correct the errors before saving.");
       return;
     }
-    
+
     // Convert all intensity values to numbers before saving
-    const formattedFactors = editedFactors.map(factor => ({
+    const formattedFactors = editedFactors.map((factor) => ({
       ...factor,
-      intensity: Number(factor.intensity)
+      intensity: Number(factor.intensity),
     }));
-    
+
     await handleBulkUpdateSubmissionAPI(event, formattedFactors);
     setEditing(false);
     getConversionFactors(setEditedFactors);
-  };
+  }
 
   return (
     <div className="container-fluid">
@@ -117,12 +116,12 @@ function FactorTable({ tableName, conversionFactors }) {
         </button>
         {editing && (
           <button
-          className="btn btn-success m-1 flex-grow-1 text-nowrap"
-          onClick={handleBulkSave}
-          disabled={Object.keys(errors).length > 0} // Disable when there are errors
-        >
-          Save Changes
-        </button>
+            className="btn btn-success m-1 flex-grow-1 text-nowrap"
+            onClick={handleBulkSave}
+            disabled={Object.keys(errors).length > 0} // Disable when there are errors
+          >
+            Save Changes
+          </button>
         )}
       </div>
 
@@ -140,9 +139,10 @@ function FactorTable({ tableName, conversionFactors }) {
                   }}
                   style={{ cursor: "pointer" }}
                 >
-                  {field.replace("_", " ")} {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+                  {field.replace("_", " ")}{" "}
+                  {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-              )
+              ),
             )}
           </tr>
         </thead>
@@ -158,9 +158,19 @@ function FactorTable({ tableName, conversionFactors }) {
                       type="text"
                       className={`form-control ${errors[factor.id] ? "is-invalid" : ""}`}
                       value={factor.intensity}
-                      onChange={(e) => handleInputChange(factor.id, "intensity", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          factor.id,
+                          "intensity",
+                          e.target.value,
+                        )
+                      }
                     />
-                    {errors[factor.id] && <div className="invalid-feedback">{errors[factor.id]}</div>}
+                    {errors[factor.id] && (
+                      <div className="invalid-feedback">
+                        {errors[factor.id]}
+                      </div>
+                    )}
                   </>
                 ) : (
                   factor.intensity
