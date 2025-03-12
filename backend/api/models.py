@@ -26,6 +26,7 @@ from accounts.models import User
 #     def __str__(self):
 #         return self.username
 
+
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     input_data = models.JSONField()
@@ -34,9 +35,10 @@ class CalculationRecord(models.Model):
 
     def __str__(self):
         return f"Calculation on {self.timestamp}"
-        
+
     class Meta:
         managed = False
+
 
 class ProcurementData(models.Model):
     code = models.CharField(max_length=10, unique=True)
@@ -73,10 +75,10 @@ class Result(models.Model):
     total_carbon_emissions = models.DecimalField(max_digits=10, decimal_places=2)
     report_data = models.JSONField(null=True, blank=True)
 
-
     class Meta:
         db_table = "calculate_result"
         managed = False
+
 
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)

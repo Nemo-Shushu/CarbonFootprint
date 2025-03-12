@@ -1,4 +1,4 @@
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,9 +6,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
 from .models import User
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 class RegisterView(generics.CreateAPIView):
@@ -18,7 +17,7 @@ class RegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         print(request.data)
-        serializer = self.get_serializer(data=request.data)  
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
@@ -66,6 +65,7 @@ class LogoutView(APIView):
         return Response(
             {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
         )
+
 
 def get_ordered_errors(serializer):
     errors = serializer.errors

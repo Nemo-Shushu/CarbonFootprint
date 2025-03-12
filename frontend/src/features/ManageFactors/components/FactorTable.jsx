@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { getConversionFactors, handleBulkUpdateSubmissionAPI } from "../api/apiFactors.jsx"; // Assuming API functions are in this file
-import ModalTitle from "react-bootstrap/esm/ModalTitle.js";
+import {
+  getConversionFactors,
+  handleBulkUpdateSubmissionAPI,
+} from "../api/apiFactors.jsx"; // Assuming API functions are in this file
 import "../assets/ManageFactors.css";
 
 FactorTable.propTypes = {
   tableName: PropTypes.string,
   conversionFactors: PropTypes.array,
-  setConversionFactors: PropTypes.func.isRequired, // Function to update state after saving
 };
 
 function FactorTable({ tableName, conversionFactors }) {
@@ -26,7 +27,7 @@ function FactorTable({ tableName, conversionFactors }) {
   const filteredFactors = editedFactors.filter((factor) =>
     `${factor.category} ${factor.consumption_type}`
       .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+      .includes(searchQuery.toLowerCase()),
   );
 
   // Handle sorting
@@ -50,8 +51,8 @@ function FactorTable({ tableName, conversionFactors }) {
   const handleInputChange = (id, field, value) => {
     setEditedFactors((prev) =>
       prev.map((factor) =>
-        factor.id === id ? { ...factor, [field]: value } : factor
-      )
+        factor.id === id ? { ...factor, [field]: value } : factor,
+      ),
     );
   };
 
@@ -59,29 +60,21 @@ function FactorTable({ tableName, conversionFactors }) {
   const handleBulkSave = async (event) => {
     await handleBulkUpdateSubmissionAPI(event, editedFactors);
     setEditing(false);
-    getConversionFactors(setConversionFactors); // Refresh data after update
+    getConversionFactors(setEditedFactors); // Refresh data after update
   };
 
-  
-  
-
   return (
-    <div class="container-fluid">
+    <div className="container-fluid">
       <div>
         <div className="row align-items-center">
-          <div
-            className="col-md-8 align-middle"
-            style={{ paddingLeft: "0px" }}
-          >
+          <div className="col-md-8 align-middle" style={{ paddingLeft: "0px" }}>
             <h2 className="text-start">Manage {tableName} Factors</h2>
           </div>
         </div>
       </div>
-    
+
       {/* Search Bar */}
-      <div className="d-flex mb-2">
-        
-      </div>
+      <div className="d-flex mb-2"></div>
 
       {/* Edit & Save Buttons */}
       <div className="d-flex my-3">
@@ -92,11 +85,17 @@ function FactorTable({ tableName, conversionFactors }) {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="btn btn-primary m-1 flex-grow-1 text-nowrap" onClick={toggleEditMode}>
-            {editing ? "Cancel" : "Bulk Edit Mode"}
+        <button
+          className="btn btn-primary m-1 flex-grow-1 text-nowrap"
+          onClick={toggleEditMode}
+        >
+          {editing ? "Cancel" : "Bulk Edit Mode"}
         </button>
         {editing && (
-          <button className="btn btn-success m-1 flex-grow-1 text-nowrap" onClick={handleBulkSave}>
+          <button
+            className="btn btn-success m-1 flex-grow-1 text-nowrap"
+            onClick={handleBulkSave}
+          >
             Save Changes
           </button>
         )}
@@ -120,7 +119,7 @@ function FactorTable({ tableName, conversionFactors }) {
                   {field.replace("_", " ")}{" "}
                   {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-              )
+              ),
             )}
           </tr>
         </thead>

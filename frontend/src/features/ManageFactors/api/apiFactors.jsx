@@ -49,4 +49,3 @@ export async function handleBulkUpdateSubmissionAPI(event, updatedFactors) {
       console.error("Failed to update conversion factors", err);
     });
 }
-

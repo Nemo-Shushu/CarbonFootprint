@@ -8,7 +8,7 @@ class University(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         managed = False
 
@@ -71,6 +71,6 @@ class User(AbstractUser):
 
     def is_researcher_user(self):
         return self.is_researcher
-    
+
     class Meta:
         managed = False

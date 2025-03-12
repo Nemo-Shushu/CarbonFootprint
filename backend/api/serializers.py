@@ -14,15 +14,18 @@ class ResearchFieldSerializer(serializers.ModelSerializer):
         model = ResearchField
         fields = ("name",)
 
+
 class CalculationRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalculationRecord
         fields = "__all__"
 
+
 class GetIntensitySerializer(serializers.ModelSerializer):
     class Meta:
         model = BenchmarkData
         fields = ("id", "category", "intensity", "consumption_type", "unit")
+
 
 class UpdateIntensitySerializer(serializers.ModelSerializer):
     class Meta:
