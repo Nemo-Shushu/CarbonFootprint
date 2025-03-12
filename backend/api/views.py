@@ -409,19 +409,35 @@ def update_intensity_view(request):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        id = request.data.get("id")
-        if not id:
-            return Response({'detail': 'Category is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(request.data, list):
+            return Response({'detail': 'Expected a list of objects.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            benchmark_instance = BenchmarkData.objects.get(id=id)
-        except BenchmarkData.DoesNotExist:
-            return Response({'detail': 'intensity factor not found.'}, status=status.HTTP_404_NOT_FOUND)
+        updated_objects = []
+        errors = []
 
-        # Update the existing object
-        serializer = UpdateIntensitySerializer(benchmark_instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        for item in request.data:
+            id = item.get("id")
+
+            if not id:
+                errors.append({'detail': 'id is required.', 'data': item})
+                continue
+
+            try:
+                benchmark_instance = BenchmarkData.objects.get(id=id)
+            except BenchmarkData.DoesNotExist:
+                errors.append({'detail': f'intensity factor with id {id} not found', 'data': item})
+                continue
+
+            # Update the existing object
+            serializer = UpdateIntensitySerializer(benchmark_instance, data=item, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                updated_objects.append(serializer.data)
+            else:
+                errors.append({'detail': 'Validation failed.', 'errors': serializer.errors, 'data': item})
+
+        response_data = {'updated': updated_objects}
+        if errors:
+            response_data['errors'] = errors
+
+        return Response(response_data, status=status.HTTP_200_OK if updated_objects else status.HTTP_400_BAD_REQUEST)
