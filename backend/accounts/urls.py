@@ -22,7 +22,11 @@ urlpatterns = [
         "conversion-factors/", ConversionFactorsView.as_view(), name="conversion-factor"
     ),
     path("conversion-factors/<int:factor_id>", ConversionFactorsAPIView.as_view()),
-    path("send-email-confirmation-token/", SendEmailConfirmationTokenAPIView.as_view(), name="send_email_confirmation_token"),
+    path(
+        "send-email-confirmation-token/",
+        SendEmailConfirmationTokenAPIView.as_view(),
+        name="send_email_confirmation_token",
+    ),
     path("confirm-email/", ConfirmEmailAPIView.as_view(), name="confirm_email"),
-     path("create-user/", CreateView.as_view(), name="confirm_user"),
+    path("create-user/", CreateView.as_view(), name="confirm_user"),
 ]
