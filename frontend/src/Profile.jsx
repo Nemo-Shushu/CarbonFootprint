@@ -97,7 +97,7 @@ const Profile = () => {
   const [researchField, setResearchField] = useState();
   const [showPassword, setShowPassword] = useState(false);
   // newEmail 상태는 사용자가 "Change Email" 모달에서 입력하는 값입니다.
-  const [newEmail, setNewEmail] = useState('');
+  const [newEmail, setNewEmail] = useState("");
   const [code, setCode] = useState("");
   const [updateForm, setUpdateForm] = useState({
     first_name: "",
@@ -152,7 +152,7 @@ const Profile = () => {
     setNewEmail(event.target.value);
   };
 
-  const handleSend = (event) => {
+  const handleSend = () => {
     if (newEmail.trim() === "") {
       alert("Please fill Email first");
       return;
@@ -321,7 +321,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="bg-grey profile-card card mb-4 p-4" style={{ width: "100%" }}>
+    <div
+      className="bg-grey profile-card card mb-4 p-4"
+      style={{ width: "100%" }}
+    >
       <div className="row align-items-center">
         <div className="container text-white">
           <div className="row">
