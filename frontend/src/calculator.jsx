@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
@@ -192,8 +193,8 @@ function Calculator() {
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
-              <strong>Personnel:</strong>
+            <div className="mt-4">
+              <strong>Personnel</strong>
             </div>
             <hr />
 
@@ -235,7 +236,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>
                 Type of space (for calculation of electricity and gas
                 consumption):
@@ -299,7 +300,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>
                 Type of space (for calculation of water consumption):
               </strong>
@@ -419,7 +420,7 @@ function Calculator() {
         {/* {JSON.stringify(travelReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Air travel</strong>
             </div>
             <hr />
@@ -538,7 +539,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Sea travel</strong>
             </div>
             <hr />
@@ -563,7 +564,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Land travel</strong>
             </div>
             <hr />
@@ -764,7 +765,7 @@ function Calculator() {
         {/* {JSON.stringify(wasteReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Recycling</strong>
             </div>
             <hr />
@@ -807,7 +808,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Waste</strong>
             </div>
             <hr />
@@ -911,7 +912,6 @@ function Calculator() {
     const [loaded, setLoaded] = useState(false);
     const [rowCategory, setRowCategory] = useState({});
     const [categorySelected, setCategorySelected] = useState({});
-    const [searchText, setSearchText] = useState(""); // Tracks search input
 
     useEffect(() => {
       /* 
@@ -947,20 +947,33 @@ function Calculator() {
       }));
     }
 
-    function handleCategoryChange(event) {
-      //when a new category is selected, it's added to categorySelected and the row is updated with that category
-      const selectedValue = event.target.value;
-      const rowNum = event.target.closest("tr").id;
+    function handleCategoryChange(selectedOption, { name }) {
+      if (!selectedOption) return;
+
+      const rowNum = name;
+
+      //remove previously seleted category
+      const prevCategory = rowCategory[rowNum];
+      if (prevCategory) {
+        setCategorySelected((prev) => ({ ...prev, [prevCategory]: false }));
+      }
 
       setRowCategory((prevRowCategory) => ({
         ...prevRowCategory,
-        [rowNum]: selectedValue,
+        [rowNum]: selectedOption.value,
       }));
 
       setCategorySelected((prevCategorySelected) => ({
         ...prevCategorySelected,
-        [selectedValue]: true,
+        [selectedOption.value]: true,
       }));
+
+      setTimeout(() => {
+        const amountInput = document.getElementById(`amount-${rowNum}`);
+        if (amountInput) {
+          amountInput.focus();
+        }
+      }, 100);
     }
 
     function handleBack() {
@@ -1002,12 +1015,13 @@ function Calculator() {
 
     return (
       <main className="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-        {/* Header and New Row Button */}
-        <div className="d-flex justify-content-between align-items-center">
-          <h2>Procurement</h2>
+        <div className="d-flex align-items-center mt-3">
+          <span className="procurement-instruction">
+            Press to add new lines
+          </span>
+
           <button
-            className="btn btn-outline-moss px-5 py-1"
-            style={{ fontSize: "2rem" }}
+            className="btn btn-moss btn-lg ms-3 procurement-add-btn"
             onClick={handleAddRow}
           >
             +
@@ -1030,48 +1044,39 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
-                    {/* Search Input for Filtering Dropdown Options */}
-                    <input
-                      type="text"
-                      placeholder="Search category..."
-                      className="form-control form-control-sm mb-1"
-                      onChange={(event) =>
-                        setSearchText(event.target.value.toLowerCase())
+                    <Select
+                      options={
+                        procurementCategories.map((category) => ({
+                          value: category.code,
+                          label: `${category.code} - ${category.name}`,
+                          isDisabled: categorySelected[category.code], // Disable already selected categories
+                        })) || []
                       }
-                    />
-
-                    <select
-                      defaultValue={
-                        rowCategory[num] === null ? "default" : rowCategory[num]
+                      value={
+                        rowCategory[num]
+                          ? {
+                              value: rowCategory[num],
+                              label:
+                                procurementCategories.find(
+                                  (c) => c.code === rowCategory[num],
+                                )?.name || rowCategory[num],
+                            }
+                          : null
                       }
-                      className="form-select form-select-sm"
-                      aria-label=".form-select-lg example"
                       onChange={handleCategoryChange}
-                      disabled={rowCategory[num] !== null}
-                    >
-                      <option value="default" disabled>
-                        Select a procurement category
-                      </option>
-                      {procurementCategories
-                        .filter(
-                          (category) =>
-                            category.name.toLowerCase().includes(searchText) ||
-                            category.code.includes(searchText),
-                        )
-                        .map((category) => (
-                          <option
-                            key={category.code}
-                            value={category.code}
-                            disabled={categorySelected[category.code]}
-                          >
-                            {category.code} - {category.name}
-                            {categorySelected[category.code] &&
-                            category.code !== rowCategory[num]
-                              ? " - SELECTED"
-                              : ""}
-                          </option>
-                        ))}
-                    </select>
+                      name={num} // Pass row number to track category selection
+                      placeholder="Select or search a category..."
+                      isSearchable // enables typing inside the dropdown to search
+                      menuPortalTarget={document.body}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        menu: (base) => ({
+                          ...base,
+                          maxHeight: "600px",
+                          overflowY: "auto",
+                        }),
+                      }}
+                    />
                   </td>
 
                   <td className="text-center">
@@ -1083,6 +1088,7 @@ function Calculator() {
                         type="number"
                         className="form-control form-control-sm ms-2"
                         disabled={rowCategory[num] === null}
+                        id={"amount-${num}"}
                         name={rowCategory[num]}
                         placeholder="Expenses, GBP"
                         value={procurementReport[rowCategory[num]] ?? ""}
