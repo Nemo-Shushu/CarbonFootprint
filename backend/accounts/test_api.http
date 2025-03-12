@@ -7,7 +7,7 @@ Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
 Connection: keep-alive
-Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+Cookie: csrftoken=4qpuIeCVSsN38LOjSaWhIahWliDmtMeK; sessionid=v3g2fad6oo46ktnah05hx7s54zsaderl
 Host: localhost:8000
 Origin: http://localhost:3000
 Referer: http://localhost:3000/
@@ -139,10 +139,9 @@ X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
 ### test getresult
 POST http://localhost:8000/api/Dashboard_show_user_result_data/
 Content-Type: application/json
-Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
-X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+Cookie: csrftoken=56p7POmQdLQvWa5o7XV97rPfWV8DQOUN; sessionid=qgbvv1wsqd3a3k0uy2zkq61zrrciua25
+X-CSRFToken: 56p7POmQdLQvWa5o7XV97rPfWV8DQOUN
 
-### 发送 POST 请求测试 get_all_report_data API
 POST http://localhost:8000/api/get_all_report_data/
 Content-Type: application/json
 Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
@@ -151,3 +150,30 @@ X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
 {
   "report_id": 15
 }
+
+POST http://localhost:8000/api/get_all_report_data/
+Content-Type: application/json
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+
+{
+  "report_id": 15
+}
+
+
+### test update_carbon_impact
+POST http://localhost:8000/api/update-carbon-impact/
+Content-Type: application/json
+Cookie: csrftoken=4qpuIeCVSsN38LOjSaWhIahWliDmtMeK; sessionid=v3g2fad6oo46ktnah05hx7s54zsaderl
+X-CSRFToken: 4qpuIeCVSsN38LOjSaWhIahWliDmtMeK
+
+{
+    "category": "Bread",
+    "carbon_impact": 2.99398372857928759
+}
+
+### test get_all_carbon_impact
+GET http://localhost:8000/api/get-all-carbon-impact/
+Content-Type: application/json
+Cookie: csrftoken=4qpuIeCVSsN38LOjSaWhIahWliDmtMeK; sessionid=v3g2fad6oo46ktnah05hx7s54zsaderl
+X-CSRFToken: 4qpuIeCVSsN38LOjSaWhIahWliDmtMeK

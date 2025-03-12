@@ -15,6 +15,8 @@ from api.views import (
     submit_view,
     dashboard_show_user_result_data,
     get_all_report_data,
+    get_all_carbon_impact,
+    update_carbon_impact
 )
 import json
 from unittest.mock import patch, MagicMock
@@ -516,3 +518,64 @@ class Submit_Get_Tests(SimpleTestCase):
         response = get_all_report_data(request)
         self.assertEqual(response.status_code, 404)
         self.assertJSONEqual(response.content, {"error": "Report not found"})
+        
+class CarbonImpactTests(SimpleTestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_success(self, mock_update_or_create):
+        """Test successful carbon impact update"""
+        mock_update_or_create.return_value = (True, None)
+
+        request = self.factory.post(
+            '/update-carbon-impact/',
+            data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
+            content_type='application/json'
+        )
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"success": True})
+
+    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_missing_data(self, mock_update_or_create):
+        """Test update with missing data"""
+        request = self.factory.post(
+            '/update-carbon-impact/',
+            data=json.dumps({"category": "Electricity"}),
+            content_type='application/json'
+        )
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {"error": "Both 'category' and 'carbon_impact' are required."})
+
+    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_success(self, mock_values):
+        """Test successful carbon impact retrieval"""
+        mock_values.return_value = [
+            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
+            {"id": 2, "category": "Gas", "carbon_impact": 0.8}
+        ]
+
+        request = self.factory.get('/get-all-carbon-impact/')
+        response = get_all_carbon_impact(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, [
+            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
+            {"id": 2, "category": "Gas", "carbon_impact": 0.8}
+        ])
+
+    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_error(self, mock_values):
+        """Test error handling in get_all_carbon_impact"""
+        mock_values.side_effect = Exception("Database error")
+
+        request = self.factory.get('/get-all-carbon-impact/')
+        response = get_all_carbon_impact(request)
+
+        self.assertEqual(response.status_code, 500)
+        self.assertJSONEqual(response.content, {"error": "Database error"})
