@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../useAuth";
 import Sidebar from "../../../Sidebar";
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 import "../assets/ManageFactors.css";
 import FactorTable from "./FactorTable";
 import {
   getConversionFactors,
 } from "../api/apiFactors";
 
+
 function ManageFactors() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getConversionFactors(setConversionFactors);
-  }, []);
-
-  const [conversionFactors, setConversionFactors] = useState([]);
 
   function handleProtect() {
     navigate("/sign-in");
@@ -28,11 +24,25 @@ function ManageFactors() {
         style={{ flex: "1", padding: "1rem", overflowY: "auto" }}
         className="update-factors-container"
       >
-
-        <FactorTable
-          tableName={"Intensity"}
-          conversionFactors={conversionFactors}
-        />
+        <Tabs
+          defaultActiveKey="intensity"
+          id="fill-tab-example"
+          className="mb-3"
+          fill
+        >
+          <Tab eventKey="intensity" title="Intensity Factors" className="container-fluid">
+            <FactorTable
+              tableName={"Intensity"}
+              conversionFactors={getConversionFactors}
+            />
+          </Tab>
+          <Tab eventKey="procurement" title="Procurement Factors" className="container-fluid">
+            <FactorTable
+              tableName={"Procurement"}
+              conversionFactors={getConversionFactors}
+            />
+          </Tab>
+        </Tabs>
       </main>
     </div>
   ) : (

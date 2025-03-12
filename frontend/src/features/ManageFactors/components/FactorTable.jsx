@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { getConversionFactors, handleBulkUpdateSubmissionAPI } from "../api/apiFactors.jsx"; // Assuming API functions are in this file
 import ModalTitle from "react-bootstrap/esm/ModalTitle.js";
+import "../assets/ManageFactors.css";
 
 FactorTable.propTypes = {
   tableName: PropTypes.string,
@@ -18,7 +19,7 @@ function FactorTable({ tableName, conversionFactors }) {
 
   // Initialize edited factors with existing data
   useEffect(() => {
-    setEditedFactors(conversionFactors);
+    getConversionFactors(setEditedFactors);
   }, [conversionFactors]);
 
   // Handle search filter
@@ -60,6 +61,8 @@ function FactorTable({ tableName, conversionFactors }) {
     setEditing(false);
     getConversionFactors(setConversionFactors); // Refresh data after update
   };
+
+  
   
 
   return (
