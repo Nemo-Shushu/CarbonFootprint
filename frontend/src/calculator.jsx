@@ -1015,12 +1015,13 @@ function Calculator() {
 
     return (
       <main className="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-        {/* Header and New Row Button */}
-        <div className="d-flex justify-content-between align-items-center">
-          <h2>Procurement</h2>
+        <div className="d-flex align-items-center mt-3">
+          <span className="procurement-instruction">
+            Press to add new lines
+          </span>
+
           <button
-            className="btn btn-outline-moss px-5 py-1"
-            style={{ fontSize: "2rem" }}
+            className="btn btn-moss btn-lg ms-3 procurement-add-btn"
             onClick={handleAddRow}
           >
             +
