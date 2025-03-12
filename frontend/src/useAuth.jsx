@@ -11,7 +11,7 @@ export function useAuth() {
   }, []);
 
   function getSession() {
-    fetch(backendUrl + "api2/session/", {
+    fetch(backendUrl + "api/session/", {
       credentials: "include",
     })
       .then((res) => res.json())

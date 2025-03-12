@@ -12,7 +12,7 @@ const Profile = () => {
   }, []);
 
   function getSession() {
-    fetch("http://localhost:8000/api2/session/", {
+    fetch("http://localhost:8000/api/session/", {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -25,7 +25,7 @@ const Profile = () => {
   }
 
   const getName = () => {
-    fetch("http://localhost:8000/api2/whoami/", {
+    fetch("http://localhost:8000/api/whoami/", {
       credentials: "include",
     })
       .then((res) => res.json())
