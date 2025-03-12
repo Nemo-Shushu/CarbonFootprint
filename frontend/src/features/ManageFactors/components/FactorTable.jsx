@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { getConversionFactors, handleBulkUpdateSubmissionAPI } from "../api/apiFactors.jsx"; // Assuming API functions are in this file
+import ModalTitle from "react-bootstrap/esm/ModalTitle.js";
 
 FactorTable.propTypes = {
   tableName: PropTypes.string,
@@ -8,7 +9,7 @@ FactorTable.propTypes = {
   setConversionFactors: PropTypes.func.isRequired, // Function to update state after saving
 };
 
-function FactorTable({ tableName, conversionFactors, setConversionFactors }) {
+function FactorTable({ tableName, conversionFactors }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -69,7 +70,7 @@ function FactorTable({ tableName, conversionFactors, setConversionFactors }) {
             className="col-md-8 align-middle"
             style={{ paddingLeft: "0px" }}
           >
-            <h2 className="text-start">Manage Conversion Factors</h2>
+            <h2 className="text-start">Manage {tableName} Factors</h2>
           </div>
         </div>
       </div>
@@ -89,7 +90,7 @@ function FactorTable({ tableName, conversionFactors, setConversionFactors }) {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button className="btn btn-primary m-1 flex-grow-1 text-nowrap" onClick={toggleEditMode}>
-            {editing ? "Cancel" : "Bulk Edit"}
+            {editing ? "Cancel" : "Bulk Edit Mode"}
         </button>
         {editing && (
           <button className="btn btn-success m-1 flex-grow-1 text-nowrap" onClick={handleBulkSave}>
