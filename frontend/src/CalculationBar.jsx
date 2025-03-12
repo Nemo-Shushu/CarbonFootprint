@@ -1,20 +1,10 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./static/CalculationBar.css";
 
 const CalculationBar = () => {
-  const navigate = useNavigate();
   const location = useLocation();
 
   const showBar = location.pathname !== "/calculator";
-
-  const steps = [
-    {
-      label: "Step 1: General Data Entry",
-      path: "/calculator/general-data-entry",
-    },
-    { label: "Step 2: Procurement", path: "/calculator/procurement" },
-    { label: "Step 3: Results", path: "/calculator/results" },
-  ];
 
   const subSteps = [
     { label: "Utilities", path: "/calculator/utilities" },
@@ -22,31 +12,31 @@ const CalculationBar = () => {
     { label: "Waste", path: "/calculator/waste" },
   ];
 
-  //so only applicable step titles are shown 
+  //so only applicable step titles are shown
   const isStep1 =
     location.pathname.startsWith("/calculator/general-data-entry") ||
     location.pathname.startsWith("/calculator/utilities") ||
     location.pathname.startsWith("/calculator/travel") ||
     location.pathname.startsWith("/calculator/waste");
 
-    const getCurrentStepTitle = () => {
-      if (location.pathname === "/calculator/utilities") {
-        return "Step 1: General Data Entry - Utilities";
-      }
-      if (location.pathname === "/calculator/travel") {
-        return "Step 1: General Data Entry - Travel";
-      }
-      if (location.pathname === "/calculator/waste") {
-        return "Step 1: General Data Entry - Waste";
-      }
-      if (location.pathname === "/calculator/procurement") {
-        return "Step 2: Procurement";
-      }
-      if (location.pathname === "/calculator/results") {
-        return "Step 3: Results";
-      }
-      return "Step 1: General Data Entry";
-    };
+  const getCurrentStepTitle = () => {
+    if (location.pathname === "/calculator/utilities") {
+      return "Step 1: General Data Entry - Utilities";
+    }
+    if (location.pathname === "/calculator/travel") {
+      return "Step 1: General Data Entry - Travel";
+    }
+    if (location.pathname === "/calculator/waste") {
+      return "Step 1: General Data Entry - Waste";
+    }
+    if (location.pathname === "/calculator/procurement") {
+      return "Step 2: Procurement";
+    }
+    if (location.pathname === "/calculator/results") {
+      return "Step 3: Results";
+    }
+    return "Step 1: General Data Entry";
+  };
 
   if (!showBar) {
     return null;
@@ -56,7 +46,8 @@ const CalculationBar = () => {
     <div>
       {/* change static mapping to dynamic*/}
       <div className="nav-container">
-        <h2 className="step-title">{getCurrentStepTitle()}</h2> {/* Shows correct step title */}
+        <h2 className="step-title">{getCurrentStepTitle()}</h2>{" "}
+        {/* Shows correct step title */}
       </div>
 
       {isStep1 && (
