@@ -32,7 +32,7 @@ function TableComponent() {
   async function getReports() {
     try {
       const response = await fetch(
-        `${backendUrl}api2/dashboard_show_user_result_data/`,
+        `${backendUrl}api2/dashboard-show-user-result-data/`,
         {
           method: "POST",
           credentials: "include",
@@ -57,7 +57,7 @@ function TableComponent() {
 
   async function getSpecificReport() {
     try {
-      const response = await fetch(`${backendUrl}api2/get_all_report_data/`, {
+      const response = await fetch(`${backendUrl}api2/get-all-report-data/`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -148,7 +148,7 @@ function AdminTableComponent() {
   async function getReports() {
     try {
       const response = await fetch(
-        `${backendUrl}api2/dashboard_show_user_result_data/`,
+        `${backendUrl}api2/dashboard-show-user-result-data/`,
         {
           method: "POST",
           credentials: "include",
@@ -173,7 +173,7 @@ function AdminTableComponent() {
 
   async function getSpecificReport() {
     try {
-      const response = await fetch(`${backendUrl}api2/get_all_report_data/`, {
+      const response = await fetch(`${backendUrl}api2/get-all-report-data/`, {
         method: "POST",
         credentials: "include",
         headers: {
