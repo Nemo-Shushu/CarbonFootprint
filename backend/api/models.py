@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
     id = models.BigAutoField(primary_key=True)
     password = models.CharField(max_length=128)
@@ -25,6 +26,7 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
+
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     input_data = models.JSONField()
@@ -33,6 +35,7 @@ class CalculationRecord(models.Model):
 
     def __str__(self):
         return f"Calculation on {self.timestamp}"
+
 
 class ProcurementData(models.Model):
     code = models.CharField(max_length=10, unique=True)
@@ -67,9 +70,9 @@ class Result(models.Model):
     total_carbon_emissions = models.DecimalField(max_digits=10, decimal_places=2)
     report_data = models.JSONField(null=True, blank=True)
 
-
     class Meta:
         db_table = "calculate_result"
+
 
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)
