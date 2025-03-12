@@ -15,5 +15,7 @@ urlpatterns = [
     path('submit/', views.submit_view, name='submits'),
     path("get-csrf/", views.get_csrf_token, name="get-csrf-token"),
     path("dashboard_show_user_result_data/", views.dashboard_show_user_result_data, name="dashboard_show_user_result_data"),
-    path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data")
+    path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data"),
+    path("update_carbon_impact/", views.update_carbon_impact, name="update_carbon_impact"),
+    path("get_all_carbon_impact/",views.get_all_carbon_impact, name='get_all_carbon_impact')
 ]

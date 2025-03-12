@@ -398,3 +398,44 @@ def get_all_report_data(request):
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+def update_carbon_impact(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method. Use POST."}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        category_name = data.get("category")
+        new_carbon_impact = data.get("carbon_impact")
+
+        if not category_name or new_carbon_impact is None:
+            return JsonResponse({"error": "Both 'category' and 'carbon_impact' are required."}, status=400)
+
+        category_instance = CategoryCarbonImpact.objects.filter(category=category_name).first()
+
+        if category_instance:
+            category_instance.carbon_impact = float(new_carbon_impact)
+            category_instance.save()
+            return JsonResponse({"success": True, "message": f"Updated '{category_name}' with carbon impact {new_carbon_impact}."}, status=200)
+        else:
+            return JsonResponse({"error": f"Category '{category_name}' not found."}, status=404)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format."}, status=400)
+    except ValueError:
+        return JsonResponse({"error": "Invalid value for 'carbon_impact'."}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+def get_all_carbon_impact(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Invalid request method. Use GET."}, status=405)
+
+    try:
+        all_data = CategoryCarbonImpact.objects.all().values("id", "category", "carbon_impact")
+
+        data_list = list(all_data)
+
+        return JsonResponse(data_list, safe=False, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
