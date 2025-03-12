@@ -8,7 +8,6 @@ class University(models.Model):
 
     def __str__(self):
         return self.name
-   
 
 
 class ResearchField(models.Model):
@@ -16,7 +15,7 @@ class ResearchField(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class User(AbstractUser):
     email = models.EmailField(
@@ -68,7 +67,6 @@ class User(AbstractUser):
         return self.is_researcher
 
 
-
 class ConversionFactor(models.Model):
     activity = models.CharField(max_length=100)
     value = models.DecimalField(max_digits=10, decimal_places=5)
@@ -76,7 +74,8 @@ class ConversionFactor(models.Model):
 
     def __str__(self):
         return f"{self.activity} - {self.value} {self.unit}"
-    
+
+
 class EmailVerification(models.Model):
     email = models.EmailField(
         max_length=35,
