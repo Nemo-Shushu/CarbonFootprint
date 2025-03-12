@@ -115,9 +115,3 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
-
-
-class ConversionFactorsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConversionFactor
-        fields = "__all__"

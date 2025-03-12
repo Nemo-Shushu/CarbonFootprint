@@ -12,10 +12,12 @@ from api.models import BenchmarkData
 from api.models import User
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.views import APIView
+from rest_framework import status
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
-from .serializers import InstitutionSerializer, ResearchFieldSerializer
+from .serializers import InstitutionSerializer, ResearchFieldSerializer, GetIntensitySerializer, UpdateIntensitySerializer
 
 
 def get_csrf(request):
@@ -398,3 +400,28 @@ def get_all_report_data(request):
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAdminUser])
+def update_intensity_view(request):
+    if request.method == 'GET':
+        queryset = BenchmarkData.objects.values("id", "category", "intensity", "consumption_type", "unit").order_by("category")
+        serializer = GetIntensitySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        id = request.data.get("id")
+        if not id:
+            return Response({'detail': 'Category is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            benchmark_instance = BenchmarkData.objects.get(id=id)
+        except BenchmarkData.DoesNotExist:
+            return Response({'detail': 'intensity factor not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the existing object
+        serializer = UpdateIntensitySerializer(benchmark_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

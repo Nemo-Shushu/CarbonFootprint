@@ -15,5 +15,9 @@ urlpatterns = [
     path('submit/', views.submit_view, name='submits'),
     path("get-csrf/", views.get_csrf_token, name="get-csrf-token"),
     path("dashboard_show_user_result_data/", views.dashboard_show_user_result_data, name="dashboard_show_user_result_data"),
-    path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data")
+    path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data"),
+    path(
+        "intensity-factors/", views.update_intensity_view, name="intensity-factor"
+    ),
+    path("conversion-factors/<int:factor_id>", views.update_intensity_view),
 ]
