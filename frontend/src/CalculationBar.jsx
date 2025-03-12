@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./static/CalculationBar.css";
 
 const CalculationBar = () => {
@@ -22,19 +22,31 @@ const CalculationBar = () => {
     { label: "Waste", path: "/calculator/waste" },
   ];
 
+  //so only applicable step titles are shown 
   const isStep1 =
     location.pathname.startsWith("/calculator/general-data-entry") ||
     location.pathname.startsWith("/calculator/utilities") ||
     location.pathname.startsWith("/calculator/travel") ||
     location.pathname.startsWith("/calculator/waste");
 
-  const handleNavigate = (path) => {
-    if (path === "/calculator/general-data-entry") {
-      navigate("/calculator/utilities");
-    } else {
-      navigate(path);
-    }
-  };
+    const getCurrentStepTitle = () => {
+      if (location.pathname === "/calculator/utilities") {
+        return "Step 1: General Data Entry - Utilities";
+      }
+      if (location.pathname === "/calculator/travel") {
+        return "Step 1: General Data Entry - Travel";
+      }
+      if (location.pathname === "/calculator/waste") {
+        return "Step 1: General Data Entry - Waste";
+      }
+      if (location.pathname === "/calculator/procurement") {
+        return "Step 2: Procurement";
+      }
+      if (location.pathname === "/calculator/results") {
+        return "Step 3: Results";
+      }
+      return "Step 1: General Data Entry";
+    };
 
   if (!showBar) {
     return null;
@@ -42,21 +54,9 @@ const CalculationBar = () => {
 
   return (
     <div>
+      {/* change static mapping to dynamic*/}
       <div className="nav-container">
-        {steps.map((step) => {
-          const isStep1Active =
-            step.path === "/calculator/general-data-entry" && isStep1;
-
-          return (
-            <div
-              key={step.path}
-              className={`nav-item ${location.pathname.startsWith(step.path) || isStep1Active ? "active" : ""}`}
-              onClick={() => handleNavigate(step.path)}
-            >
-              {step.label}
-            </div>
-          );
-        })}
+        <h2 className="step-title">{getCurrentStepTitle()}</h2> {/* Shows correct step title */}
       </div>
 
       {isStep1 && (
@@ -67,7 +67,7 @@ const CalculationBar = () => {
               className={`sub-nav-item ${
                 location.pathname === subStep.path ? "active" : ""
               }`}
-              onClick={() => navigate(subStep.path)}
+              // onClick={() => navigate(subStep.path)}
             >
               {subStep.label}
             </div>

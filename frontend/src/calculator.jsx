@@ -193,8 +193,8 @@ function Calculator() {
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
-              <strong>Personnel:</strong>
+            <div className="mt-4">
+              <strong>Personnel</strong>
             </div>
             <hr />
 
@@ -236,7 +236,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>
                 Type of space (for calculation of electricity and gas
                 consumption):
@@ -300,7 +300,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>
                 Type of space (for calculation of water consumption):
               </strong>
@@ -420,7 +420,7 @@ function Calculator() {
         {/* {JSON.stringify(travelReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Air travel</strong>
             </div>
             <hr />
@@ -539,7 +539,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Sea travel</strong>
             </div>
             <hr />
@@ -564,7 +564,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Land travel</strong>
             </div>
             <hr />
@@ -765,7 +765,7 @@ function Calculator() {
         {/* {JSON.stringify(wasteReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Recycling</strong>
             </div>
             <hr />
@@ -808,7 +808,7 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4 fst-italic">
+            <div className="mt-4">
               <strong>Waste</strong>
             </div>
             <hr />
