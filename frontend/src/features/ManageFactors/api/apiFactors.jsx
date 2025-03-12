@@ -5,7 +5,7 @@ const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export async function getConversionFactors(setFactors) {
-  await fetch(backendUrl + "api/accounts/conversion-factors/", {
+  await fetch(backendUrl + "api/intensity-factors/", {
     method: "GET",
     credentials: "include",
   })
@@ -24,74 +24,29 @@ export async function getConversionFactors(setFactors) {
     });
 }
 
-export async function handleUpdateSubmissionAPI(event, selectedFactor) {
+export async function handleBulkUpdateSubmissionAPI(event, updatedFactors) {
   event.preventDefault();
-  await fetch(
-    backendUrl + "api/accounts/conversion-factors/" + selectedFactor.id,
-    {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        "X-CSRFToken": csrftoken,
-      },
-      body: JSON.stringify(selectedFactor),
-    },
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("failed to update conversion factors");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((err) => {
-      console.error("failed to update conversion factors", err);
-    });
-}
 
-export async function handleCreateSubmissionAPI(event, factor) {
-  event.preventDefault();
-  await fetch(backendUrl + "api/accounts/conversion-factors/", {
-    method: "POST",
+  await fetch(backendUrl + "api/intensity-factors/", {
+    method: "PUT",
     credentials: "include",
     headers: {
       "content-type": "application/json",
       "X-CSRFToken": csrftoken,
     },
-    body: JSON.stringify({ activity: factor.activity, value: factor.value }),
+    body: JSON.stringify(updatedFactors),
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("failed to create new conversion factor");
+        throw new Error("Failed to update conversion factors");
       }
       return response.json();
     })
+    .then((data) => {
+      console.log("Updated Factors:", data);
+    })
     .catch((err) => {
-      console.error("failed to create conversion factors", err);
+      console.error("Failed to update conversion factors", err);
     });
 }
 
-export async function handleDeleteSubmissionAPI(event, selectedFactor) {
-  event.preventDefault();
-  console.log(event);
-  await fetch(
-    backendUrl + "api/accounts/conversion-factors/" + selectedFactor.id,
-    {
-      method: "DELETE",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        "X-CSRFToken": csrftoken,
-      },
-    },
-  )
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((err) => {
-      console.error("unable to delete specified conversion factor", err);
-    });
-}

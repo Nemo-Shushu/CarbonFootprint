@@ -18,6 +18,5 @@ urlpatterns = [
     path("get_all_report_data/", views.get_all_report_data, name="get_all_report_data"),
     path(
         "intensity-factors/", views.update_intensity_view, name="intensity-factor"
-    ),
-    path("conversion-factors/<int:factor_id>", views.update_intensity_view),
+    )
 ]
