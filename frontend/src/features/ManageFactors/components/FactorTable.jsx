@@ -42,9 +42,12 @@ function FactorTable({ tableName, conversionFactors }) {
     return sortOrder === "asc" ? valueA - valueB : valueB - valueA;
   });
 
-  const toggleEditMode = () => setEditing(!editing);
+  function toggleEditMode() {
+    setEditing(!editing);
+  }
+    
 
-  const handleInputChange = (id, field, value) => {
+  function handleInputChange(id, field, value) {
     if (field === "intensity") {
       // Allow only numbers and one decimal point
       if (value !== "" && !/^-?\d*\.?\d*$/.test(value)) {
@@ -71,7 +74,7 @@ function FactorTable({ tableName, conversionFactors }) {
     }
   };  
   
-  const handleBulkSave = async (event) => {
+  async function handleBulkSave(event) {
     if (Object.keys(errors).length > 0) {
       alert("Please correct the errors before saving.");
       return;
