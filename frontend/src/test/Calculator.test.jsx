@@ -110,7 +110,9 @@ describe("Calculator Component", () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText((content) => content.includes("Press to add new lines")),
+        screen.getByText((content) =>
+          content.includes("Press to add new lines"),
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) => content.includes("category")),
@@ -251,7 +253,6 @@ describe("Procurement Component", () => {
     await waitFor(() => {
       expect(screen.getByText(/Press to add new lines/i)).toBeInTheDocument();
     });
-    
 
     expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();

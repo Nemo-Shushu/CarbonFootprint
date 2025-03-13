@@ -97,7 +97,6 @@ function TableComponent() {
       <h3>Available Reports</h3>
       <div className="table-responsive small">
         {Array.isArray(data) && data.length > 0 ? (
-          
           <table className="table table-striped table-hover table-sm">
             <thead>
               <tr>
@@ -125,17 +124,20 @@ function TableComponent() {
               ))}
             </tbody>
           </table>
-
         ) : (
           <div
             className="fs-2 d-flex justify-content-center align-items-center"
-            style={{ height: "300px", fontSize: "1.5rem", fontWeight: "bold", color: "gray", }}
+            style={{
+              height: "300px",
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              color: "gray",
+            }}
           >
             No data available
           </div>
         )}
       </div>
-
     </main>
   );
 }
@@ -257,13 +259,17 @@ function AdminTableComponent() {
         ) : (
           <div
             className="fs-2 d-flex justify-content-center align-items-center"
-            style={{ height: "300px", fontSize: "1.5rem", fontWeight: "bold", color: "gray", }}
+            style={{
+              height: "300px",
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              color: "gray",
+            }}
           >
             No data available
           </div>
         )}
       </div>
-
     </main>
   );
 }

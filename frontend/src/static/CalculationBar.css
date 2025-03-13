@@ -1,15 +1,13 @@
 :root {
   --primary-green: var(--bs-moss);
-  --muted-olive-green:#7b9e91;
-
+  --muted-olive-green: #7b9e91;
 }
-
 
 .nav-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #7B9E91;
+  background: #7b9e91;
   padding: 1rem 2rem;
   border-radius: 20px;
   box-shadow: var(--card-shadow);
@@ -18,8 +16,6 @@
   position: relative;
   z-index: 10;
 }
-
-
 
 .nav-item {
   padding: 10px 20px;
@@ -47,7 +43,6 @@
   box-shadow: none;
 }
 
-
 .sub-nav-item {
   padding: 8px 16px;
   cursor: pointer;
@@ -72,4 +67,3 @@
   padding: 15px 20px;
   border-radius: 20px;
 }
-

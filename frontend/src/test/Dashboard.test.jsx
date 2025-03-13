@@ -5,7 +5,6 @@ import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
 import React from "react";
 
-
 vi.mock("../Sidebar", () => ({ default: () => <div data-testid="sidebar" /> }));
 vi.mock("../Profile", () => ({ default: () => <div data-testid="profile" /> }));
 vi.mock("../ResultsDisplay", () => ({
@@ -33,11 +32,13 @@ describe("Dashboard Component", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByTestId("sidebar")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /dashboard/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /dashboard/i }),
+    ).toBeInTheDocument();
   });
 
   it("displays 'No data available' when no reports exist", async () => {
@@ -45,13 +46,13 @@ describe("Dashboard Component", () => {
       Promise.resolve({
         ok: true,
         json: () => Promise.resolve([]),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -67,15 +68,21 @@ describe("Dashboard Component", () => {
         ok: true,
         json: () =>
           Promise.resolve([
-            { id: 1, institution: "MIT", field: "AI", emissions: 100, email: "test@example.com" },
+            {
+              id: 1,
+              institution: "MIT",
+              field: "AI",
+              emissions: 100,
+              email: "test@example.com",
+            },
           ]),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -96,15 +103,21 @@ describe("Dashboard Component", () => {
         ok: true,
         json: () =>
           Promise.resolve([
-            { id: 1, institution: "MIT", field: "AI", emissions: 100, email: "test@example.com" },
+            {
+              id: 1,
+              institution: "MIT",
+              field: "AI",
+              emissions: 100,
+              email: "test@example.com",
+            },
           ]),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -120,7 +133,7 @@ describe("Dashboard Component", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     const profileIcon = screen.getByTestId("profile-icon");
@@ -149,9 +162,8 @@ describe("Dashboard Component", () => {
               email: "admin@example.com",
             },
           ]),
-      })
+      }),
     );
-
 
     render(
       <MemoryRouter>
@@ -170,9 +182,7 @@ describe("Dashboard Component", () => {
         "Total Emissions",
       ]);
     });
-
   });
-
 
   it("handles fetch failure gracefully", async () => {
     global.fetch = vi.fn(() => Promise.reject(new Error("Network Error")));
@@ -180,7 +190,7 @@ describe("Dashboard Component", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("No data available")).toBeInTheDocument();
@@ -206,9 +216,6 @@ describe("Dashboard Component - Authentication", () => {
   });
 });
 
-
-
-
 describe("Dashboard Component - Table headers", () => {
   it("renders the table headers for normal users", async () => {
     global.fetch = vi.fn((url) =>
@@ -223,13 +230,13 @@ describe("Dashboard Component - Table headers", () => {
               emissions: 200,
             },
           ]),
-      })
+      }),
     );
 
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
@@ -247,10 +254,6 @@ describe("Dashboard Component - Table headers", () => {
     expect(screen.queryByText("Email")).not.toBeInTheDocument();
   });
 
-  
-
-
-
   it("displays 'No data available' when no reports exist", async () => {
     global.fetch = vi.fn((url) => {
       if (url.includes("dashboard_show_user_result_data")) {
@@ -265,7 +268,7 @@ describe("Dashboard Component - Table headers", () => {
     render(
       <MemoryRouter>
         <Dashboard />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     await waitFor(() => {
