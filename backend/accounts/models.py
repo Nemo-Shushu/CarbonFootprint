@@ -75,7 +75,6 @@ class ConversionFactor(models.Model):
     def __str__(self):
         return f"{self.activity} - {self.value} {self.unit}"
 
-
 class EmailVerification(models.Model):
     email = models.EmailField(
         max_length=35,

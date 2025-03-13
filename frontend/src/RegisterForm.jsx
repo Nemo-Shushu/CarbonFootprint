@@ -87,14 +87,14 @@ async function sendCode(user) {
     });
 }
 
-async function verifyCode(user, code) {
+async function verifyCode(user,code) {
   return fetch(backendUrl + "api/accounts/confirm-email/", {
     // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ user, verification_code: code }),
+    body: JSON.stringify({user,verification_code:code}),
   })
     .then((response) => {
       if (!response.ok) {
@@ -189,13 +189,11 @@ function RegisterForm() {
     // If createUser doesn't succeed, modalError is set in the modal. It is expected that by this point - user details have been verified by validateUser, and createUser shouldn't fail.
     // if verifyCode is not successful, verificationError is set in the modal
     event.preventDefault();
-    verifyCode(user, code)
+    verifyCode(user,code)
       .then((data) => {
         console.log("Code verified:", data);
         setError("");
-        setIsVerified(true);
-        setVerifiedMessage("Your email is verified successfully.");
-        setVerifyDisabled(true);
+        setIsVerified(true)
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
@@ -203,23 +201,23 @@ function RegisterForm() {
       });
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = (event) =>{
     event.preventDefault();
-    if (!isVerified) {
+    if (!isVerified){
       setModalError("Please verify your email before proceeding.");
       return;
     }
     createUser(user)
-      .then((data) => {
-        console.log("User created:", data);
-        setModalError("");
-        navigate("/sign-in");
-      })
-      .catch((err) => {
-        console.error("Error creating user:", err);
-        setModalError(true);
-      });
-  };
+          .then((data) => {
+            console.log("User created:", data);
+            setModalError("");
+            navigate("/sign-in");
+          })
+          .catch((err) => {
+            console.error("Error creating user:", err);
+            setModalError(true);
+          });
+  }
   const handleModal = (event) => {
     // when the user submits their details, handleModal first tries to validate user details,
     // and make sure that when the user next submits their request to create an account, there will be no errors.
@@ -301,18 +299,11 @@ function RegisterForm() {
               )}
               {verifiedMessage && <p className="success">{verifiedMessage}</p>}
 
-              <button
-                className="verify-button"
-                type="button"
-                onClick={handleVerify}
-                disabled={verifyDisabled}
-              >
+              <button className="verify-button" type="button" onClick={handleVerify}  >
                 Verify my Email
               </button>
               <button
-                className="register-button"
-                type="button"
-                onClick={handleRegister}
+                className="register-button" type="button" onClick={handleRegister}
               >
                 Register
               </button>
