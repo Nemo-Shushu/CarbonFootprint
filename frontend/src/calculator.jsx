@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
