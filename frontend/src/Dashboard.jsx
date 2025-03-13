@@ -94,36 +94,48 @@ function TableComponent() {
           />
         </Modal.Body>
       </Modal>
-      <h2>Available Reports</h2>
+      <h3>Available Reports</h3>
       <div className="table-responsive small">
-        <table className="table table-striped table-hover table-sm">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Academic Institution</th>
-              <th scope="col">Research Field</th>
-              <th scope="col">Total Emissions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr
-                key={index}
-                className="align-middle"
-                onClick={() => {
-                  setRepId(row.id);
-                  setVisible(true);
-                }}
-              >
-                <th scope="row">{row.id}</th>
-                <td>{row.institution}</td>
-                <td>{row.field}</td>
-                <td>{row.emissions}</td>
+        {Array.isArray(data) && data.length > 0 ? (
+          
+          <table className="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Academic Institution</th>
+                <th scope="col">Research Field</th>
+                <th scope="col">Total Emissions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((row, index) => (
+                <tr
+                  key={index}
+                  className="align-middle"
+                  onClick={() => {
+                    setRepId(row.id);
+                    setVisible(true);
+                  }}
+                >
+                  <th scope="row">{row.id}</th>
+                  <td>{row.institution}</td>
+                  <td>{row.field}</td>
+                  <td>{row.emissions}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+        ) : (
+          <div
+            className="fs-2 d-flex justify-content-center align-items-center"
+            style={{ height: "300px", fontSize: "1.5rem", fontWeight: "bold", color: "gray", }}
+          >
+            No data available
+          </div>
+        )}
       </div>
+
     </main>
   );
 }
@@ -212,36 +224,46 @@ function AdminTableComponent() {
       </Modal>
       <h2>Available Reports</h2>
       <div className="table-responsive small">
-        <table className="table table-striped table-hover table-sm">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Academic Institution</th>
-              <th scope="col">Research Field</th>
-              <th scope="col">Total Emissions</th>
-              <th scope="col">Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, index) => (
-              <tr
-                key={index}
-                className="align-middle"
-                onClick={() => {
-                  setRepId(row.id);
-                  setVisible(true);
-                }}
-              >
-                <th scope="row">{row.id}</th>
-                <td>{row.institution}</td>
-                <td>{row.field}</td>
-                <td>{row.emissions}</td>
-                <td>{row.email}</td>
+        {Array.isArray(data) && data.length > 0 ? (
+          <table className="table table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Academic Institution</th>
+                <th scope="col">Research Field</th>
+                <th scope="col">Total Emissions</th>
+                <th scope="col">Email</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((row, index) => (
+                <tr
+                  key={index}
+                  className="align-middle"
+                  onClick={() => {
+                    setRepId(row.id);
+                    setVisible(true);
+                  }}
+                >
+                  <th scope="row">{row.id}</th>
+                  <td>{row.institution}</td>
+                  <td>{row.field}</td>
+                  <td>{row.emissions}</td>
+                  <td>{row.email}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div
+            className="fs-2 d-flex justify-content-center align-items-center"
+            style={{ height: "300px", fontSize: "1.5rem", fontWeight: "bold", color: "gray", }}
+          >
+            No data available
+          </div>
+        )}
       </div>
+
     </main>
   );
 }
