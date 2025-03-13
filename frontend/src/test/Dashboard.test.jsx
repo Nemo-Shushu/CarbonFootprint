@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
-import React from "react";
 
 vi.mock("../Sidebar", () => ({ default: () => <div data-testid="sidebar" /> }));
 vi.mock("../Profile", () => ({ default: () => <div data-testid="profile" /> }));
@@ -218,7 +217,7 @@ describe("Dashboard Component - Authentication", () => {
 
 describe("Dashboard Component - Table headers", () => {
   it("renders the table headers for normal users", async () => {
-    global.fetch = vi.fn((url) =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () =>
