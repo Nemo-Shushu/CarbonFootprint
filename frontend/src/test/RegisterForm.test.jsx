@@ -19,7 +19,6 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// Mock API 请求
 global.fetch = vi.fn((url) => {
   if (url.includes("api2/institutions")) {
     return Promise.resolve({
