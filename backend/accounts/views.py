@@ -174,22 +174,42 @@ class SendEmailConfirmationTokenAPIView(APIView):
         return Response({"message": "Verification code sent."}, status=status.HTTP_200_OK)
     
 class ConfirmEmailAPIView(APIView):
-    permission_classes = [AllowAny,]
+    permission_classes = [
+        AllowAny,
+    ]
+
     def post(self, request):
-        email = request.data.get("email")
+        if "user" in request.data and request.data["user"]:
+                user_data = request.data.get("user")
+                email = user_data.get("email")
+        else:
+            email = request.data.get("email")
+
         code = request.data.get("verification_code")
         if not email or not code:
-            return Response({"error": "Email and verification code are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Email and verification code are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        verification_obj = get_object_or_404(EmailVerification, emil=email)
+        try:
+            verification_obj = EmailVerification.objects.get(email=email)
+        except EmailVerification.DoesNotExist:
+            return Response(
+                {"detail": "Email already verified or no verification record found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         if verification_obj.verification_code == code:
-            user = verification_obj.user
-            user.is_verified = True
-            user.save()
-            verification_obj.delete() 
-            return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
+            verification_obj.delete()
+            return Response(
+                {"message": "Email verified successfully."}, status=status.HTTP_200_OK
+            )
         else:
-            return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid verification code."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         
 class CreateView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
@@ -198,9 +218,8 @@ class CreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         print(request.data)
         serializer = self.get_serializer(data=request.data)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
