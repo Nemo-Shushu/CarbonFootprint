@@ -9,7 +9,6 @@ from .models import User, ConversionFactor,EmailVerification
 from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer,CreateUserSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
 
