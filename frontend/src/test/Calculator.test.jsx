@@ -110,7 +110,7 @@ describe("Calculator Component", () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText((content) => content.includes("Procurement")),
+        screen.getByText((content) => content.includes("Press to add new lines")),
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) => content.includes("category")),
@@ -249,10 +249,9 @@ describe("Procurement Component", () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /procurement/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Press to add new lines/i)).toBeInTheDocument();
     });
+    
 
     expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
@@ -270,8 +269,11 @@ describe("Procurement Component", () => {
 
     fireEvent.click(addRowButton);
 
+    const categoryDropdown = screen.getByRole("combobox");
+    fireEvent.change(categoryDropdown, { target: { value: "A" } });
+
     await waitFor(() => {
-      expect(screen.getAllByRole("textbox")).toHaveLength(1);
+      expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
     });
   });
 
@@ -282,15 +284,18 @@ describe("Procurement Component", () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
+    const addRowButton = screen.getByRole("button", { name: "+" });
+
+    fireEvent.click(addRowButton);
+
+    const categoryDropdown = screen.getByRole("combobox");
+    fireEvent.change(categoryDropdown, { target: { value: "A" } });
+
     await waitFor(() => {
-      expect(screen.getAllByRole("textbox")).toHaveLength(1);
+      expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
     });
 
-    const selectElement = screen.getByRole("combobox");
-    fireEvent.change(selectElement, { target: { value: "A" } });
-
-    expect(selectElement.value).toBe("A");
+    expect(categoryDropdown.value).toBe("A");
   });
 
   it("deletes a row when clicking Delete", async () => {
@@ -300,9 +305,15 @@ describe("Procurement Component", () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
+    const addRowButton = screen.getByRole("button", { name: "+" });
+
+    fireEvent.click(addRowButton);
+
+    const categoryDropdown = screen.getByRole("combobox");
+    fireEvent.change(categoryDropdown, { target: { value: "A" } });
+
     await waitFor(() => {
-      expect(screen.getAllByRole("textbox")).toHaveLength(1);
+      expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
     });
 
     const deleteButton = screen.getByRole("button", { name: /delete/i });
