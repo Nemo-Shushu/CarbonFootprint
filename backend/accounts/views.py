@@ -5,12 +5,20 @@ from rest_framework.views import APIView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
-from .models import User, ConversionFactor,EmailVerification
-from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer,CreateUserSerializer
+from .models import User, ConversionFactor, EmailVerification
+from .serializers import (
+    RegisterSerializer,
+    UserSerializer,
+    ConversionFactorsSerializer,
+    CreateUserSerializer,
+    UpdateSerializer,
+)
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
+from django.shortcuts import get_object_or_404
+
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -162,9 +170,20 @@ def send_verification_email(email, code):
 class SendEmailConfirmationTokenAPIView(APIView):
     permission_classes = [AllowAny,]
     def post(self, request, format=None):
-        email = request.data.get("email")
+        if isinstance(request.data, dict):
+            email = request.data.get("email")
+        else:
+            email = request.data 
         if not email:
-            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        count = EmailVerification.objects.filter(email=email).count()
+        if count > 1:
+            return Response(
+                {"error": "Email is not unique in the database."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         code = get_random_string(length=6)
 
         EmailVerification.objects.update_or_create(email = email, defaults={"verification_code": code})
@@ -221,4 +240,31 @@ class CreateView(generics.CreateAPIView):
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+    
+class UpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = UpdateSerializer
+
+    def get_object(self):
+        return self.request.user
+    
+class UpdateUserEmailAPIView(APIView):
+    permission_classes = [AllowAny]  
+
+    def patch(self, request, format=None):
+        current_email = request.data.get("currentEmail")
+        new_email = request.data.get("newEmail")
+
+        if not current_email or not new_email:
+            return Response(
+                {"error": "Both current_email and new_email are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = get_object_or_404(User, email=current_email)
+        user.email = new_email
+        user.save()
+
+        return Response(
+            {"message": "Email updated successfully."},
+            status=status.HTTP_200_OK
+        )        
