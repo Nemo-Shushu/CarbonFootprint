@@ -1076,6 +1076,14 @@ function Calculator() {
                       isSearchable // enables typing inside the dropdown to search
                       menuPortalTarget={document.body}
                       styles={{
+                        control: (base, state) => ({
+                          ...base,
+                          borderColor: state.isFocused ? "#4F7A6A" : "#ccc",
+                          boxShadow: state.isFocused ? "0 0 5px #4F7A6A" : "none",
+                          "&:hover": {
+                            borderColor: "#4F7A6A",
+                          },
+                        }),
                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                         menu: (base) => ({
                           ...base,
