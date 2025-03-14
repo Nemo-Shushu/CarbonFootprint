@@ -5,6 +5,7 @@ import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
+import "./static/Calculator.css";
 import "./static/dashboard.css";
 import "./static/Instruction.css";
 import procurementCategories from "./static/procurementCategories.json";
@@ -189,19 +190,21 @@ function Calculator() {
     }
 
     return (
-      <main className="ms-sm-auto px-md-4">
+      <main className="ms-sm-auto px-md-4 calculator-content-container">
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
-        <form className="needs-validation" noValidate>
+        <form className="needs-validation calculator-form" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-              <strong>Personnel</strong>
+            <strong className="calculator-section-title">
+    Personnel
+  </strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Number of FTE staff working on project</strong>
+                  <strong>Number of FTE staff on project</strong>
                 </label>
                 <input
                   type="number"
@@ -237,17 +240,16 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-              <strong>
-                Type of space (for calculation of electricity and gas
-                consumption):
-              </strong>
+            <strong className="calculator-section-title">
+            Type of space -for calculation of electricity and gas consumption
+  </strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Academic laboratory</strong>
+                  <strong>Academic Laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -265,7 +267,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Admin office</strong>
+                  <strong>Admin Office</strong>
                 </label>
                 <input
                   type="number"
@@ -283,7 +285,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Academic office</strong>
+                  <strong>Academic Office</strong>
                 </label>
                 <input
                   type="number"
@@ -301,16 +303,16 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-              <strong>
-                Type of space (for calculation of water consumption):
-              </strong>
+            <strong className="calculator-section-title">
+            Type of space -for calculation of water consumption
+  </strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Physical sciences laboratory</strong>
+                  <strong>Physical Sciences Laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -328,7 +330,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Engineering laboratory</strong>
+                  <strong>Engineering Laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -346,7 +348,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Medical/Life sciences laboratory</strong>
+                  <strong>Medical/Life Sciences Laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -364,7 +366,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Office/Admin space</strong>
+                  <strong>Office/Admin Space</strong>
                 </label>
                 <input
                   type="number"
@@ -416,12 +418,14 @@ function Calculator() {
     }
 
     return (
-      <main className="ms-sm-auto px-md-4">
+      <main className="ms-sm-auto px-md-4 calculator-content-container">
         {/* {JSON.stringify(travelReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-              <strong>Air travel</strong>
+            <strong className="calculator-section-title">
+            Air Travel
+  </strong>
             </div>
             <hr />
 
@@ -540,7 +544,9 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-              <strong>Sea travel</strong>
+            <strong className="calculator-section-title">
+            Sea Travel 
+  </strong>
             </div>
             <hr />
 
@@ -565,7 +571,9 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-              <strong>Land travel</strong>
+            <strong className="calculator-section-title">
+            Land Travel
+  </strong>
             </div>
             <hr />
 
@@ -721,18 +729,16 @@ function Calculator() {
           </div>
         </form>
 
-        <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-          <button
-            type="button"
-            className="btn btn-outline-secondary me-2"
-            onClick={handleBack}
-          >
-            Back
-          </button>
-          <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Next
-          </button>
-        </div>
+        <div className="calculator-button-container">
+
+  <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>
+    Back
+  </button>
+  <button type="button" className="btn btn-moss" onClick={handleRoute}>
+    Next
+  </button>
+</div>
+
       </main>
     );
   }
@@ -761,12 +767,14 @@ function Calculator() {
     }
 
     return (
-      <main className="ms-sm-auto px-md-4">
+      <main className="ms-sm-auto px-md-4 calculator-content-container">
         {/* {JSON.stringify(wasteReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-              <strong>Recycling</strong>
+            <strong className="calculator-section-title">
+            Recycling
+  </strong>
             </div>
             <hr />
 
@@ -809,14 +817,16 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-              <strong>Waste</strong>
+            <strong className="calculator-section-title">
+            Waste
+  </strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>General waste</strong>
+                  <strong>General Waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1172,24 +1182,22 @@ function Calculator() {
       <main className="ms-sm-auto px-md-4">
         <h2>Results</h2>
         <ResultsDisplay calculations={data} rawData={report} />
-        <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-          <button
-            type="button"
-            className="btn btn-outline-secondary me-2"
-            onClick={handleBack}
-          >
-            Back
-          </button>
-          <button type="button" className="btn btn-moss" onClick={submitReport}>
-            Submit
-          </button>
-        </div>
+        <div className="calculator-nav-buttons">
+  <button className="btn btn-outline-secondary" onClick={handleBack}>
+    Back
+  </button>
+  <button className="btn btn-moss" onClick={handleRoute}>
+    Next
+  </button>
+</div>
+
       </main>
     );
   }
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div className="calculator-container">
+
       <Sidebar style={{ flex: "0 0 17%" }} />
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
         <CalculationBar />
