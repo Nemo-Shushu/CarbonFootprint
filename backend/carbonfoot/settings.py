@@ -177,11 +177,11 @@ CSRF_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 20 * 60
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "mrang0722@gmail.com"
-EMAIL_HOST_PASSWORD = "yfwx ybnq ofsf vxam"
+EMAIL_HOST_USER = 'mrang0722@gmail.com'
+EMAIL_HOST_PASSWORD = 'yfwx ybnq ofsf vxam'
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER

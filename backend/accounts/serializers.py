@@ -103,12 +103,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
         return value
 
-
 class ConversionFactorsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConversionFactor
         fields = "__all__"
-
 
 class CreateUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
