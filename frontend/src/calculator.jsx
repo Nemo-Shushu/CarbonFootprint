@@ -121,7 +121,7 @@ function Calculator() {
       },
     ];
 
-      return (
+    return (
       <main className="instructions-container">
         <div className="instructions-header">
           <img
