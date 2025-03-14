@@ -1079,7 +1079,9 @@ function Calculator() {
                         control: (base, state) => ({
                           ...base,
                           borderColor: state.isFocused ? "#4F7A6A" : "#ccc",
-                          boxShadow: state.isFocused ? "0 0 5px #4F7A6A" : "none",
+                          boxShadow: state.isFocused
+                            ? "0 0 5px #4F7A6A"
+                            : "none",
                           "&:hover": {
                             borderColor: "#4F7A6A",
                           },
