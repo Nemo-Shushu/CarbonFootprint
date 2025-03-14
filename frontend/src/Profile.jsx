@@ -40,7 +40,6 @@ async function sendCode(email) {
     headers: {
       "Content-Type": "application/json",
     },
-    // 보내는 값은 객체 형태로 감쌉니다.
     body: JSON.stringify({ email }),
   })
     .then((response) => {
@@ -96,7 +95,6 @@ const Profile = () => {
   const [isResearcher, setIsResearcher] = useState(false);
   const [researchField, setResearchField] = useState();
   const [showPassword, setShowPassword] = useState(false);
-  // newEmail 상태는 사용자가 "Change Email" 모달에서 입력하는 값입니다.
   const [newEmail, setNewEmail] = useState("");
   const [code, setCode] = useState("");
   const [updateForm, setUpdateForm] = useState({
@@ -138,7 +136,6 @@ const Profile = () => {
     setShow(true);
   };
 
-  // 모달 열 때 newEmail을 초기화하지 않고 그대로 두어 사용자가 입력한 값이 유지되게 함.
   const handleEmailShow = () => {
     setShowEmail(true);
   };
