@@ -5,11 +5,12 @@ from rest_framework.views import APIView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
-from .models import User, ConversionFactor
-from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer
+from .models import User, ConversionFactor,EmailVerification
+from .serializers import RegisterSerializer, UserSerializer, ConversionFactorsSerializer,CreateUserSerializer
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
+from django.core.mail import EmailMessage
+from django.utils.crypto import get_random_string
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -17,25 +18,20 @@ class UserView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class RegisterView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
-    def create(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = self.get_serializer(data=request.data)  
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(
-                serializer.data, status=status.HTTP_201_CREATED, headers=headers
-            )
+            return Response({"message": "User Detail verified successfully."}, status=status.HTTP_200_OK)
         else:
+            errors = get_ordered_errors(serializer)
+            print(errors)
             return Response(
-                get_ordered_errors(serializer), status=status.HTTP_400_BAD_REQUEST
+                errors, status=status.HTTP_400_BAD_REQUEST
             )
-
 
 class CsrfTokenView(APIView):
     permission_classes = (AllowAny,)
@@ -156,3 +152,73 @@ def get_ordered_errors(serializer):
             ordered_errors[field] = err
 
     return ordered_errors
+
+def send_verification_email(email, code):
+    subject = "Your Verification Code"
+    body = f"Your verification code is: {code}"
+    email_message = EmailMessage(subject, body, to=[email])
+    email_message.send()
+    
+class SendEmailConfirmationTokenAPIView(APIView):
+    permission_classes = [AllowAny,]
+    def post(self, request, format=None):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        code = get_random_string(length=6)
+
+        EmailVerification.objects.update_or_create(email = email, defaults={"verification_code": code})
+
+        send_verification_email(email, code)
+        return Response({"message": "Verification code sent."}, status=status.HTTP_200_OK)
+    
+class ConfirmEmailAPIView(APIView):
+    permission_classes = [
+        AllowAny,
+    ]
+
+    def post(self, request):
+        if "user" in request.data and request.data["user"]:
+                user_data = request.data.get("user")
+                email = user_data.get("email")
+        else:
+            email = request.data.get("email")
+
+        code = request.data.get("verification_code")
+        if not email or not code:
+            return Response(
+                {"error": "Email and verification code are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            verification_obj = EmailVerification.objects.get(email=email)
+        except EmailVerification.DoesNotExist:
+            return Response(
+                {"detail": "Email already verified or no verification record found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if verification_obj.verification_code == code:
+            verification_obj.delete()
+            return Response(
+                {"message": "Email verified successfully."}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"error": "Invalid verification code."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+class CreateView(generics.CreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = CreateUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
