@@ -195,9 +195,7 @@ function Calculator() {
         <form className="needs-validation calculator-form" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-            <strong className="calculator-section-title">
-    Personnel
-  </strong>
+              <strong className="calculator-section-title">PERSONNEL</strong>
             </div>
             <hr />
 
@@ -240,11 +238,12 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Type of space -for calculation of electricity and gas consumption
-  </strong>
-            </div>
-            <hr />
+  <strong className="calculator-section-title">TYPE OF SPACE</strong>
+  <p className="calculator-section-subtitle text-start ms-1">
+    For calculating electricity and gas consumption
+  </p>
+</div>
+<hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
@@ -303,11 +302,12 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Type of space -for calculation of water consumption
-  </strong>
-            </div>
-            <hr />
+  <strong className="calculator-section-title">TYPE OF SPACE</strong>
+  <p className="calculator-section-subtitle text-start ms-1">
+    For calculating water consumption
+  </p>
+</div>
+<hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
@@ -423,16 +423,14 @@ function Calculator() {
         <form className="needs-validation" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Air Travel
-  </strong>
+              <strong className="calculator-section-title">AIR TRAVEL</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy short-haul, to/from UK</strong>
+                  <strong>Economy Short-Haul, To/From UK</strong>
                 </label>
                 <input
                   type="number"
@@ -450,7 +448,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business short-haul, to/from UK</strong>
+                  <strong>Business Short-Haul, To/From UK</strong>
                 </label>
                 <input
                   type="number"
@@ -470,7 +468,7 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy long-haul, to/from UK</strong>
+                  <strong>Economy Long-Haul, To/From UK</strong>
                 </label>
                 <input
                   type="number"
@@ -488,7 +486,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business long-haul, to/from UK</strong>
+                  <strong>Business Long-Haul, To/From UK</strong>
                 </label>
                 <input
                   type="number"
@@ -508,7 +506,7 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy international, to/from non-UK</strong>
+                  <strong>Economy International, To/From Non-UK</strong>
                 </label>
                 <input
                   type="number"
@@ -526,7 +524,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business international, to/from non-UK</strong>
+                  <strong>Business International, To/From Non-UK</strong>
                 </label>
                 <input
                   type="number"
@@ -544,9 +542,7 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Sea Travel 
-  </strong>
+              <strong className="calculator-section-title">SEA TRAVEL</strong>
             </div>
             <hr />
 
@@ -571,9 +567,7 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Land Travel
-  </strong>
+              <strong className="calculator-section-title">LAND TRAVEL</strong>
             </div>
             <hr />
 
@@ -674,7 +668,7 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>National rail</strong>
+                  <strong>National Rail</strong>
                 </label>
                 <input
                   type="number"
@@ -692,7 +686,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>International rail</strong>
+                  <strong>International Rail</strong>
                 </label>
                 <input
                   type="number"
@@ -710,7 +704,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Light rail and tram</strong>
+                  <strong>Light Rail and Tram</strong>
                 </label>
                 <input
                   type="number"
@@ -730,15 +724,18 @@ function Calculator() {
         </form>
 
         <div className="calculator-button-container">
-
-  <button type="button" className="btn btn-outline-secondary me-2" onClick={handleBack}>
-    Back
-  </button>
-  <button type="button" className="btn btn-moss" onClick={handleRoute}>
-    Next
-  </button>
-</div>
-
+          <button
+            type="button"
+            className="btn btn-outline-secondary me-3
+            "
+            onClick={handleBack}
+          >
+            Back
+          </button>
+          <button type="button" className="btn btn-moss" onClick={handleRoute}>
+            Next
+          </button>
+        </div>
       </main>
     );
   }
@@ -772,16 +769,14 @@ function Calculator() {
         <form className="needs-validation" noValidate>
           <div className="row g-2">
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Recycling
-  </strong>
+              <strong className="calculator-section-title">RECYCLING</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Mixed recycling</strong>
+                  <strong>Mixed Recycling</strong>
                 </label>
                 <input
                   type="number"
@@ -799,7 +794,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>WEEE mixed recycling</strong>
+                  <strong>WEEE Mixed Recycling</strong>
                 </label>
                 <input
                   type="number"
@@ -817,9 +812,7 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-            <strong className="calculator-section-title">
-            Waste
-  </strong>
+              <strong className="calculator-section-title">WASTE</strong>
             </div>
             <hr />
 
@@ -844,7 +837,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Clinical waste</strong>
+                  <strong>Clinical Waste</strong>
                 </label>
                 <input
                   type="number"
@@ -862,7 +855,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Chemical waste</strong>
+                  <strong>Chemical Waste</strong>
                 </label>
                 <input
                   type="number"
@@ -880,7 +873,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Biological waste</strong>
+                  <strong>Biological Waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1027,7 +1020,7 @@ function Calculator() {
       <main className="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
         <div className="d-flex align-items-center mt-3">
           <span className="procurement-instruction">
-            Press to add new lines
+            Press + to add new lines
           </span>
 
           <button
@@ -1183,21 +1176,19 @@ function Calculator() {
         <h2>Results</h2>
         <ResultsDisplay calculations={data} rawData={report} />
         <div className="calculator-nav-buttons">
-  <button className="btn btn-outline-secondary" onClick={handleBack}>
-    Back
-  </button>
-  <button className="btn btn-moss" onClick={handleRoute}>
-    Next
-  </button>
-</div>
-
+          <button className="btn btn-outline-secondary" onClick={handleBack}>
+            Back
+          </button>
+          <button className="btn btn-moss" onClick={submitReport}>
+            Submit
+          </button>
+        </div>
       </main>
     );
   }
 
   return (
     <div className="calculator-container">
-
       <Sidebar style={{ flex: "0 0 17%" }} />
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
         <CalculationBar />
