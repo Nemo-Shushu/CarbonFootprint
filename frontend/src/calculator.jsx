@@ -238,12 +238,14 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-  <strong className="calculator-section-title">TYPE OF SPACE</strong>
-  <p className="calculator-section-subtitle text-start ms-1">
-    For calculating electricity and gas consumption
-  </p>
-</div>
-<hr />
+              <strong className="calculator-section-title">
+                TYPE OF SPACE
+              </strong>
+              <p className="calculator-section-subtitle text-start ms-1">
+                For calculating electricity and gas consumption
+              </p>
+            </div>
+            <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
@@ -302,12 +304,14 @@ function Calculator() {
             </div>
 
             <div className="mt-4">
-  <strong className="calculator-section-title">TYPE OF SPACE</strong>
-  <p className="calculator-section-subtitle text-start ms-1">
-    For calculating water consumption
-  </p>
-</div>
-<hr />
+              <strong className="calculator-section-title">
+                TYPE OF SPACE
+              </strong>
+              <p className="calculator-section-subtitle text-start ms-1">
+                For calculating water consumption
+              </p>
+            </div>
+            <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
