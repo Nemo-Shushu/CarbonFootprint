@@ -30,9 +30,10 @@ export default defineConfig({
       include: ["src/**/*.js", "src/**/*.jsx"],
       exclude: [
         "node_modules",
-        "src/test/**",
         "vite.config.js",
         "src/features/**",
+        "src/setupTests.jsx",
+        "src/main.jsx",
       ],
     },
   },
