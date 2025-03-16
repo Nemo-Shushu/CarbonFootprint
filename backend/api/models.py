@@ -27,6 +27,7 @@ from accounts.models import User
 #     def __str__(self):
 #         return self.username
 
+
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     input_data = models.JSONField()

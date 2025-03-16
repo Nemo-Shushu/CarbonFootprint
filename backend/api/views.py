@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from api.models import Result
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
+
 # from api.models import User
 from accounts.models import User
 
@@ -63,22 +64,24 @@ def session_view(request):
 
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return JsonResponse({'isAuthenticated': False})
+        return JsonResponse({"isAuthenticated": False})
 
     print(type(request.user))
     user = request.user
-    return JsonResponse({
-        'isAuthenticated': True,
-        'username': user.username,
-        'forename': user.first_name,
-        'lastname': user.last_name,
-        'email': user.email,
-        'institute': user.institute.name,
-        'research_field':user.research_field.name,
-        'isAdmin': user.is_admin,
-        'isResearcher': user.is_researcher,
-        'dateJoined': user.date_joined,
-    })
+    return JsonResponse(
+        {
+            "isAuthenticated": True,
+            "username": user.username,
+            "forename": user.first_name,
+            "lastname": user.last_name,
+            "email": user.email,
+            "institute": user.institute.name,
+            "research_field": user.research_field.name,
+            "isAdmin": user.is_admin,
+            "isResearcher": user.is_researcher,
+            "dateJoined": user.date_joined,
+        }
+    )
 
 
 @api_view(["GET"])
@@ -847,6 +850,7 @@ def get_all_report_data(request):
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+
 def update_carbon_impact(request):
     if request.method == "POST":
         try:
@@ -855,26 +859,31 @@ def update_carbon_impact(request):
             carbon_impact = data.get("carbon_impact")
 
             if not category or carbon_impact is None:
-                return JsonResponse({"error": "Both 'category' and 'carbon_impact' are required."}, status=400)
+                return JsonResponse(
+                    {"error": "Both 'category' and 'carbon_impact' are required."},
+                    status=400,
+                )
 
             updated, _ = CategoryCarbonImpact.objects.update_or_create(
-                category=category,
-                defaults={"carbon_impact": carbon_impact}
+                category=category, defaults={"carbon_impact": carbon_impact}
             )
 
             return JsonResponse({"success": True if updated else False}, status=200)
-        
+
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-    
+
     return JsonResponse({"error": "Invalid request method"}, status=405)
-    
+
+
 def get_all_carbon_impact(request):
     if request.method == "GET":
         try:
-            data = list(CategoryCarbonImpact.objects.values("id", "category", "carbon_impact"))
+            data = list(
+                CategoryCarbonImpact.objects.values("id", "category", "carbon_impact")
+            )
             return JsonResponse(data, safe=False, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
