@@ -171,10 +171,8 @@ class SessionWhoamiTests(SimpleTestCase):
         self.assertJSONEqual(response.content, {"isAuthenticated": False})
 
     def test_whoami_authenticated(self):
-        # 创建 MockFactory 数据
         mock_user = MockFactory.mock_user()
 
-        # 将 mock_user 转换为可序列化的格式
         mock_user_data = {
             "isAuthenticated": True,
             "username": "testuser",
@@ -188,9 +186,8 @@ class SessionWhoamiTests(SimpleTestCase):
         }
 
         request = self.factory.get("/fake-url/")
-        request.user = mock_user  # 保留 request.user 为 mock_user
+        request.user = mock_user
 
-        # 修改 whoami_view 以直接返回 mock_user_data
         with patch("api.views.JsonResponse", return_value=JsonResponse(mock_user_data)):
             response = whoami_view(request)
 

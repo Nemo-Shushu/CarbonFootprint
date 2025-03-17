@@ -837,6 +837,22 @@ CREATE TABLE public.django_session (
 ALTER TABLE public.django_session OWNER TO carbon_foot;
 
 --
+-- Name: accounts_adminrequest; Type: TABLE; Schema: public; Owner: carbon_foot
+--
+
+CREATE TABLE public.accounts_adminrequest (
+    id serial NOT NULL,
+    user_id integer NOT NULL,
+    requested_role character varying(50) NOT NULL,
+    reason text NOT NULL,
+    status character varying(10) NOT NULL DEFAULT 'Pending'::character varying,
+    created_at timestamp without time zone NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.accounts_adminrequest
+ADD CONSTRAINT accounts_adminrequest_pkey PRIMARY KEY (id)
+
+--
 -- Name: procurement_data_id_seq; Type: SEQUENCE; Schema: public; Owner: carbon_foot
 --
 
