@@ -521,7 +521,7 @@ const Profile = () => {
                 aria-label="newEmail"
                 aria-describedby="basic-addon-newEmail"
               />
-            </InputGroup>
+            
             <Button
               className="verify-button"
               type="button"
@@ -529,6 +529,7 @@ const Profile = () => {
             >
               Send code
             </Button>
+            </InputGroup>
             <div className="sign-in-form">
               <form onSubmit={handleVerify}>
                 <p>Please enter the code emailed to you below:</p>
