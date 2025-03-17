@@ -1,9 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
 
   web:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile_prod
     command: gunicorn carbonfoot.wsgi:application --bind 0.0.0.0:8000

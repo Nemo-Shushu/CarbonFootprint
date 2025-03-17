@@ -14,6 +14,7 @@ class ResearchFieldSerializer(serializers.ModelSerializer):
         model = ResearchField
         fields = ("name",)
 
+
 class CalculationRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalculationRecord
