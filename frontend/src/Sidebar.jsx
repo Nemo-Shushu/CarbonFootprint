@@ -1,10 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "./useAuth";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./scss/custom.scss";
+import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -113,9 +111,11 @@ function Sidebar({ onAdminStatusChange }) {
       className="bg-moss text-white d-flex flex-column pt-3 align-items-center"
       style={{ width: 15 + "rem", maxWidth: 20 + "rem" }}
     >
-      <div className="m-2">
+      <div>
         <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
-          <span style={{ cursor: "pointer" }}>{firstName} </span>
+          <span style={{ cursor: "pointer", paddingLeft: "40px" }}>
+            {firstName}{" "}
+          </span>
           <img
             src="/images/logout.png"
             alt="Logout Icon"
@@ -132,25 +132,39 @@ function Sidebar({ onAdminStatusChange }) {
           style={{
             overflow: "hidden",
             textOverflow: "ellipsis",
-            maxWidth: 170 + "px",
+            maxWidth: 200 + "px",
+            paddingLeft: "20px",
           }}
         >
           {email}
         </p>
         <button
-          className="btn btn-light text-moss fw-bold text-align-center fs-6 p-2 m-2"
-          style={{ width: 90 + "%" }}
+          className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "New Report" ? "active" : ""}`}
+          style={{ width: "100%", margin: "0", borderRadius: "0" }}
           onClick={handleCalculator}
         >
-          + New Report
+          <div
+            style={{ width: "24px", display: "flex", justifyContent: "center" }}
+          >
+            <i
+              className="bi bi-file-earmark-plus"
+              style={{ fontSize: "20px" }}
+            ></i>
+          </div>
+          <span style={{ marginLeft: "9px" }}>New Report</span>
         </button>
 
         <nav className="w-100">
           {/* Dashboard Button */}
           <div
-            className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 my-3 ${activeItem === "Dashboard" ? "active" : ""}`}
+            className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "Dashboard" ? "active" : ""}`}
             onClick={handleDashboard}
-            style={{ cursor: "pointer", width: 90 + "%" }}
+            style={{
+              cursor: "pointer",
+              width: 100 + "%",
+              borderRadius: "0",
+              margin: "10px 0 0 0",
+            }}
           >
             <img
               src="/images/Dashboard.png"
@@ -160,6 +174,7 @@ function Sidebar({ onAdminStatusChange }) {
                 objectFit: "contain",
                 marginRight: 10 + "px",
                 marginLeft: "5" + "px",
+                paddingleft: "10px",
               }}
             />{" "}
             Dashboard
@@ -169,20 +184,26 @@ function Sidebar({ onAdminStatusChange }) {
             <>
               {/* Admin Tool Button */}
               <div
-                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${
+                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 ${
                   activeItem === "AdminTool" ? "active" : ""
                 }`}
                 onClick={handleAdminTool}
-                style={{ cursor: "pointer", width: "90%" }}
+                style={{
+                  cursor: "pointer",
+                  width: "100%",
+                  borderRadius: "0",
+                  margin: "10px 0 0 0",
+                }}
               >
                 <img
                   src="/images/RequestAdmin.png"
                   alt="AdminTool Icon"
                   style={{
-                    width: "16px",
+                    width: 20 + "px",
                     objectFit: "contain",
-                    marginRight: "10px",
-                    marginLeft: "5px",
+                    marginRight: 10 + "px",
+                    marginLeft: "5" + "px",
+                    paddingleft: "10px",
                   }}
                 />
                 Admin Tool
@@ -190,16 +211,26 @@ function Sidebar({ onAdminStatusChange }) {
 
               {/* Manage Factors Button */}
               <div
-                className={`btn btn-moss d-flex text-center text-white fs-6 p-2 m-2 ${
+                className={`btn btn-moss d-flex text-center text-white fs-6 p-2 ${
                   activeItem === "Manage Factors" ? "active" : ""
                 }`}
                 onClick={handleManageFactors}
-                style={{ cursor: "pointer", width: "90%" }}
+                style={{
+                  cursor: "pointer",
+                  width: "100%",
+                  borderRadius: "0",
+                  margin: "10px 0 0 0",
+                }}
               >
                 <div className="p-1 text-center">
                   <i
                     className="bi bi-database-fill-gear align-middle"
-                    style={{ fontSize: "18px" }}
+                    style={{
+                      fontSize: "20px",
+                      marginLeft: "-2px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
                   ></i>
                 </div>
                 <div>
@@ -223,10 +254,11 @@ function Sidebar({ onAdminStatusChange }) {
                   src="/images/RequestAdmin.png"
                   alt="Request Admin Icon"
                   style={{
-                    width: "16px",
+                    width: 20 + "px",
                     objectFit: "contain",
-                    marginRight: "10px",
-                    marginLeft: "5px",
+                    marginRight: 10 + "px",
+                    marginLeft: "5" + "px",
+                    paddingleft: "10px",
                   }}
                 />
                 Request Admin
