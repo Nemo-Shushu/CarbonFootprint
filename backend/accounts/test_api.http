@@ -139,8 +139,8 @@ X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 ### test getresult
 POST http://localhost:8000/api2/dashboard-show-user-result-data/
 Content-Type: application/json
-Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
-X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF
 
 ### 发送 POST 请求测试 get_all_report_data API
 POST http://localhost:8000/api2/get-all-report-data/
@@ -185,23 +185,44 @@ X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
 ### test admin_request_list
 GET http://localhost:8000/api2/admin-request-list/
 Content-Type: application/json
-Cookie: csrftoken=c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y; sessionid=1lcpoki0emeu7ddrfjwat8ssloiizzcj
-X-CSRFToken: c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF
 
 ### test user_request_list
 GET http://localhost:8000/api2/user-request-status/
 Content-Type: application/json
-Cookie: csrftoken=E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul; sessionid=bqz91luvpj3ma9oe7u5mzxm5j5g3z639
-X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF
 
 ### test submit-adminrequest
 POST http://localhost:8000/api2/approve-or-reject-request/
 Content-Type: application/json
-Cookie: csrftoken=VF8mkuem98Zfai5uG1NCBrewdOnewR2U; sessionid=eqydrdab3rphbkkjwdg85vcucbs5w1ib
-X-CSRFToken: VF8mkuem98Zfai5uG1NCBrewdOnewR2U
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF
 
 {
     "user_id": 2,
     "state": "Approved"
 }
 
+### test save draft
+POST http://localhost:8000/api2/store-unsubmitted-reports-backend/
+Content-Type: application/json
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20"
+  },
+  "travel": {
+    "air-eco-short-UK": "1000"
+  }
+}
+
+### test get draft
+GET http://localhost:8000/api2/retrieve-and-delete-temp-report/
+Content-Type: application/json
+Cookie: csrftoken=CteR7VevcTLfsoEB3R8ndre663DtY8JF; sessionid=y8vcav9lpr2a71qehwywukjzkxftx275
+X-CSRFToken: CteR7VevcTLfsoEB3R8ndre663DtY8JF

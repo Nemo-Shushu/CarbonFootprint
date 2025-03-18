@@ -6,7 +6,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from api.models import AdminRequest, Result
+from api.models import AdminRequest, Result, TempReport
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
 from accounts.models import User
@@ -1077,6 +1077,75 @@ def approve_or_reject_request(request):
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+def store_unsubmitted_reports_backend(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {"error": "Please login first."},
+                status=403
+            )
+
+        user_id = request.user.id
+
+        try:
+            data = json.loads(request.body)
+
+            if TempReport.objects.filter(user_id=user_id).exists():
+                return JsonResponse(
+                    {"success": False, "message": "You already have a draft."},
+                    status=400
+                )
+
+            TempReport.objects.create(
+                user_id=user_id,
+                data=data
+            )
+
+            return JsonResponse(
+                {"success": True, "message": "Draft successfully saved."},
+                status=201
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+def retrieve_and_delete_temp_report(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {"error": "Please login first."},
+                status=403
+            )
+
+        user_id = request.user.id
+
+        try:
+            temp_report = TempReport.objects.filter(user_id=user_id).first()
+
+            if temp_report:
+                report_data = temp_report.data
+                
+                temp_report.delete()
+
+                return JsonResponse(
+                    {"data": report_data},
+                    status=200
+                )
+
+            return JsonResponse(
+                {"success": "No draft now"},
+                status=404
+            )
+
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

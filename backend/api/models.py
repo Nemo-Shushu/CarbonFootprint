@@ -107,3 +107,11 @@ class AdminRequest(models.Model):
 
     def __str__(self):
         return f"{self.user.id} - {self.requested_role} ({self.status})"
+
+class TempReport(models.Model):
+    user = models.OneToOneField("accounts.User", on_delete=models.CASCADE)
+    data = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "calculate_temp_reports"
