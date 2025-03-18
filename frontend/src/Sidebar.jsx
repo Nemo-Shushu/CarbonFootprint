@@ -109,7 +109,13 @@ function Sidebar({ onAdminStatusChange }) {
   return (
     <div
       className="bg-moss text-white d-flex flex-column pt-3 align-items-center"
-      style={{ width: 15 + "rem", maxWidth: 20 + "rem" }}
+      style={{
+        width: 15 + "rem",
+        maxWidth: 20 + "rem",
+        height: "100vh",
+        background: "#234e39",
+        position: "relative",
+      }}
     >
       <div>
         <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
@@ -266,6 +272,76 @@ function Sidebar({ onAdminStatusChange }) {
             </>
           )}
         </nav>
+      </div>
+      {/* University of Glasgow Logo*/}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          textAlign: "center",
+        }}
+      >
+        <img
+          src="/images/UniLogo.png"
+          alt="University of Glasgow"
+          style={{
+            width: "150px",
+            height: "auto",
+            marginBottom: "15px",
+          }}
+        />
+        {/* Social Media Icons */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginTop: "10px",
+          }}
+        >
+          <a
+            href="https://www.facebook.com/UofGlasgow"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className="bi bi-facebook"
+              style={{ fontSize: "20px", color: "#ffffff" }}
+            ></i>
+          </a>
+          <a
+            href="https://twitter.com/UofGlasgow"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className="bi bi-twitter-x"
+              style={{ fontSize: "20px", color: "#ffffff" }}
+            ></i>
+          </a>
+          <a
+            href="https://www.instagram.com/UofGlasgow"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className="bi bi-instagram"
+              style={{ fontSize: "20px", color: "#ffffff" }}
+            ></i>
+          </a>
+          <a
+            href="https://www.gla.ac.uk/research/az/sustainablesolutions/ourprojects/carbonfootprinttool/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i
+              className="bi bi-house-door"
+              style={{ fontSize: "20px", color: "#ffffff" }}
+            ></i>
+          </a>
+        </div>
       </div>
     </div>
   );
