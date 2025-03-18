@@ -284,7 +284,7 @@ function Sidebar({ onAdminStatusChange }) {
         }}
       >
         <img
-          src="/images/UniLogo.png"
+          src="/images/UoG_keyline.png"
           alt="University of Glasgow"
           style={{
             width: "150px",
