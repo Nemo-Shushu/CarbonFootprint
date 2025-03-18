@@ -521,14 +521,14 @@ const Profile = () => {
                 aria-label="newEmail"
                 aria-describedby="basic-addon-newEmail"
               />
-            
-            <Button
-              className="verify-button"
-              type="button"
-              onClick={handleSend}
-            >
-              Send code
-            </Button>
+
+              <Button
+                className="verify-button"
+                type="button"
+                onClick={handleSend}
+              >
+                Send code
+              </Button>
             </InputGroup>
             <div className="sign-in-form">
               <form onSubmit={handleVerify}>

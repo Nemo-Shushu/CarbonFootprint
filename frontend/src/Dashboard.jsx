@@ -280,7 +280,6 @@ function Dashboard() {
   const [showProfile, setShowProfile] = useState(
     queryParams.get("showProfile") === "true",
   );
-  const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -294,7 +293,6 @@ function Dashboard() {
    */
   function toggleProfile() {
     setShowProfile((prev) => !prev);
-    setShowDropdown(false);
   }
 
   /**
@@ -302,7 +300,6 @@ function Dashboard() {
    */
   function toggleDropdown(event) {
     event.stopPropagation();
-    setShowDropdown((prev) => !prev);
   }
 
   /**
@@ -310,7 +307,7 @@ function Dashboard() {
    */
   function handleClickOutside(event) {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setShowDropdown(false);
+      // setShowDropdown(false);
     }
   }
 
@@ -358,7 +355,6 @@ function Dashboard() {
               className="dropdown-item"
               onClick={() => {
                 toggleProfile();
-                setShowDropdown(false);
               }}
               data-testid="profile-btn"
             >
