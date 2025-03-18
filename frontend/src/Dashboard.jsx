@@ -22,7 +22,15 @@ function TableComponent({ isAdmin }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
-  const [visible, setVisible] = useState(false);
+  const [visibleReport, setVisibleReport] = useState(false);
+  const [visibleFilter, setVisibleFilter] = useState(false);
+  const [searchString, setSearchString] = useState("");
+  const [institutions, setInstitutions] = useState([]);
+  const [fields, setFields] = useState([]);
+  const [filter, setFilter] = useState({
+    institute: "",
+    research_field: "",
+  });
 
   useEffect(() => {
     getReports();
@@ -33,6 +41,38 @@ function TableComponent({ isAdmin }) {
       getSpecificReport();
     }
   }, [repId]);
+
+  useEffect(() => {
+    fetch(backendUrl.concat("api2/institutions/"))
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Fail to get an university lists.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setInstitutions(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching institutions:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(backendUrl.concat("api2/fields/"))
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Fail to get a field lists.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setFields(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching fields:", err);
+      });
+  }, []);
 
   async function getReports() {
     try {
@@ -86,9 +126,28 @@ function TableComponent({ isAdmin }) {
     }
   }
 
+  const handleInstitutionsChange = (event) => {
+    const selectedInstitute = event.target.value;
+    setFilter((prevFilter) => ({ ...prevFilter, institute: selectedInstitute }));
+  };
+
+  const handleFieldsChange = (event) => {
+    const selectedField = event.target.value;
+    setFilter((prevFilter) => ({ ...prevFilter, research_field: selectedField }));
+  };
+
+  function handleSearchChange(event) {
+    setSearchString(event.target.value);
+  };
+
+  function findString(val) {
+    if (parseInt(searchString) == 0) return true;
+    return val.toString().includes(searchString);
+  }
+
   return (
     <main className="ms-sm-auto px-md-4">
-      <Modal show={visible} onHide={() => setVisible(false)} centered size="lg">
+      <Modal show={visibleReport} onHide={() => setVisibleReport(false)} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Carbon Emissions Data for: Report #{repId}</Modal.Title>
         </Modal.Header>
@@ -99,7 +158,72 @@ function TableComponent({ isAdmin }) {
           />
         </Modal.Body>
       </Modal>
-      <h3>Available Reports</h3>
+      <Modal show={visibleFilter} onHide={() => setVisibleFilter(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Filter Reports</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* Dropdown for Academic Institution, not searchable at the moment  */}
+          <div className="input-group">
+            <select
+              name="institute"
+              className="input-field"
+              value={filter.institute}
+              onChange={handleInstitutionsChange}
+            >
+              <option value="" disabled>
+                Select an institution
+              </option>
+              {institutions.map((inst, index) => (
+                <option key={index} value={inst.name}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Dropdown for Research Field, need to be updated */}
+          <div className="input-group">
+            <select
+              name="research_field"
+              className="input-field"
+              value={filter.research_field}
+              onChange={handleFieldsChange}
+            >
+              <option value="" disabled>
+                Select a Research Field
+              </option>
+              {fields.map((inst, index) => (
+                <option key={index} value={inst.name}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button onClick={() => setFilter({ institute: "", research_field: "" })}>
+            Reset Filter
+          </button>
+        </Modal.Body>
+      </Modal>
+      <div className="d-flex">
+        <h3>Available Reports</h3>
+        <input
+          type="text"
+          name="search"
+          className="input-field"
+          placeholder="Search a specific report ID"
+          onChange={handleSearchChange}
+        />
+        <button
+          className=""
+          onClick={() => {
+            setVisibleFilter(true);
+          }}
+          >
+          Funnel symbol
+        </button>
+      </div>
       <div className="table-responsive small">
         {Array.isArray(data) && data.length > 0 ? (
           <table className="table table-striped table-hover table-sm">
@@ -114,12 +238,15 @@ function TableComponent({ isAdmin }) {
             </thead>
             <tbody>
               {data.map((row, index) => (
+                findString(row.id) && 
+                (filter.institute === "" || filter.institute === row.institution) &&
+                (filter.research_field === "" || filter.research_field === row.field) && 
                 <tr
                   key={index}
                   className="align-middle"
                   onClick={() => {
                     setRepId(row.id);
-                    setVisible(true);
+                    setVisibleReport(true);
                   }}
                 >
                   <th scope="row">{row.id}</th>
