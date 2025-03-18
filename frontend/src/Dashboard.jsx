@@ -10,10 +10,15 @@ import Profile from "./Profile";
 import Cookies from "js-cookie";
 import ResultsDisplay from "./ResultsDisplay";
 import Modal from "react-bootstrap/Modal";
+import PropTypes from "prop-types";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-function TableComponent() {
+TableComponent.propTypes = {
+  isAdmin: PropTypes.boolean,
+};
+
+function TableComponent({ isAdmin }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
@@ -104,6 +109,7 @@ function TableComponent() {
                 <th scope="col">Academic Institution</th>
                 <th scope="col">Research Field</th>
                 <th scope="col">Total Emissions</th>
+                {isAdmin && <th scope="col">Email</th>}
               </tr>
             </thead>
             <tbody>
@@ -120,138 +126,7 @@ function TableComponent() {
                   <td>{row.institution}</td>
                   <td>{row.field}</td>
                   <td>{row.emissions}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div
-            className="fs-2 d-flex justify-content-center align-items-center"
-            style={{
-              height: "300px",
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-              color: "gray",
-            }}
-          >
-            No data available
-          </div>
-        )}
-      </div>
-    </main>
-  );
-}
-
-// Admin Dashboard Page
-function AdminTableComponent() {
-  const [data, setData] = useState([]);
-  const [repId, setRepId] = useState();
-  const [report, setReport] = useState([]);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    getReports();
-  }, []);
-
-  useEffect(() => {
-    if (repId !== null && repId !== undefined) {
-      getSpecificReport();
-    }
-  }, [repId]);
-
-  async function getReports() {
-    try {
-      const response = await fetch(
-        `${backendUrl}api2/dashboard-show-user-result-data/`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": Cookies.get("csrftoken"),
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Reports received:", responseData);
-      setData(responseData);
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-    }
-  }
-
-  async function getSpecificReport() {
-    try {
-      const response = await fetch(`${backendUrl}api2/get-all-report-data/`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": Cookies.get("csrftoken"),
-        },
-        body: JSON.stringify({
-          report_id: repId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Report received:", responseData);
-      setReport(responseData);
-    } catch (error) {
-      console.error("Error fetching report:", error);
-    }
-  }
-
-  return (
-    <main className="ms-sm-auto px-md-4">
-      <Modal show={visible} onHide={() => setVisible(false)} centered size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Carbon Emissions Data for: Report #{repId}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <ResultsDisplay
-            calculations={report.calculations_data}
-            rawData={report.report_data}
-          />
-        </Modal.Body>
-      </Modal>
-      <h2>Available Reports</h2>
-      <div className="table-responsive small">
-        {Array.isArray(data) && data.length > 0 ? (
-          <table className="table table-striped table-hover table-sm">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Academic Institution</th>
-                <th scope="col">Research Field</th>
-                <th scope="col">Total Emissions</th>
-                <th scope="col">Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr
-                  key={index}
-                  className="align-middle"
-                  onClick={() => {
-                    setRepId(row.id);
-                    setVisible(true);
-                  }}
-                >
-                  <th scope="row">{row.id}</th>
-                  <td>{row.institution}</td>
-                  <td>{row.field}</td>
-                  <td>{row.emissions}</td>
-                  <td>{row.email}</td>
+                  {isAdmin && <td>{row.email}</td>}
                 </tr>
               ))}
             </tbody>
@@ -383,7 +258,7 @@ function Dashboard() {
           </div>
         )}
 
-        {isAdmin ? <AdminTableComponent /> : <TableComponent />}
+        <TableComponent isAdmin={isAdmin} />
       </main>
     </div>
   );
