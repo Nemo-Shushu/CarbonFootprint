@@ -8,7 +8,7 @@ import Modal from "react-bootstrap/Modal";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function createUser(user) {
-  return fetch(backendUrl + "api/accounts/register/", {
+  return fetch(backendUrl + "api/accounts/create-user/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +34,7 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/???/", {
+  return fetch(backendUrl + "api/accounts/register/", {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
     method: "POST",
     headers: {
@@ -61,7 +61,7 @@ async function validateUser(user) {
 }
 
 async function sendCode(user) {
-  return fetch(backendUrl + "api/accounts/???/", {
+  return fetch(backendUrl + "api/accounts/send-email-confirmation-token/", {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
     method: "POST",
     headers: {
@@ -87,14 +87,14 @@ async function sendCode(user) {
     });
 }
 
-async function verifyCode(code) {
-  return fetch(backendUrl + "api/accounts/???/", {
+async function verifyCode(user, code) {
+  return fetch(backendUrl + "api/accounts/confirm-email/", {
     // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(code),
+    body: JSON.stringify({ user, verification_code: code }),
   })
     .then((response) => {
       if (!response.ok) {
@@ -125,16 +125,20 @@ function RegisterForm() {
     institute: "",
     research_field: "",
   });
+
   const [code, setCode] = useState("");
   const [error, setError] = useState();
   const [modalError, setModalError] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
+  const [verifiedMessage, setVerifiedMessage] = useState("");
   const [institutions, setInstitutions] = useState([]);
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [visible, setVisible] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const [verifyDisabled, setVerifyDisabled] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -178,27 +182,20 @@ function RegisterForm() {
     }
   }, [isAuthenticated, loading]);
 
-  const handleSubmit = (event) => {
+  const handleVerify = (event) => {
     // when user has received their code, they paste it into the text box and press "Verify my Email". Then this function attempts to verify the verification code.
     // if verifyCode is successful, the function attempts to create the account with createUser.
     // If createUser succeeds, user is routed to sign-in.
     // If createUser doesn't succeed, modalError is set in the modal. It is expected that by this point - user details have been verified by validateUser, and createUser shouldn't fail.
     // if verifyCode is not successful, verificationError is set in the modal
     event.preventDefault();
-    verifyCode(code)
+    verifyCode(user, code)
       .then((data) => {
         console.log("Code verified:", data);
         setError("");
-        createUser(user)
-          .then((data) => {
-            console.log("User created:", data);
-            setModalError("");
-            navigate("/sign-in");
-          })
-          .catch((err) => {
-            console.error("Error creating user:", err);
-            setModalError(true);
-          });
+        setIsVerified(true);
+        setVerifiedMessage("Your email is verified successfully.");
+        setVerifyDisabled(true);
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
@@ -206,6 +203,23 @@ function RegisterForm() {
       });
   };
 
+  const handleRegister = (event) => {
+    event.preventDefault();
+    if (!isVerified) {
+      setModalError("Please verify your email before proceeding.");
+      return;
+    }
+    createUser(user)
+      .then((data) => {
+        console.log("User created:", data);
+        setModalError("");
+        navigate("/sign-in");
+      })
+      .catch((err) => {
+        console.error("Error creating user:", err);
+        setModalError(true);
+      });
+  };
   const handleModal = (event) => {
     // when the user submits their details, handleModal first tries to validate user details,
     // and make sure that when the user next submits their request to create an account, there will be no errors.
@@ -264,7 +278,7 @@ function RegisterForm() {
         </Modal.Header>
         <Modal.Body>
           <div className="sign-in-form">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleVerify}>
               <p>Please enter the code emailed to you below:</p>
               <input
                 type="text"
@@ -285,9 +299,22 @@ function RegisterForm() {
               {modalError && (
                 <p className="warning">An unknown error occurred.</p>
               )}
+              {verifiedMessage && <p className="success">{verifiedMessage}</p>}
 
-              <button className="sign-in-button" type="submit">
+              <button
+                className="verify-button"
+                type="button"
+                onClick={handleVerify}
+                disabled={verifyDisabled}
+              >
                 Verify my Email
+              </button>
+              <button
+                className="register-button"
+                type="button"
+                onClick={handleRegister}
+              >
+                Register
               </button>
             </form>
           </div>

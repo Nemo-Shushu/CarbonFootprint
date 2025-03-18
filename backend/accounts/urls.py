@@ -4,6 +4,11 @@ from accounts.views import (
     CsrfTokenView,
     LogoutView,
     LoginView,
+    ConfirmEmailAPIView,
+    SendEmailConfirmationTokenAPIView,
+    CreateView,
+    UpdateView,
+    UpdateUserEmailAPIView,
 )
 
 app_name = "accounts"
@@ -13,4 +18,9 @@ urlpatterns = [
     path("csrf/", CsrfTokenView.as_view(), name="csrf"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path("send-email-confirmation-token/", SendEmailConfirmationTokenAPIView.as_view(), name="send_email_confirmation_token"),
+    path("confirm-email/", ConfirmEmailAPIView.as_view(), name="confirm_email"),
+    path("create-user/", CreateView.as_view(), name="confirm_user"),
+    path('update/', UpdateView.as_view(), name='update'),
+    path('update-email/', UpdateUserEmailAPIView.as_view(), name='update_email'),
 ]

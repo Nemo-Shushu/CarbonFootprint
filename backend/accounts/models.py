@@ -74,3 +74,12 @@ class User(AbstractUser):
 
     class Meta:
         managed = False
+
+class EmailVerification(models.Model):
+    email = models.EmailField(
+        max_length=35,
+        unique=True,
+        error_messages={"unique": "A user with this email already exists."},
+    )
+    verification_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)

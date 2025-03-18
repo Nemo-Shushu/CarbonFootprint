@@ -73,19 +73,18 @@ def whoami_view(request):
 
     print(type(request.user))
     user = request.user
-    return JsonResponse(
-        {
-            "isAuthenticated": True,
-            "username": user.username,
-            "forename": user.first_name,
-            "email": user.email,
-            "institute": user.institute.name,
-            "research_field": user.research_field.name,
-            "isAdmin": user.is_admin,
-            "isResearcher": user.is_researcher,
-            "dateJoined": user.date_joined,
-        }
-    )
+    return JsonResponse({
+        'isAuthenticated': True,
+        'username': user.username,
+        'forename': user.first_name,
+        'lastname': user.last_name,
+        'email': user.email,
+        'institute': user.institute.name,
+        'research_field':user.research_field.name,
+        'isAdmin': user.is_admin,
+        'isResearcher': user.is_researcher,
+        'dateJoined': user.date_joined,
+    })
 
 
 @api_view(["GET"])

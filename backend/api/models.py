@@ -1,4 +1,5 @@
 from django.db import models
+
 from accounts.models import User
 
 class CalculationRecord(models.Model):
@@ -52,6 +53,7 @@ class Result(models.Model):
     class Meta:
         db_table = "calculate_result"
         managed = False
+
 
 
 class BenchmarkData(models.Model):
