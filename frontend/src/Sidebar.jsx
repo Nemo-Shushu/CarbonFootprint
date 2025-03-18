@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import "./scss/custom.scss";
-import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -274,7 +269,9 @@ function Sidebar({ onAdminStatusChange }) {
                   ></i>
                 </div>
                 <div>
-                  <p className="mb-0 ms-2 text-start">Manage Conversion Factors</p>
+                  <p className="mb-0 ms-2 text-start">
+                    Manage Conversion Factors
+                  </p>
                 </div>
               </div>
             </>

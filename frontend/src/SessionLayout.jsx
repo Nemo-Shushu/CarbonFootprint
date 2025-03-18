@@ -1,34 +1,34 @@
-// src/SessionLayout.jsx
-import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { useState, useEffect } from "react";
+import { Modal, Button } from "react-bootstrap";
 import Cookies from "js-cookie";
+import PropTypes from "prop-types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SessionLayout({ children }) {
   const [remainingTime, setRemainingTime] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
-  const[extend,setExtend] = useState(false);
+  const [extend, setExtend] = useState(false);
 
   useEffect(() => {
-      const fetchSessionExpiry = async () => {
-        try {
-          const response = await fetch(`${backendUrl}api2/session-expiry/`, {
-            credentials: "include",
-          });
-          const data = await response.json();
-          setRemainingTime(data.remaining_time);
-        } catch (error) {
-          console.error("Error fetching session expiry:", error);
-        }
-      };
-  
+    const fetchSessionExpiry = async () => {
+      try {
+        const response = await fetch(`${backendUrl}api2/session-expiry/`, {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setRemainingTime(data.remaining_time);
+      } catch (error) {
+        console.error("Error fetching session expiry:", error);
+      }
+    };
+
+    fetchSessionExpiry();
+    const serverTimerId = setInterval(() => {
       fetchSessionExpiry();
-      const serverTimerId = setInterval(() => {
-        fetchSessionExpiry();
-      }, 10000);
-  
-      return () => clearInterval(serverTimerId);
-    }, []);
+    }, 10000);
+
+    return () => clearInterval(serverTimerId);
+  }, []);
   useEffect(() => {
     if (remainingTime <= 300 && remainingTime > 0 && !extend) {
       setShowPopup(true);
@@ -41,12 +41,12 @@ function SessionLayout({ children }) {
   const handleExtendSession = async () => {
     try {
       const response = await fetch(`${backendUrl}api2/extend-session/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           "X-CSRFToken": Cookies.get("csrftoken"),
         },
-        credentials: 'include'
+        credentials: "include",
       });
       const data = await response.json();
       setRemainingTime(data.remaining_time);
@@ -69,7 +69,9 @@ function SessionLayout({ children }) {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Your session will expire in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}. Would you like to extend your session?
+            Your session will expire in {minutes}:
+            {seconds < 10 ? `0${seconds}` : seconds}. Would you like to extend
+            your session?
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -84,5 +86,7 @@ function SessionLayout({ children }) {
     </div>
   );
 }
-
+SessionLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 export default SessionLayout;

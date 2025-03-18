@@ -30,5 +30,5 @@ root.render(
         <Route path="admin-tool" element={<AdminTool />} />
       </Routes>
     </SessionLayout>
-  </BrowserRouter>
+  </BrowserRouter>,
 );
