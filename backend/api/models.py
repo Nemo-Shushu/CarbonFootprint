@@ -27,6 +27,7 @@ from accounts.models import User
 #     def __str__(self):
 #         return self.username
 
+
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     input_data = models.JSONField()
@@ -85,3 +86,24 @@ class BenchmarkData(models.Model):
 
     class Meta:
         db_table = "accounts_benchmarkdata"
+
+
+class AdminRequest(models.Model):
+    STATUS_CHOICES = [
+        ("Pending", "Pending"),
+        ("Approved", "Approved"),
+        ("Rejected", "Rejected"),
+    ]
+
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    requested_role = models.CharField(max_length=50)
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "accounts_adminrequest"
+
+    def __str__(self):
+        return f"{self.user.id} - {self.requested_role} ({self.status})"
