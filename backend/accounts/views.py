@@ -19,12 +19,6 @@ from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
 
 
-class UserView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-
 class RegisterView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer

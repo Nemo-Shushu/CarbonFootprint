@@ -5,7 +5,7 @@ const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export async function getConversionFactors(setFactors) {
-  await fetch(backendUrl + "api/intensity-factors/", {
+  await fetch(`${backendUrl}api/intensity-factors/`, {
     method: "GET",
     credentials: "include",
   })
@@ -27,7 +27,7 @@ export async function getConversionFactors(setFactors) {
 export async function handleBulkUpdateSubmissionAPI(event, updatedFactors) {
   event.preventDefault();
 
-  await fetch(backendUrl + "api/intensity-factors/", {
+  await fetch(`${backendUrl}api/intensity-factors/`, {
     method: "PUT",
     credentials: "include",
     headers: {
