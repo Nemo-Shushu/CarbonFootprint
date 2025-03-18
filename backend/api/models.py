@@ -74,7 +74,6 @@ class Result(models.Model):
     class Meta:
         db_table = "calculate_result"
 
-
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)
     category = models.CharField(max_length=150)

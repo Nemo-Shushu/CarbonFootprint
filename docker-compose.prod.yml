@@ -1,15 +1,22 @@
 version: "3.8"
 
 services:
+
   web:
     build:
       context: ./backend
       dockerfile: Dockerfile_prod
     command: gunicorn carbonfoot.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend/:/app
+    networks:
+      - my-network
     ports:
       - 8000:8000
     env_file:
       - ./.env.prod
+    depends_on:
+      - db
 
   react-app:
     build:
@@ -23,4 +30,24 @@ services:
       - /app/node_modules
       - ./frontend:/app
     ports:
-      - "3000:3000"
+    - "3000:3000"
+
+  db:
+    image: postgres:17
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: carbon_foot
+      POSTGRES_DB: carbon_foot_data
+    env_file:
+      - ./.env.prod
+    networks:
+      - my-network
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
+
+networks:
+  my-network:
