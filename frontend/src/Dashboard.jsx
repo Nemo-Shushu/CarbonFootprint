@@ -31,6 +31,10 @@ function TableComponent({ isAdmin }) {
     institute: "",
     research_field: "",
   });
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc',
+  });
 
   useEffect(() => {
     getReports();
@@ -153,6 +157,30 @@ function TableComponent({ isAdmin }) {
     );
   });
 
+  const sortTable = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    else if (sortConfig.key === key && sortConfig.direction === 'desc') {
+      key = 'id';
+      direction = 'asc';
+    }
+  
+    const sortedData = [...data].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === 'asc' ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    setSortConfig({ key, direction });
+    setData(sortedData);
+  };
+
   return (
     <main className="ms-sm-auto px-md-4">
       <Modal show={visibleReport} onHide={() => setVisibleReport(false)} centered size="lg">
@@ -236,11 +264,46 @@ function TableComponent({ isAdmin }) {
           <table className="table table-striped table-hover table-sm">
             <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Academic Institution</th>
-                <th scope="col">Research Field</th>
-                <th scope="col">Total Emissions</th>
-                {isAdmin && <th scope="col">Email</th>}
+                <th
+                  scope="col"
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  #
+                </th>
+                <th
+                  scope="col"
+                  onClick={() => sortTable('institution')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Academic Institution
+                  {sortConfig.key === 'institution' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                </th>
+                <th
+                  scope="col"
+                  onClick={() => sortTable('field')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Research Field
+                  {sortConfig.key === 'field' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                </th>
+                <th
+                  scope="col"
+                  onClick={() => sortTable('emissions')}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  Total Emissions
+                  {sortConfig.key === 'emissions' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                </th>
+                {isAdmin && (
+                  <th
+                    scope="col"
+                    onClick={() => sortTable('email')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                  >
+                    Email
+                    {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
