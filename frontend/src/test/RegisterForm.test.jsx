@@ -20,13 +20,13 @@ vi.mock("react-router-dom", async () => {
 });
 
 global.fetch = vi.fn((url) => {
-  if (url.includes("api2/institutions")) {
+  if (url.includes("api/institutions")) {
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve([{ name: "Test University" }]),
     });
   }
-  if (url.includes("api2/fields")) {
+  if (url.includes("api/fields")) {
     return Promise.resolve({
       ok: true,
       json: () => Promise.resolve([{ name: "Computer Science" }]),
