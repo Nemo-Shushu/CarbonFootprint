@@ -143,7 +143,7 @@ function RegisterForm() {
     setShowPassword((prev) => !prev);
   };
   useEffect(() => {
-    fetch(backendUrl.concat("api2/institutions/"))
+    fetch(backendUrl.concat("api/institutions/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get an university lists.");
@@ -159,7 +159,7 @@ function RegisterForm() {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/fields/"))
+    fetch(backendUrl.concat("api/fields/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get a field lists.");

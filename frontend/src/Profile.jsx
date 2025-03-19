@@ -222,7 +222,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/institutions/"))
+    fetch(backendUrl.concat("api/institutions/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get university lists.");
@@ -238,7 +238,7 @@ const Profile = () => {
   }, [backendUrl]);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/fields/"))
+    fetch(backendUrl.concat("api/fields/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get field lists.");
@@ -254,7 +254,7 @@ const Profile = () => {
   }, [backendUrl]);
 
   function getSession() {
-    fetch(backendUrl.concat("api2/session/"), {
+    fetch(backendUrl.concat("api/session/"), {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -267,7 +267,7 @@ const Profile = () => {
   }
 
   const getName = () => {
-    fetch(backendUrl.concat("api2/whoami/"), {
+    fetch(backendUrl.concat("api/whoami/"), {
       credentials: "include",
     })
       .then((res) => res.json())
