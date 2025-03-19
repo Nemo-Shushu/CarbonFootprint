@@ -20,37 +20,6 @@ function Sidebar({ onAdminStatusChange }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [timeLeft, setTimeLeft] = useState(1200);
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
-  useEffect(() => {
-    const localTimerId = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-    return () => clearInterval(localTimerId);
-  }, []);
-  useEffect(() => {
-    const fetchSessionExpiry = async () => {
-      try {
-        const response = await fetch(`${backendUrl}api2/session-expiry/`, {
-          credentials: "include",
-        });
-        const data = await response.json();
-        setTimeLeft(data.remaining_time);
-      } catch (error) {
-        console.error("Error fetching session expiry:", error);
-      }
-    };
-
-    fetchSessionExpiry();
-    const serverTimerId = setInterval(() => {
-      fetchSessionExpiry();
-    }, 10000);
-
-    return () => clearInterval(serverTimerId);
-  }, []);
-
   useEffect(() => {
     if (location.pathname === "/dashboard") {
       setActiveItem("Dashboard");
@@ -172,11 +141,6 @@ function Sidebar({ onAdminStatusChange }) {
           }}
         >
           {email}
-          <div>
-            <h11 style={{ color: "#1E90FF" }}>
-              Remaining Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-            </h11>
-          </div>
         </p>
         <button
           className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "New Report" ? "active" : ""}`}
