@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  getConversionFactors,
   handleBulkUpdateSubmissionAPI,
 } from "../api/apiFactors.jsx";
 import "../assets/ManageFactors.css";
 
 FactorTable.propTypes = {
   tableName: PropTypes.string,
-  conversionFactors: PropTypes.array,
+  conversionFactors: PropTypes.func,
 };
 
 function FactorTable({ tableName, conversionFactors }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState(null);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortField, setSortField] = useState("category"); // Default sort by category
+  const [sortOrder, setSortOrder] = useState("asc"); // Default ascending order
   const [editing, setEditing] = useState(false);
   const [editedFactors, setEditedFactors] = useState([]);
+  const [originalFactors, setOriginalFactors] = useState([]); // Store original values for comparison
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    getConversionFactors(setEditedFactors);
-  }, [conversionFactors]);
+    conversionFactors(setEditedFactors)
+    conversionFactors(setOriginalFactors)
+  }, [setEditedFactors, setOriginalFactors]);
 
   const filteredFactors = editedFactors.filter((factor) =>
     `${factor.category} ${factor.consumption_type}`
@@ -43,6 +44,11 @@ function FactorTable({ tableName, conversionFactors }) {
   });
 
   function toggleEditMode() {
+    if (editing) {
+      // If canceling edit mode, revert to original values
+      setEditedFactors([...originalFactors]);
+      setErrors({});
+    }
     setEditing(!editing);
   }
 
@@ -73,21 +79,40 @@ function FactorTable({ tableName, conversionFactors }) {
     }
   }
 
+  // Function to check if a factor has been modified
+  function hasFactorChanged(editedFactor) {
+    const originalFactor = originalFactors.find(f => f.id === editedFactor.id);
+    if (!originalFactor) return true; // New factor
+    
+    // Convert to same type before comparison (both as numbers)
+    return Number(editedFactor.intensity) !== Number(originalFactor.intensity);
+  }
+
   async function handleBulkSave(event) {
     if (Object.keys(errors).length > 0) {
       alert("Please correct the errors before saving.");
       return;
     }
 
-    // Convert all intensity values to numbers before saving
-    const formattedFactors = editedFactors.map((factor) => ({
-      ...factor,
-      intensity: Number(factor.intensity),
-    }));
+    // Filter only changed factors
+    const changedFactors = editedFactors
+      .filter(hasFactorChanged)
+      .map(factor => ({
+        ...factor,
+        intensity: Number(factor.intensity),
+      }));
 
-    await handleBulkUpdateSubmissionAPI(event, formattedFactors);
+    if (changedFactors.length === 0) {
+      alert("No changes detected.");
+      return;
+    }
+
+    await handleBulkUpdateSubmissionAPI(event, changedFactors);
     setEditing(false);
-    getConversionFactors(setEditedFactors);
+    
+    // Refresh data after save
+    await conversionFactors(setEditedFactors);
+    setOriginalFactors(editedFactors);
   }
 
   return (
@@ -118,7 +143,8 @@ function FactorTable({ tableName, conversionFactors }) {
           <button
             className="btn btn-success m-1 flex-grow-1 text-nowrap"
             onClick={handleBulkSave}
-            disabled={Object.keys(errors).length > 0} // Disable when there are errors
+            disabled={Object.keys(errors).length > 0 || 
+              !editedFactors.some(hasFactorChanged)} // Disable when no changes
           >
             Save Changes
           </button>
@@ -148,7 +174,10 @@ function FactorTable({ tableName, conversionFactors }) {
         </thead>
         <tbody className="table-group-divider">
           {sortedFactors.map((factor) => (
-            <tr className="align-middle text-start" key={factor.id}>
+            <tr 
+              className={`align-middle text-start ${editing && hasFactorChanged(factor) ? "table-warning" : ""}`} 
+              key={factor.id}
+            >
               <td>{factor.category}</td>
               <td>{factor.consumption_type}</td>
               <td>
