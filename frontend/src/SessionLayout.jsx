@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import Cookies from "js-cookie";
 import PropTypes from "prop-types";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SessionLayout({ children }) {
   const [remainingTime, setRemainingTime] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
-  const [extend, setExtend] = useState(false);
-
   useEffect(() => {
     const fetchSessionExpiry = async () => {
       try {
@@ -25,18 +24,26 @@ function SessionLayout({ children }) {
     fetchSessionExpiry();
     const serverTimerId = setInterval(() => {
       fetchSessionExpiry();
-    }, 10000);
+    }, 600000);
 
     return () => clearInterval(serverTimerId);
   }, []);
+
   useEffect(() => {
-    if (remainingTime <= 300 && remainingTime > 0 && !extend) {
-      setShowPopup(true);
-      setExtend(true);
-    } else {
-      setShowPopup(false);
+    const localTimerId = setInterval(() => {
+      setRemainingTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+    return () => clearInterval(localTimerId);
+  }, []);
+
+
+  useEffect(() => {
+    if (remainingTime <= 300 && remainingTime > 0) {
+      if (!showPopup) {
+        setShowPopup(true);
+      }
     }
-  }, [remainingTime]);
+  }, [remainingTime, showPopup]);
 
   const handleExtendSession = async () => {
     try {
@@ -51,7 +58,6 @@ function SessionLayout({ children }) {
       const data = await response.json();
       setRemainingTime(data.remaining_time);
       setShowPopup(false);
-      setExtend(false);
     } catch (error) {
       console.error("Error extending session:", error);
     }
@@ -63,8 +69,8 @@ function SessionLayout({ children }) {
   return (
     <div>
       {children}
-      <Modal show={showPopup} onHide={() => setShowPopup(false)} centered>
-        <Modal.Header closeButton>
+      <Modal show={showPopup} onHide={() => {}} centered>
+        <Modal.Header>
           <Modal.Title>Session Extension</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -86,7 +92,9 @@ function SessionLayout({ children }) {
     </div>
   );
 }
+
 SessionLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
 export default SessionLayout;
