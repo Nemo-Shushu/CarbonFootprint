@@ -22,14 +22,6 @@ urlpatterns = [
     path("update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"),
     path("get-all-carbon-impact/",views.get_all_carbon_impact, name='get-all-carbon-impact'),
     path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
-    path(
-        "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
-    ),
-    path(
-        "get-all-carbon-impact/",
-        views.get_all_carbon_impact,
-        name="get-all-carbon-impact",
-    ),
     path("submit-adminrequest/", views.submit_admin_request, name="submit_request"),
     path("admin-request-list/", views.admin_request_list, name="admin_request_list"),
     path("user-request-status/", views.user_request_status, name="user_request_status"),
