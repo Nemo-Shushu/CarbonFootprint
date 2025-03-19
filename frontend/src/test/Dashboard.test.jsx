@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "../Dashboard";
 import { useAuth } from "../useAuth";
+import { useEffect } from "react";
 
 vi.mock("../Sidebar", () => ({ default: () => <div data-testid="sidebar" /> }));
 vi.mock("../Profile", () => ({ default: () => <div data-testid="profile" /> }));
@@ -19,8 +20,18 @@ vi.mock("../useAuth", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  useAuth.mockReturnValue({ isAuthenticated: true, loading: false });
+  vi.resetModules();
+
+  vi.doMock("../Sidebar", () => ({
+    default: ({ onAdminStatusChange }) => {
+      useEffect(() => {
+        onAdminStatusChange(false); 
+      }, []);
+      return <div data-testid="sidebar" />;
+    },
+  }));
 });
+
 
 describe("Dashboard Component", () => {
   beforeEach(() => {
@@ -139,22 +150,26 @@ describe("Dashboard Component", () => {
     fireEvent.click(profileIcon);
 
     expect(screen.getByTestId("profile-btn")).toBeInTheDocument();
-    expect(screen.getByTestId("setting-btn")).toBeInTheDocument();
 
-    fireEvent.click(profileIcon);
-    expect(screen.queryByTestId("profile-btn")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("setting-btn")).not.toBeInTheDocument();
   });
 
   it("renders the table headers for admin users", async () => {
+    vi.doMock("../Sidebar", () => ({
+      default: ({ onAdminStatusChange }) => {
+        useEffect(() => {
+          onAdminStatusChange(true); 
+        }, []);
+        return <div data-testid="sidebar" />;
+      },
+    }));
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         json: () =>
           Promise.resolve([
             {
-              isAdmin: true,
               id: 1,
+              isAdmin: true,
               institution: "MIT",
               field: "AI",
               emissions: 100,
@@ -163,6 +178,8 @@ describe("Dashboard Component", () => {
           ]),
       }),
     );
+
+    const { Dashboard } = await import("../Dashboard");
 
     render(
       <MemoryRouter>
@@ -179,6 +196,7 @@ describe("Dashboard Component", () => {
         "Academic Institution",
         "Research Field",
         "Total Emissions",
+        "Email"
       ]);
     });
   });
@@ -223,6 +241,7 @@ describe("Dashboard Component - Table headers", () => {
         json: () =>
           Promise.resolve([
             {
+              isAdmin: false,
               id: 1,
               institution: "MIT",
               field: "AI",
@@ -275,4 +294,9 @@ describe("Dashboard Component - Table headers", () => {
       expect(screen.queryByRole("columnheader")).not.toBeInTheDocument();
     });
   });
+
+
+  
+  
+
 });

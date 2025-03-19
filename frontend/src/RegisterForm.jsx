@@ -271,7 +271,7 @@ function RegisterForm() {
 
   return (
     <div className="sign-in-wrapper">
-      <Modal show={visible} centered size="lg">
+      <Modal show={visible} centered size="lg" data-testid="verification-modal">
         {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
         <Modal.Header>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
