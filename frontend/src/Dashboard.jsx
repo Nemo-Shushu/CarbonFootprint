@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./static/dashboard.css";
-import Sidebar from "./Sidebar";
-import "./static/Sidebar.css";
-import "./static/RequestAdmin.css";
-import Profile from "./Profile";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "js-cookie";
-import ResultsDisplay from "./ResultsDisplay";
+import { useEffect, useRef, useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import { useLocation } from "react-router-dom";
+import Profile from "./Profile";
+import ResultsDisplay from "./ResultsDisplay";
+import Sidebar from "./Sidebar";
+import "./static/dashboard.css";
+import "./static/RequestAdmin.css";
+import "./static/Sidebar.css";
 import PropTypes from "prop-types";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -81,7 +81,7 @@ function TableComponent({ isAdmin }) {
   async function getReports() {
     try {
       const response = await fetch(
-        `${backendUrl}api2/dashboard-show-user-result-data/`,
+        `${backendUrl}api/dashboard-show-user-result-data/`,
         {
           method: "POST",
           credentials: "include",
@@ -106,7 +106,7 @@ function TableComponent({ isAdmin }) {
 
   async function getSpecificReport() {
     try {
-      const response = await fetch(`${backendUrl}api2/get-all-report-data/`, {
+      const response = await fetch(`${backendUrl}api/get-all-report-data/`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -349,7 +349,6 @@ function Dashboard() {
   const [showProfile, setShowProfile] = useState(
     queryParams.get("showProfile") === "true",
   );
-  const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -363,7 +362,6 @@ function Dashboard() {
    */
   function toggleProfile() {
     setShowProfile((prev) => !prev);
-    setShowDropdown(false);
   }
 
   /**
@@ -371,7 +369,6 @@ function Dashboard() {
    */
   function toggleDropdown(event) {
     event.stopPropagation();
-    setShowDropdown((prev) => !prev);
   }
 
   /**
@@ -379,7 +376,7 @@ function Dashboard() {
    */
   function handleClickOutside(event) {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setShowDropdown(false);
+      // setShowDropdown(false);
     }
   }
 
@@ -403,45 +400,35 @@ function Dashboard() {
 
       {/* Main Content */}
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
-        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-1 border-bottom">
           <h1 className="h2">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
 
           {/* Setting */}
           <div className="position-relative" ref={dropdownRef}>
             <i
-              className="bi bi-person-circle h2"
-              alt="Settings"
+              className="bi bi-person-circle"
+              alt="Profile"
               data-testid="profile-icon"
-              style={{ width: "30px", cursor: "pointer" }}
+              style={{
+                fontSize: "2.5rem",
+                color: "#333",
+                cursor: "pointer",
+                marginRight: "-30px",
+                padding: "5px",
+                borderRadius: "100%",
+              }}
               onClick={toggleDropdown}
-            ></i>
+            />
 
-            {/* Dropdown */}
-            {showDropdown && (
-              <ul className="dropdown-menu show position-absolute end-0">
-                <li>
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      toggleProfile();
-                      setShowDropdown(false);
-                    }}
-                    data-testid="profile-btn"
-                  >
-                    Profile
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="dropdown-item"
-                    onClick={""}
-                    data-testid="setting-btn"
-                  >
-                    Settings
-                  </button>
-                </li>
-              </ul>
-            )}
+            <button
+              className="dropdown-item"
+              onClick={() => {
+                toggleProfile();
+              }}
+              data-testid="profile-btn"
+            >
+              Profile
+            </button>
           </div>
         </div>
 
