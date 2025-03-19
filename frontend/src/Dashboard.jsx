@@ -33,7 +33,7 @@ function TableComponent({ isAdmin }) {
   });
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: 'asc',
+    direction: "asc",
   });
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function TableComponent({ isAdmin }) {
   }, [repId]);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/institutions/"))
+    fetch(backendUrl.concat("api/institutions/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get an university lists.");
@@ -63,7 +63,7 @@ function TableComponent({ isAdmin }) {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/fields/"))
+    fetch(backendUrl.concat("api/fields/"))
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get a field lists.");
@@ -132,17 +132,23 @@ function TableComponent({ isAdmin }) {
 
   const handleInstitutionsChange = (event) => {
     const selectedInstitute = event.target.value;
-    setFilter((prevFilter) => ({ ...prevFilter, institute: selectedInstitute }));
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      institute: selectedInstitute,
+    }));
   };
 
   const handleFieldsChange = (event) => {
     const selectedField = event.target.value;
-    setFilter((prevFilter) => ({ ...prevFilter, research_field: selectedField }));
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      research_field: selectedField,
+    }));
   };
 
   function handleSearchChange(event) {
     setSearchString(event.target.value);
-  };
+  }
 
   function findString(val) {
     if (parseInt(searchString) == 0) return true;
@@ -151,39 +157,43 @@ function TableComponent({ isAdmin }) {
 
   const filteredData = data.filter((row) => {
     return (
-      findString(row.id) && 
+      findString(row.id) &&
       (filter.institute === "" || filter.institute === row.institution) &&
       (filter.research_field === "" || filter.research_field === row.field)
     );
   });
 
   const sortTable = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+      key = "id";
+      direction = "asc";
     }
-    else if (sortConfig.key === key && sortConfig.direction === 'desc') {
-      key = 'id';
-      direction = 'asc';
-    }
-  
+
     const sortedData = [...data].sort((a, b) => {
       if (a[key] < b[key]) {
-        return direction === 'asc' ? -1 : 1;
+        return direction === "asc" ? -1 : 1;
       }
       if (a[key] > b[key]) {
-        return direction === 'asc' ? 1 : -1;
+        return direction === "asc" ? 1 : -1;
       }
       return 0;
     });
-  
+
     setSortConfig({ key, direction });
     setData(sortedData);
   };
 
   return (
     <main className="ms-sm-auto px-md-4">
-      <Modal show={visibleReport} onHide={() => setVisibleReport(false)} centered size="lg">
+      <Modal
+        show={visibleReport}
+        onHide={() => setVisibleReport(false)}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Carbon Emissions Data for: Report #{repId}</Modal.Title>
         </Modal.Header>
@@ -194,7 +204,12 @@ function TableComponent({ isAdmin }) {
           />
         </Modal.Body>
       </Modal>
-      <Modal show={visibleFilter} onHide={() => setVisibleFilter(false)} centered size="lg">
+      <Modal
+        show={visibleFilter}
+        onHide={() => setVisibleFilter(false)}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Filter Reports</Modal.Title>
         </Modal.Header>
@@ -235,7 +250,10 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
-          <button className="btn btn-moss" onClick={() => setFilter({ institute: "", research_field: "" })}>
+          <button
+            className="btn btn-moss"
+            onClick={() => setFilter({ institute: "", research_field: "" })}
+          >
             Reset Filter
           </button>
         </Modal.Body>
@@ -252,10 +270,12 @@ function TableComponent({ isAdmin }) {
           />
           <button
             className="btn btn-secondary btn-sm"
-            onClick={() => {setVisibleFilter(true);}}
+            onClick={() => {
+              setVisibleFilter(true);
+            }}
             title="Filter by Research Field and Academic Institution"
-            >
-            <i class="bi bi-funnel"></i>
+          >
+            <i className="bi bi-funnel"></i>
           </button>
         </div>
       </div>
@@ -266,42 +286,62 @@ function TableComponent({ isAdmin }) {
               <tr>
                 <th
                   scope="col"
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 >
                   #
                 </th>
                 <th
                   scope="col"
-                  onClick={() => sortTable('institution')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  onClick={() => sortTable("institution")}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 >
                   Academic Institution
-                  {sortConfig.key === 'institution' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                  {sortConfig.key === "institution" &&
+                    (sortConfig.direction === "asc" ? (
+                      <i className="bi bi-sort-up"></i>
+                    ) : (
+                      <i className="bi bi-sort-down"></i>
+                    ))}
                 </th>
                 <th
                   scope="col"
-                  onClick={() => sortTable('field')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  onClick={() => sortTable("field")}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 >
                   Research Field
-                  {sortConfig.key === 'field' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                  {sortConfig.key === "field" &&
+                    (sortConfig.direction === "asc" ? (
+                      <i className="bi bi-sort-up"></i>
+                    ) : (
+                      <i className="bi bi-sort-down"></i>
+                    ))}
                 </th>
                 <th
                   scope="col"
-                  onClick={() => sortTable('emissions')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  onClick={() => sortTable("emissions")}
+                  style={{ cursor: "pointer", userSelect: "none" }}
                 >
                   Total Emissions
-                  {sortConfig.key === 'emissions' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                  {sortConfig.key === "emissions" &&
+                    (sortConfig.direction === "asc" ? (
+                      <i className="bi bi-sort-up"></i>
+                    ) : (
+                      <i className="bi bi-sort-down"></i>
+                    ))}
                 </th>
                 {isAdmin && (
                   <th
                     scope="col"
-                    onClick={() => sortTable('email')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => sortTable("email")}
+                    style={{ cursor: "pointer", userSelect: "none" }}
                   >
                     Email
-                    {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? <i class="bi bi-sort-up"></i> : <i class="bi bi-sort-down"></i>)}
+                    {sortConfig.key === "email" &&
+                      (sortConfig.direction === "asc" ? (
+                        <i className="bi bi-sort-up"></i>
+                      ) : (
+                        <i className="bi bi-sort-down"></i>
+                      ))}
                   </th>
                 )}
               </tr>
@@ -335,7 +375,9 @@ function TableComponent({ isAdmin }) {
               color: "gray",
             }}
           >
-            {data.length > 0 ? "No data available matching your filters or search parameters" : "No data available"}
+            {data.length > 0
+              ? "No data available matching your filters or search parameters"
+              : "No data available"}
           </div>
         )}
       </div>
