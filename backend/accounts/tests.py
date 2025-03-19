@@ -1,4 +1,3 @@
-from decimal import Decimal
 import json
 from django.test import SimpleTestCase, RequestFactory
 from unittest.mock import patch, MagicMock
@@ -9,12 +8,10 @@ from accounts.views import (
     CsrfTokenView,
     LoginView,
     LogoutView,
-    ConversionFactorsView,
-    ConversionFactorsAPIView,
     get_ordered_errors,
 )
 from django.middleware.csrf import CsrfViewMiddleware
-from accounts.models import ConversionFactor, EmailVerification
+from accounts.models import EmailVerification
 from accounts.views import (
     SendEmailConfirmationTokenAPIView,
     ConfirmEmailAPIView,
@@ -167,71 +164,6 @@ class LoginLogoutTests(SimpleTestCase):
         self.assertEqual(response.data, {"detail": "Successfully logged out."})
 
 
-class ConversionFactorsViewTests(SimpleTestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-
-    @patch("accounts.models.ConversionFactor.objects.all")
-    @patch("accounts.views.IsAdminUser.has_permission", return_value=True)
-    def test_conversion_factors_get_success(self, mock_permission, mock_all):
-        mock_queryset = MagicMock()
-        mock_queryset.order_by.return_value = [
-            MagicMock(id=1, activity="Activity A", value=Decimal("1.23000"), unit="kg")
-        ]
-        mock_all.return_value = mock_queryset
-
-        request = self.factory.get("/fake-url/")
-        request.user = MockFactory.mock_user()
-
-        response = ConversionFactorsView.as_view()(request)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.data,
-            [{"id": 1, "activity": "Activity A", "value": "1.23000", "unit": "kg"}],
-        )
-
-    @patch("accounts.models.ConversionFactor.objects.create")
-    @patch("accounts.views.IsAdminUser.has_permission", return_value=True)
-    def test_conversion_factors_post_success(self, mock_permission, mock_create):
-        mock_create.return_value = MagicMock(
-            id=2, activity="Activity B", value=Decimal("2.34567"), unit="ton"
-        )
-
-        request = self.factory.post(
-            "/fake-url/",
-            content_type="application/json",
-            data=json.dumps(
-                {"activity": "Activity B", "value": 2.34567, "unit": "ton"}
-            ),
-        )
-        request.user = MockFactory.mock_user()
-
-        response = ConversionFactorsView.as_view()(request)
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(
-            response.data,
-            {"id": 2, "activity": "Activity B", "value": "2.34567", "unit": "ton"},
-        )
-
-    @patch("accounts.models.ConversionFactor.objects.create")
-    @patch("accounts.views.IsAdminUser.has_permission", return_value=True)
-    def test_conversion_factors_post_failure(self, mock_permission, mock_create):
-        mock_create.side_effect = ValueError("Invalid data")
-
-        request = self.factory.post(
-            "/fake-url/",
-            content_type="application/json",
-            data=json.dumps({"activity": "", "value": 2.34567, "unit": "kg"}),
-        )
-        request.user = MockFactory.mock_user()
-
-        response = ConversionFactorsView.as_view()(request)
-
-        self.assertEqual(response.status_code, 400)
-
-
 class MockFactory:
     @staticmethod
     def mock_user():
@@ -239,46 +171,6 @@ class MockFactory:
         mock_user.is_authenticated = True
         return mock_user
 
-
-class ConversionFactorsAPIViewTests(SimpleTestCase):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-
-    @patch("accounts.models.ConversionFactor.objects.get")
-    @patch("accounts.views.IsAdminUser.has_permission", return_value=True)
-    def test_get_conversion_factor_success(self, mock_permission, mock_get):
-        mock_factor = MagicMock(
-            id=1, activity="Test Activity", value=Decimal("3.14159"), unit="kg"
-        )
-        mock_get.return_value = mock_factor
-
-        request = self.factory.get("/conversion-factors/1/")
-        request.user = MockFactory.mock_user()
-
-        response = ConversionFactorsAPIView.as_view()(request, factor_id=1)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.data,
-            {"id": 1, "activity": "Test Activity", "value": "3.14159", "unit": "kg"},
-        )
-
-    @patch(
-        "accounts.models.ConversionFactor.objects.get",
-        side_effect=ConversionFactor.DoesNotExist,
-    )
-    @patch("accounts.views.IsAdminUser.has_permission", return_value=True)
-    def test_get_conversion_factor_not_found(self, mock_permission, mock_get):
-        request = self.factory.get("/conversion-factors/999/")
-        request.user = MockFactory.mock_user()
-
-        response = ConversionFactorsAPIView.as_view()(request, factor_id=999)
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response.data,
-            {
-                "res": "Object with factor id 999 does not exist <class 'rest_framework.permissions.IsAdminUser'>"
-            },
-        )
 
 
 class GetOrderedErrorsTests(SimpleTestCase):
