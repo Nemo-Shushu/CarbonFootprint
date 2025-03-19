@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function createUser(user) {
-  return fetch(backendUrl + "api/accounts/create-user/", {
+  return fetch(`${backendUrl}api/accounts/create-user/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +35,7 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/register/", {
+  return fetch(`${backendUrl}api/accounts/register/`, {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
     method: "POST",
     headers: {
@@ -62,7 +62,7 @@ async function validateUser(user) {
 }
 
 async function sendCode(user) {
-  return fetch(backendUrl + "api/accounts/send-email-confirmation-token/", {
+  return fetch(`${backendUrl}api/accounts/send-email-confirmation-token/`, {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
     method: "POST",
     headers: {
@@ -89,7 +89,7 @@ async function sendCode(user) {
 }
 
 async function verifyCode(user, code) {
-  return fetch(backendUrl + "api/accounts/confirm-email/", {
+  return fetch(`${backendUrl}api/accounts/confirm-email/`, {
     // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
     method: "POST",
     headers: {
@@ -144,7 +144,7 @@ function RegisterForm({ forceVisible = false }) {
     setShowPassword((prev) => !prev);
   };
   useEffect(() => {
-    fetch(backendUrl.concat("api2/institutions/"))
+    fetch(`${backendUrl}api/institutions/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get an university lists.");
@@ -160,7 +160,7 @@ function RegisterForm({ forceVisible = false }) {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/fields/"))
+    fetch(`${backendUrl}api/fields/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get a field lists.");

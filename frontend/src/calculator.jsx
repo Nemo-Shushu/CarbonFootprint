@@ -20,7 +20,7 @@ function Calculator() {
 
   async function submitReport() {
     try {
-      const response = await fetch(`${backendUrl}api2/submit/`, {
+      const response = await fetch(`${backendUrl}api/submit/`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -1163,7 +1163,7 @@ function Calculator() {
 
     async function peekCalculations(report) {
       try {
-        const response = await fetch(`${backendUrl}api2/report/`, {
+        const response = await fetch(`${backendUrl}api/report/`, {
           method: "POST",
           credentials: "include",
           headers: {

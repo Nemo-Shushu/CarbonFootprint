@@ -192,7 +192,7 @@ describe("Calculator Component", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("api2/submit/"),
+        expect.stringContaining("api/submit/"),
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -387,7 +387,7 @@ describe("Results Component", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("api2/report/"),
+        expect.stringContaining("api/report/"),
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
