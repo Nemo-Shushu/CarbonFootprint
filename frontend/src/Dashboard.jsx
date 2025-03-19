@@ -207,28 +207,30 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
-          <button onClick={() => setFilter({ institute: "", research_field: "" })}>
+          <button className="btn btn-moss" onClick={() => setFilter({ institute: "", research_field: "" })}>
             Reset Filter
           </button>
         </Modal.Body>
       </Modal>
-      <div className="d-flex">
-        <h3>Available Reports</h3>
-        <input
-          type="text"
-          name="search"
-          className="input-field"
-          placeholder="Search a specific report ID"
-          onChange={handleSearchChange}
-        />
-        <button
-          className=""
-          onClick={() => {
-            setVisibleFilter(true);
-          }}
-          >
-          Funnel symbol
-        </button>
+      <div className="d-flex align-items-center justify-content-between">
+        <h3 className="mb-0">Available Reports</h3>
+        <div className="d-flex ms-auto">
+          <input
+            type="text"
+            name="search"
+            className="form-control form-control-sm me-2"
+            placeholder="Search specific report ID"
+            onChange={handleSearchChange}
+          />
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => {
+              setVisibleFilter(true);
+            }}
+            >
+            <i class="bi bi-funnel"></i>
+          </button>
+        </div>
       </div>
       <div className="table-responsive small">
         {Array.isArray(data) && filteredData.length > 0 ? (
