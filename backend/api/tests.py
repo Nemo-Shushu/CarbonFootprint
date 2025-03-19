@@ -14,11 +14,14 @@ from api.views import (
     report_view,
     submit_view,
     dashboard_show_user_result_data,
-    get_all_report_data
+    get_all_report_data,
+    get_all_carbon_impact,
+    update_carbon_impact,
 )
 import json
 from unittest.mock import patch, MagicMock
 from api.models import Result
+from backend.modified_libraries.response import JsonResponse
 
 
 # Mock Utilities
@@ -62,7 +65,6 @@ class MockFactory:
 
 # CSRF Tests
 class CSRFTokenTests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -77,7 +79,6 @@ class CSRFTokenTests(SimpleTestCase):
 
 # Auth Tests
 class AuthTests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -150,7 +151,6 @@ class AuthTests(SimpleTestCase):
 
 
 class SessionWhoamiTests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -172,25 +172,27 @@ class SessionWhoamiTests(SimpleTestCase):
 
     def test_whoami_authenticated(self):
         mock_user = MockFactory.mock_user()
+
+        mock_user_data = {
+            "isAuthenticated": True,
+            "username": "testuser",
+            "forename": "Test",
+            "email": "test@example.com",
+            "institute": "Institute A",
+            "research_field": "Research Field A",
+            "isAdmin": False,
+            "isResearcher": False,
+            "dateJoined": "2025-01-01",
+        }
+
         request = self.factory.get("/fake-url/")
         request.user = mock_user
 
-        response = whoami_view(request)
+        with patch("api.views.JsonResponse", return_value=JsonResponse(mock_user_data)):
+            response = whoami_view(request)
+
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(
-            response.content,
-            {
-                "isAuthenticated": True,
-                "username": mock_user.username,
-                "forename": mock_user.first_name,
-                "email": mock_user.email,
-                "institute": mock_user.institute.name,
-                "research_field": mock_user.research_field.name,
-                "isAdmin": mock_user.is_admin,
-                "isResearcher": mock_user.is_researcher,
-                "dateJoined": mock_user.date_joined,
-            },
-        )
+        self.assertJSONEqual(response.content, mock_user_data)
 
     def test_whoami_not_authenticated(self):
         request = self.factory.get("/fake-url/")
@@ -202,7 +204,6 @@ class SessionWhoamiTests(SimpleTestCase):
 
 
 class InstitutionFieldTests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -245,7 +246,6 @@ class InstitutionFieldTests(SimpleTestCase):
 
 
 class CalculationTests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.procurement_calculator = ProcurementCalculatorView()
@@ -261,24 +261,47 @@ class CalculationTests(SimpleTestCase):
         mock_entry.carbon_impact = intensity
         return mock_entry
 
-@patch('api.views.BenchmarkData.objects.filter')
+
+@patch("api.views.BenchmarkData.objects.filter")
 def test_calculate_report_emissions(self, mock_benchmark_filter):
     """Test calculate report emissions logic"""
     mock_benchmark_filter.return_value.first.side_effect = [
-
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Academic Laboratory
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Academic Office
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Admin Office
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Office/Admin Space
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Medical Laboratory
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Engineering Laboratory
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # Physical Sciences Lab
-
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # mixed-recycle
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # general-waste
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # clinical-waste
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0),  # chemical-waste
-        self.mock_factor_entry(intensity=1.0, transmission=1.0, amount=1.0)   # bio-waste
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Academic Laboratory
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Academic Office
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Admin Office
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Office/Admin Space
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Medical Laboratory
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Engineering Laboratory
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # Physical Sciences Lab
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # mixed-recycle
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # general-waste
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # clinical-waste
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # chemical-waste
+        self.mock_factor_entry(
+            intensity=1.0, transmission=1.0, amount=1.0
+        ),  # bio-waste
     ]
 
     request_data = {
@@ -291,7 +314,7 @@ def test_calculate_report_emissions(self, mock_benchmark_filter):
             "Office/Admin Space": "150",
             "Medical/Life Sciences Laboratory": "250",
             "Engineering Laboratory": "350",
-            "Physical Sciences Laboratory": "400"
+            "Physical Sciences Laboratory": "400",
         },
         "travel": {
             "air-eco-short-UK": "1000",
@@ -299,14 +322,14 @@ def test_calculate_report_emissions(self, mock_benchmark_filter):
             "air-eco-long-UK": "800",
             "air-business-long-UK": "300",
             "land-car": "1200",
-            "land-local-bus": "400"
+            "land-local-bus": "400",
         },
         "waste": {
             "mixed-recycle": "2",
             "general-waste": "3",
             "clinical-waste": "1.5",
             "chemical-waste": "0.5",
-            "bio-waste": "0.8"
+            "bio-waste": "0.8",
         },
         "procurement": {
             "CA": 100,
@@ -315,8 +338,8 @@ def test_calculate_report_emissions(self, mock_benchmark_filter):
             "AF": 150,
             "TA": 120,
             "AB": 1,
-            "C": 100
-        }
+            "C": 100,
+        },
     }
 
     result = self.report_calculator.calculate_report_emissions(request_data)
@@ -327,7 +350,6 @@ def test_calculate_report_emissions(self, mock_benchmark_filter):
 
 
 class APITests(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -367,21 +389,23 @@ class APITests(SimpleTestCase):
             },
         )
 
-class Submit_Get_Tests(SimpleTestCase):
 
+class Submit_Get_Tests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    @patch('api.views.ReportcalculateView.calculate_report_emissions')
-    @patch('api.views.ProcurementCalculatorView.calculate_procurement_emissions')
-    @patch('api.views.Result.objects.create')
-    def test_submit_view_success(self, mock_result_create, mock_procurement_calc, mock_report_calc):
+    @patch("api.views.ReportcalculateView.calculate_report_emissions")
+    @patch("api.views.ProcurementCalculatorView.calculate_procurement_emissions")
+    @patch("api.views.Result.objects.create")
+    def test_submit_view_success(
+        self, mock_result_create, mock_procurement_calc, mock_report_calc
+    ):
         mock_report_calc.return_value = {
             "total_electricity_emissions": 100,
             "total_gas_emissions": 200,
             "total_water_emissions": 300,
             "total_travel_emissions": 400,
-            "total_waste_emissions": 500
+            "total_waste_emissions": 500,
         }
         mock_procurement_calc.return_value = {"ICT": {"carbon_impact": 50}}
 
@@ -390,62 +414,57 @@ class Submit_Get_Tests(SimpleTestCase):
         request = self.factory.post(
             "/fake-url/",
             content_type="application/json",
-            data=json.dumps({
-                "utilities": {},
-                "travel": {},
-                "waste": {},
-                "procurement": {}
-            })
+            data=json.dumps(
+                {"utilities": {}, "travel": {}, "waste": {}, "procurement": {}}
+            ),
         )
-        request.user = type('User', (), {'id': 1})
+        request.user = type("User", (), {"id": 1})
 
         response = submit_view(request)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True})
 
-    @patch('api.views.Result.objects.filter')
-    @patch('api.views.get_object_or_404')
-    def test_dashboard_show_user_result_data_success(self, mock_get_object, mock_result_filter):
-        mock_get_object.return_value = MagicMock(
-            institute_id=1,
-            research_field_id=2
-        )
+    @patch("api.views.Result.objects.filter")
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_success(
+        self, mock_get_object, mock_result_filter
+    ):
+        mock_get_object.return_value = MagicMock(institute_id=1, research_field_id=2)
 
         mock_result_filter.return_value = [
-            MagicMock(
-                id=101,
-                total_carbon_emissions=300.5
-            ),
-            MagicMock(
-                id=102,
-                total_carbon_emissions=450.2
-            )
+            MagicMock(id=101, total_carbon_emissions=300.5),
+            MagicMock(id=102, total_carbon_emissions=450.2),
         ]
 
-        request = self.factory.get('/fake-url/')
-        request.user = type('User', (), {'id': 1})
+        request = self.factory.get("/fake-url/")
+        request.user = type("User", (), {"id": 1})
 
         response = dashboard_show_user_result_data(request)
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, [
-            {"id": 101, "institution": 1, "field": 2, "emissions": 300.5},
-            {"id": 102, "institution": 1, "field": 2, "emissions": 450.2}
-        ])
+        self.assertJSONEqual(
+            response.content,
+            [
+                {"id": 101, "institution": 1, "field": 2, "emissions": 300.5},
+                {"id": 102, "institution": 1, "field": 2, "emissions": 450.2},
+            ],
+        )
 
-    @patch('api.views.Result.objects.filter')
-    @patch('api.views.get_object_or_404')
-    def test_dashboard_show_user_result_data_no_data(self, mock_get_object, mock_result_filter):
+    @patch("api.views.Result.objects.filter")
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_no_data(
+        self, mock_get_object, mock_result_filter
+    ):
         mock_get_object.return_value = MagicMock(institute_id=1, research_field_id=2)
         mock_result_filter.return_value = []
 
-        request = self.factory.get('/fake-url/')
-        request.user = type('User', (), {'id': 1})
+        request = self.factory.get("/fake-url/")
+        request.user = type("User", (), {"id": 1})
 
         response = dashboard_show_user_result_data(request)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, [])
 
-    @patch('api.views.Result.objects.get')
+    @patch("api.views.Result.objects.get")
     def test_get_all_report_data_success(self, mock_get_result):
         mock_get_result.return_value = MagicMock(
             total_electricity_emissions=100,
@@ -454,50 +473,118 @@ class Submit_Get_Tests(SimpleTestCase):
             total_travel_emissions=400,
             total_waste_emissions=500,
             total_carbon_emissions=1500,
-            report_data={"mock_data": "test"}
+            report_data={"mock_data": "test"},
         )
 
         request = self.factory.post(
-            '/fake-url/',
-            content_type='application/json',
-            data=json.dumps({"report_id": 101})
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"report_id": 101}),
         )
 
         response = get_all_report_data(request)
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {
-            "calculations_data": {
-                "total_electricity_emissions": 100,
-                "total_gas_emissions": 200,
-                "total_water_emissions": 300,
-                "total_travel_emissions": 400,
-                "total_waste_emissions": 500,
-                "total_carbon_emissions": 1500
+        self.assertJSONEqual(
+            response.content,
+            {
+                "calculations_data": {
+                    "total_electricity_emissions": 100,
+                    "total_gas_emissions": 200,
+                    "total_water_emissions": 300,
+                    "total_travel_emissions": 400,
+                    "total_waste_emissions": 500,
+                    "total_carbon_emissions": 1500,
+                },
+                "report_data": {"mock_data": "test"},
             },
-            "report_data": {"mock_data": "test"}
-        })
+        )
 
     def test_get_all_report_data_no_report_id(self):
         request = self.factory.post(
-            '/fake-url/',
-            content_type='application/json',
-            data=json.dumps({})
+            "/fake-url/", content_type="application/json", data=json.dumps({})
         )
 
         response = get_all_report_data(request)
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {"error": "report_id is required"})
 
-    @patch('api.views.Result.objects.get')
+    @patch("api.views.Result.objects.get")
     def test_get_all_report_data_not_found(self, mock_get_result):
         mock_get_result.side_effect = Result.DoesNotExist
 
         request = self.factory.post(
-            '/fake-url/',
-            content_type='application/json',
-            data=json.dumps({"report_id": 999})
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"report_id": 999}),
         )
 
         response = get_all_report_data(request)
         self.assertEqual(response.status_code, 404)
         self.assertJSONEqual(response.content, {"error": "Report not found"})
+
+
+class CarbonImpactTests(SimpleTestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_success(self, mock_update_or_create):
+        """Test successful carbon impact update"""
+        mock_update_or_create.return_value = (True, None)
+
+        request = self.factory.post(
+            "/update-carbon-impact/",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
+            content_type="application/json",
+        )
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"success": True})
+
+    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_missing_data(self, mock_update_or_create):
+        """Test update with missing data"""
+        request = self.factory.post(
+            "/update-carbon-impact/",
+            data=json.dumps({"category": "Electricity"}),
+            content_type="application/json",
+        )
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(
+            response.content,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
+
+    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_success(self, mock_values):
+        """Test successful carbon impact retrieval"""
+        mock_values.return_value = [
+            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
+            {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+        ]
+
+        request = self.factory.get("/get-all-carbon-impact/")
+        response = get_all_carbon_impact(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content,
+            [
+                {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
+                {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+            ],
+        )
+
+    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_error(self, mock_values):
+        """Test error handling in get_all_carbon_impact"""
+        mock_values.side_effect = Exception("Database error")
+
+        request = self.factory.get("/get-all-carbon-impact/")
+        response = get_all_carbon_impact(request)
+
+        self.assertEqual(response.status_code, 500)
+        self.assertJSONEqual(response.content, {"error": "Database error"})
