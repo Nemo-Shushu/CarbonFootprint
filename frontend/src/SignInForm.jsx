@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import "./static/sign-in.css";
-import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -111,7 +110,6 @@ function SignInForm() {
   const [newPassword, setNewPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [newPassword2, setNewPassword2] = useState("");
-  const { isAuthenticated, loading } = useAuth();
   const [showEmail, setShowEmail] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
@@ -175,7 +173,7 @@ function SignInForm() {
   const handleVerify = (event) => {
     event.preventDefault();
     verifyCode(email, code)
-      .then((data) => {
+      .then(() => {
         setIsVerified(true);
         setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
@@ -231,7 +229,7 @@ function SignInForm() {
         "Content-Type": "application/json",
         "X-CSRFToken": csrfToken,
       },
-      body: JSON.stringify({email:email, password:newPassword}),
+      body: JSON.stringify({ email: email, password: newPassword }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -255,13 +253,13 @@ function SignInForm() {
       body: JSON.stringify({ username: username, password: password }),
     })
       .then(isResponseOk)
-      .then((data) => {
+      .then(() => {
         setUserName("");
         setPassword("");
         setError("");
         navigate("/dashboard");
       })
-      .catch((err) => {
+      .catch(() => {
         setError("Wrong username or password");
       });
   }
@@ -346,7 +344,11 @@ function SignInForm() {
           <div className="overlay-text">Carbon Footprint Calculator</div>
         </div>
 
-        <Modal show={showEmail} onHide={handleEmailClose} className="email-modal">
+        <Modal
+          show={showEmail}
+          onHide={handleEmailClose}
+          className="email-modal"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Check Email</Modal.Title>
           </Modal.Header>
@@ -361,7 +363,11 @@ function SignInForm() {
                 aria-label="email"
                 aria-describedby="basic-addon-email"
               />
-              <Button className="verify-button" type="button" onClick={handleSend}>
+              <Button
+                className="verify-button"
+                type="button"
+                onClick={handleSend}
+              >
                 Send code
               </Button>
             </InputGroup>
@@ -379,12 +385,8 @@ function SignInForm() {
               {verificationError && (
                 <p className="warning">Your code is incorrect.</p>
               )}
-              {modalError && (
-                <p className="warning">{modalError}</p>
-              )}
-              {verifiedMessage && (
-                <p className="success">{verifiedMessage}</p>
-              )}
+              {modalError && <p className="warning">{modalError}</p>}
+              {verifiedMessage && <p className="success">{verifiedMessage}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
                 <Button
                   className="verify-button"
@@ -406,12 +408,16 @@ function SignInForm() {
           </Modal.Body>
         </Modal>
 
-        <Modal show={showPasswordModal} onHide={handlePasswordClose} className="password-modal">
+        <Modal
+          show={showPasswordModal}
+          onHide={handlePasswordClose}
+          className="password-modal"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Reset Password</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          <InputGroup className="mb-3 position-relative">
+            <InputGroup className="mb-3 position-relative">
               <InputGroup.Text id="basic-addon-password">
                 New Password
               </InputGroup.Text>
