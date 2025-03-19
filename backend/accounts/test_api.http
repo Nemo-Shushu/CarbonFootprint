@@ -171,7 +171,7 @@ X-CSRFToken: J1PwLcPb5S42lvqJ6mUBgNtXGKsa5I8T
 
 
 ### test submit-adminrequest
-POST http://localhost:8000/api2/submit-adminrequest/
+POST http://localhost:8000/api/submit-adminrequest/
 Content-Type: application/json
 Cookie: csrftoken=E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul; sessionid=bqz91luvpj3ma9oe7u5mzxm5j5g3z639
 X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
@@ -182,19 +182,19 @@ X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
 }
 
 ### test admin_request_list
-GET http://localhost:8000/api2/admin-request-list/
+GET http://localhost:8000/api/admin-request-list/
 Content-Type: application/json
 Cookie: csrftoken=c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y; sessionid=1lcpoki0emeu7ddrfjwat8ssloiizzcj
 X-CSRFToken: c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y
 
 ### test user_request_list
-GET http://localhost:8000/api2/user-request-status/
+GET http://localhost:8000/api/user-request-status/
 Content-Type: application/json
 Cookie: csrftoken=E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul; sessionid=bqz91luvpj3ma9oe7u5mzxm5j5g3z639
 X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
 
 ### test submit-adminrequest
-POST http://localhost:8000/api2/approve-or-reject-request/
+POST http://localhost:8000/api/approve-or-reject-request/
 Content-Type: application/json
 Cookie: csrftoken=VF8mkuem98Zfai5uG1NCBrewdOnewR2U; sessionid=eqydrdab3rphbkkjwdg85vcucbs5w1ib
 X-CSRFToken: VF8mkuem98Zfai5uG1NCBrewdOnewR2U
