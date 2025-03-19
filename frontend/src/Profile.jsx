@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
+import "./static/profile.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -318,12 +319,9 @@ const Profile = () => {
   };
 
   return (
-    <div
-      className="bg-grey profile-card card mb-4 p-4"
-      style={{ width: "100%" }}
-    >
+    <div className="profile-card ">
       <div className="row align-items-center">
-        <div className="container text-white">
+        <div className="container ">
           <div className="row">
             <p>
               <strong>Role: </strong>{" "}
@@ -348,17 +346,19 @@ const Profile = () => {
             </p>
           </div>
         </div>
-        <div className="mt-3">
-          <button className="btn btn-primary" onClick={handleShow}>
-            Edit Detail
+        <div className="profile-buttons">
+          <button className="profile-button" onClick={handleShow}>
+            <i className="bi bi-pencil-fill"></i> Edit Profile
           </button>
-          <button className="btn btn-primary" onClick={handleEmailShow}>
-            Change Email
+          <button className="profile-button" onClick={handleEmailShow}>
+            <i className="bi bi-envelope-fill"></i> Update Email
           </button>
         </div>
 
+        <div className="profile-image"></div>
+
         {/* Profile Update Modal */}
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} className="profile-modal">
           <Modal.Header closeButton>
             <Modal.Title>Profile Update</Modal.Title>
           </Modal.Header>
@@ -431,7 +431,8 @@ const Profile = () => {
               </select>
               <label htmlFor="floatingInputResearch">Research Field</label>
             </div>
-            <InputGroup className="mb-3">
+            {/* Password Input */}
+            <InputGroup className="mb-3 position-relative">
               <InputGroup.Text id="basic-addon-password">
                 Password
               </InputGroup.Text>
@@ -452,7 +453,9 @@ const Profile = () => {
                 {showPassword ? "Hide" : "Show"}
               </Button>
             </InputGroup>
-            <InputGroup className="mb-3">
+
+            {/* Confirm Password Input */}
+            <InputGroup className="mb-3 position-relative">
               <InputGroup.Text id="basic-addon-password2">
                 Confirm Password
               </InputGroup.Text>
@@ -465,14 +468,14 @@ const Profile = () => {
                 aria-label="password2"
                 aria-describedby="basic-addon-password2"
               />
+              <Button
+                type="button"
+                onClick={toggleShowPassword}
+                className="show-password"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </Button>
             </InputGroup>
-            <Button
-              type="button"
-              onClick={toggleShowPassword}
-              className="show-password"
-            >
-              {showPassword ? "Hide" : "Show"}
-            </Button>
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -499,15 +502,17 @@ const Profile = () => {
         </Modal>
 
         {/* Change Email Modal */}
-        <Modal show={showEmail} onHide={handleEmailClose}>
+        <Modal
+          show={showEmail}
+          onHide={handleEmailClose}
+          className="email-modal"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Change Email</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon-email">
-                New Email
-              </InputGroup.Text>
+              <InputGroup.Text id="basic-addon-email"></InputGroup.Text>
               <Form.Control
                 name="newEmail"
                 value={newEmail}
@@ -516,14 +521,15 @@ const Profile = () => {
                 aria-label="newEmail"
                 aria-describedby="basic-addon-newEmail"
               />
+
+              <Button
+                className="verify-button"
+                type="button"
+                onClick={handleSend}
+              >
+                Send code
+              </Button>
             </InputGroup>
-            <Button
-              className="verify-button"
-              type="button"
-              onClick={handleSend}
-            >
-              Send code
-            </Button>
             <div className="sign-in-form">
               <form onSubmit={handleVerify}>
                 <p>Please enter the code emailed to you below:</p>

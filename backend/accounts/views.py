@@ -24,13 +24,15 @@ class RegisterView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            return Response({"message": "User Detail verified successfully."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "User Detail verified successfully."},
+                status=status.HTTP_200_OK,
+            )
         else:
             errors = get_ordered_errors(serializer)
             print(errors)
-            return Response(
-                errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CsrfTokenView(APIView):
     permission_classes = (AllowAny,)
@@ -93,19 +95,24 @@ def get_ordered_errors(serializer):
 
     return ordered_errors
 
+
 def send_verification_email(email, code):
     subject = "Your Verification Code"
     body = f"Your verification code is: {code}"
     email_message = EmailMessage(subject, body, to=[email])
     email_message.send()
-    
+
+
 class SendEmailConfirmationTokenAPIView(APIView):
-    permission_classes = [AllowAny,]
+    permission_classes = [
+        AllowAny,
+    ]
+
     def post(self, request, format=None):
         if isinstance(request.data, dict):
             email = request.data.get("email")
         else:
-            email = request.data 
+            email = request.data
         if not email:
             return Response(
                 {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
@@ -114,15 +121,20 @@ class SendEmailConfirmationTokenAPIView(APIView):
         if count > 1:
             return Response(
                 {"error": "Email is not unique in the database."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
         code = get_random_string(length=6)
 
-        EmailVerification.objects.update_or_create(email = email, defaults={"verification_code": code})
+        EmailVerification.objects.update_or_create(
+            email=email, defaults={"verification_code": code}
+        )
 
         send_verification_email(email, code)
-        return Response({"message": "Verification code sent."}, status=status.HTTP_200_OK)
-    
+        return Response(
+            {"message": "Verification code sent."}, status=status.HTTP_200_OK
+        )
+
+
 class ConfirmEmailAPIView(APIView):
     permission_classes = [
         AllowAny,
@@ -130,8 +142,8 @@ class ConfirmEmailAPIView(APIView):
 
     def post(self, request):
         if "user" in request.data and request.data["user"]:
-                user_data = request.data.get("user")
-                email = user_data.get("email")
+            user_data = request.data.get("user")
+            email = user_data.get("email")
         else:
             email = request.data.get("email")
 
@@ -160,7 +172,8 @@ class ConfirmEmailAPIView(APIView):
                 {"error": "Invalid verification code."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
+
 class CreateView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = CreateUserSerializer
@@ -172,15 +185,17 @@ class CreateView(generics.CreateAPIView):
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class UpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = UpdateSerializer
 
     def get_object(self):
         return self.request.user
-    
+
+
 class UpdateUserEmailAPIView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def patch(self, request, format=None):
         current_email = request.data.get("currentEmail")
@@ -197,6 +212,5 @@ class UpdateUserEmailAPIView(APIView):
         user.save()
 
         return Response(
-            {"message": "Email updated successfully."},
-            status=status.HTTP_200_OK
-        )        
+            {"message": "Email updated successfully."}, status=status.HTTP_200_OK
+        )

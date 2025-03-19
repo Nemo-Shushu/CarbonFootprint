@@ -75,6 +75,7 @@ class User(AbstractUser):
     class Meta:
         managed = False
 
+
 class EmailVerification(models.Model):
     email = models.EmailField(
         max_length=35,

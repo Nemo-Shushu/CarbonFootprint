@@ -16,11 +16,12 @@ from api.views import (
     dashboard_show_user_result_data,
     get_all_report_data,
     get_all_carbon_impact,
-    update_carbon_impact
+    update_carbon_impact,
 )
 import json
 from unittest.mock import patch, MagicMock
 from api.models import Result
+from backend.modified_libraries.response import JsonResponse
 
 
 # Mock Utilities
@@ -171,25 +172,27 @@ class SessionWhoamiTests(SimpleTestCase):
 
     def test_whoami_authenticated(self):
         mock_user = MockFactory.mock_user()
+
+        mock_user_data = {
+            "isAuthenticated": True,
+            "username": "testuser",
+            "forename": "Test",
+            "email": "test@example.com",
+            "institute": "Institute A",
+            "research_field": "Research Field A",
+            "isAdmin": False,
+            "isResearcher": False,
+            "dateJoined": "2025-01-01",
+        }
+
         request = self.factory.get("/fake-url/")
         request.user = mock_user
 
-        response = whoami_view(request)
+        with patch("api.views.JsonResponse", return_value=JsonResponse(mock_user_data)):
+            response = whoami_view(request)
+
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(
-            response.content,
-            {
-                "isAuthenticated": True,
-                "username": mock_user.username,
-                "forename": mock_user.first_name,
-                "email": mock_user.email,
-                "institute": mock_user.institute.name,
-                "research_field": mock_user.research_field.name,
-                "isAdmin": mock_user.is_admin,
-                "isResearcher": mock_user.is_researcher,
-                "dateJoined": mock_user.date_joined,
-            },
-        )
+        self.assertJSONEqual(response.content, mock_user_data)
 
     def test_whoami_not_authenticated(self):
         request = self.factory.get("/fake-url/")
@@ -518,9 +521,9 @@ class Submit_Get_Tests(SimpleTestCase):
         response = get_all_report_data(request)
         self.assertEqual(response.status_code, 404)
         self.assertJSONEqual(response.content, {"error": "Report not found"})
-        
-class CarbonImpactTests(SimpleTestCase):
 
+
+class CarbonImpactTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -530,9 +533,9 @@ class CarbonImpactTests(SimpleTestCase):
         mock_update_or_create.return_value = (True, None)
 
         request = self.factory.post(
-            '/update-carbon-impact/',
+            "/update-carbon-impact/",
             data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
-            content_type='application/json'
+            content_type="application/json",
         )
 
         response = update_carbon_impact(request)
@@ -543,38 +546,44 @@ class CarbonImpactTests(SimpleTestCase):
     def test_update_carbon_impact_missing_data(self, mock_update_or_create):
         """Test update with missing data"""
         request = self.factory.post(
-            '/update-carbon-impact/',
+            "/update-carbon-impact/",
             data=json.dumps({"category": "Electricity"}),
-            content_type='application/json'
+            content_type="application/json",
         )
 
         response = update_carbon_impact(request)
         self.assertEqual(response.status_code, 400)
-        self.assertJSONEqual(response.content, {"error": "Both 'category' and 'carbon_impact' are required."})
+        self.assertJSONEqual(
+            response.content,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
 
     @patch("api.models.CategoryCarbonImpact.objects.values")
     def test_get_all_carbon_impact_success(self, mock_values):
         """Test successful carbon impact retrieval"""
         mock_values.return_value = [
             {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-            {"id": 2, "category": "Gas", "carbon_impact": 0.8}
+            {"id": 2, "category": "Gas", "carbon_impact": 0.8},
         ]
 
-        request = self.factory.get('/get-all-carbon-impact/')
+        request = self.factory.get("/get-all-carbon-impact/")
         response = get_all_carbon_impact(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, [
-            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-            {"id": 2, "category": "Gas", "carbon_impact": 0.8}
-        ])
+        self.assertJSONEqual(
+            response.content,
+            [
+                {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
+                {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+            ],
+        )
 
     @patch("api.models.CategoryCarbonImpact.objects.values")
     def test_get_all_carbon_impact_error(self, mock_values):
         """Test error handling in get_all_carbon_impact"""
         mock_values.side_effect = Exception("Database error")
 
-        request = self.factory.get('/get-all-carbon-impact/')
+        request = self.factory.get("/get-all-carbon-impact/")
         response = get_all_carbon_impact(request)
 
         self.assertEqual(response.status_code, 500)
