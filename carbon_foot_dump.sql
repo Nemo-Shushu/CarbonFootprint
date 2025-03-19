@@ -517,6 +517,20 @@ ALTER TABLE public.accounts_adminrequest
 ADD CONSTRAINT accounts_adminrequest_pkey PRIMARY KEY (id)
 
 --
+-- Name: accounts_adminrequest; Type: TABLE; Schema: public; Owner: carbon_foot
+--
+
+CREATE TABLE public.calculate_temp_reports (
+    id serial NOT NULL,
+    user_id integer NOT NULL,
+    data jsonb NOT NULL,
+    created_at timestamp without time zone NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.calculate_temp_reports
+ADD CONSTRAINT calculate_temp_reports_pkey PRIMARY KEY (id)
+
+--
 -- Name: procurement_data_id_seq; Type: SEQUENCE; Schema: public; Owner: carbon_foot
 --
 
