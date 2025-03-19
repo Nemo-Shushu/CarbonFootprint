@@ -19,6 +19,9 @@ urlpatterns = [
         name="dashboard-show-user-result-data",
     ),
     path("get-all-report-data/", views.get_all_report_data, name="get-all-report-data"),
+    path("update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"),
+    path("get-all-carbon-impact/",views.get_all_carbon_impact, name='get-all-carbon-impact'),
+    path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
     path(
         "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
     ),
@@ -34,5 +37,15 @@ urlpatterns = [
         "approve-or-reject-request/",
         views.approve_or_reject_request,
         name="approve_or_reject_request",
+    ),
+    path(
+        "store-unsubmitted-reports-backend/",
+        views.store_unsubmitted_reports_backend,
+        name="store_unsubmitted_reports_backend",
+    ),
+    path(
+        "retrieve-and-delete-temp-report/",
+        views.retrieve_and_delete_temp_report,
+        name="retrieve_and_delete_temp_report",
     ),
 ]

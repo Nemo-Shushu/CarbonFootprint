@@ -4,11 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 import { useAuth } from "./useAuth";
 import Modal from "react-bootstrap/Modal";
+import PropTypes from "prop-types";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function createUser(user) {
-  return fetch(backendUrl + "api/accounts/create-user/", {
+  return fetch(`${backendUrl}api/accounts/create-user/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +35,7 @@ async function createUser(user) {
 }
 
 async function validateUser(user) {
-  return fetch(backendUrl + "api/accounts/register/", {
+  return fetch(`${backendUrl}api/accounts/register/`, {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD CHECK IF USERS' DETAILS ARE CORRECT AND CAN BE SUBMITTED
     method: "POST",
     headers: {
@@ -61,7 +62,7 @@ async function validateUser(user) {
 }
 
 async function sendCode(user) {
-  return fetch(backendUrl + "api/accounts/send-email-confirmation-token/", {
+  return fetch(`${backendUrl}api/accounts/send-email-confirmation-token/`, {
     // ENTER THE CALL TO BACKEND HERE WHICH WOULD SEND THE CODE TO USER
     method: "POST",
     headers: {
@@ -88,7 +89,7 @@ async function sendCode(user) {
 }
 
 async function verifyCode(user, code) {
-  return fetch(backendUrl + "api/accounts/confirm-email/", {
+  return fetch(`${backendUrl}api/accounts/confirm-email/`, {
     // ENTER THE CALL TO BACKEND HERE TO VERIFY VERIFICATION CODE
     method: "POST",
     headers: {
@@ -114,7 +115,7 @@ async function verifyCode(user, code) {
     });
 }
 
-function RegisterForm() {
+function RegisterForm({ forceVisible = false }) {
   const [user, setUser] = useState({
     username: "",
     first_name: "",
@@ -136,14 +137,14 @@ function RegisterForm() {
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(forceVisible);
   const { isAuthenticated, loading } = useAuth();
   const [verifyDisabled, setVerifyDisabled] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
   useEffect(() => {
-    fetch(backendUrl.concat("api2/institutions/"))
+    fetch(`${backendUrl}api/institutions/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get an university lists.");
@@ -159,7 +160,7 @@ function RegisterForm() {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api2/fields/"))
+    fetch(`${backendUrl}api/fields/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get a field lists.");
@@ -271,7 +272,7 @@ function RegisterForm() {
 
   return (
     <div className="sign-in-wrapper">
-      <Modal show={visible} centered size="lg">
+      <Modal show={visible} centered size="lg" data-testid="verification-modal">
         {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
         <Modal.Header>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
@@ -459,5 +460,9 @@ function RegisterForm() {
     </div>
   );
 }
+
+RegisterForm.propTypes = {
+  forceVisible: PropTypes.bool,
+};
 
 export default RegisterForm;

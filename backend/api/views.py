@@ -6,15 +6,21 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from api.models import AdminRequest, Result
+from api.models import AdminRequest, Result, TempReport
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
 from accounts.models import User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework import status
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
-from .serializers import InstitutionSerializer, ResearchFieldSerializer
+from .serializers import (
+    InstitutionSerializer,
+    ResearchFieldSerializer,
+    GetIntensitySerializer,
+    UpdateIntensitySerializer,
+)
 
 
 def get_csrf(request):
@@ -854,6 +860,67 @@ def get_all_report_data(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+@api_view(["GET", "PUT"])
+@permission_classes([IsAdminUser])
+def update_intensity_view(request):
+    if request.method == "GET":
+        queryset = BenchmarkData.objects.values(
+            "id", "category", "intensity", "consumption_type", "unit"
+        ).order_by("category")
+        serializer = GetIntensitySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    elif request.method == "PUT":
+        if not isinstance(request.data, list):
+            return Response(
+                {"detail": "Expected a list of objects."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        updated_objects = []
+        errors = []
+
+        for item in request.data:
+            id = item.get("id")
+
+            if not id:
+                errors.append({"detail": "id is required.", "data": item})
+                continue
+
+            try:
+                benchmark_instance = BenchmarkData.objects.get(id=id)
+            except BenchmarkData.DoesNotExist:
+                errors.append(
+                    {"detail": f"intensity factor with id {id} not found", "data": item}
+                )
+                continue
+
+            # Update the existing object
+            serializer = UpdateIntensitySerializer(
+                benchmark_instance, data=item, partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                updated_objects.append(serializer.data)
+            else:
+                errors.append(
+                    {
+                        "detail": "Validation failed.",
+                        "errors": serializer.errors,
+                        "data": item,
+                    }
+                )
+
+        response_data = {"updated": updated_objects}
+        if errors:
+            response_data["errors"] = errors
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK
+            if updated_objects
+            else status.HTTP_400_BAD_REQUEST,
+        )
 def update_carbon_impact(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -894,6 +961,7 @@ def get_all_carbon_impact(request):
             return JsonResponse(data, safe=False, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 def submit_admin_request(request):
@@ -1077,6 +1145,61 @@ def approve_or_reject_request(request):
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def store_unsubmitted_reports_backend(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        user_id = request.user.id
+
+        try:
+            data = json.loads(request.body)
+
+            if TempReport.objects.filter(user_id=user_id).exists():
+                return JsonResponse(
+                    {"success": False, "message": "You already have a draft."},
+                    status=400,
+                )
+
+            TempReport.objects.create(user_id=user_id, data=data)
+
+            return JsonResponse(
+                {"success": True, "message": "Draft successfully saved."}, status=201
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def retrieve_and_delete_temp_report(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        user_id = request.user.id
+
+        try:
+            temp_report = TempReport.objects.filter(user_id=user_id).first()
+
+            if temp_report:
+                report_data = temp_report.data
+
+                temp_report.delete()
+
+                return JsonResponse({"data": report_data}, status=200)
+
+            return JsonResponse({"success": "No draft now"}, status=404)
+
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

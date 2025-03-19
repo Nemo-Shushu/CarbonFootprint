@@ -46,7 +46,7 @@ function SignInForm() {
   }
 
   async function login() {
-    await fetch(backendUrl + "api2/login/", {
+    await fetch(`${backendUrl}api/login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
