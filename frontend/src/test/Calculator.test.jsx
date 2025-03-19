@@ -58,16 +58,12 @@ describe("Calculator Component", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) =>
-          content.includes(
-            "For calculating electricity and gas consumption",
-          ),
+          content.includes("For calculating electricity and gas consumption"),
         ),
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) =>
-          content.includes(
-            "For calculating water consumption",
-          ),
+          content.includes("For calculating water consumption"),
         ),
       ).toBeInTheDocument();
     });
@@ -251,7 +247,11 @@ describe("Procurement Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText((content) => content.includes("Press + to add new lines"))).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("Press + to add new lines"),
+        ),
+      ).toBeInTheDocument();
     });
 
     expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();

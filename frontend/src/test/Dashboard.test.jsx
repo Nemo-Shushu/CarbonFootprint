@@ -23,15 +23,14 @@ beforeEach(() => {
   vi.resetModules();
 
   vi.doMock("../Sidebar", () => ({
-    default: ({ onAdminStatusChange }) => {
+    default: function MockSidebar({ onAdminStatusChange }) {
       useEffect(() => {
-        onAdminStatusChange(false); 
+        onAdminStatusChange(false);
       }, []);
       return <div data-testid="sidebar" />;
     },
   }));
 });
-
 
 describe("Dashboard Component", () => {
   beforeEach(() => {
@@ -150,14 +149,13 @@ describe("Dashboard Component", () => {
     fireEvent.click(profileIcon);
 
     expect(screen.getByTestId("profile-btn")).toBeInTheDocument();
-
   });
 
   it("renders the table headers for admin users", async () => {
     vi.doMock("../Sidebar", () => ({
-      default: ({ onAdminStatusChange }) => {
+      default: function MockSidebar({ onAdminStatusChange }) {
         useEffect(() => {
-          onAdminStatusChange(true); 
+          onAdminStatusChange(true);
         }, []);
         return <div data-testid="sidebar" />;
       },
@@ -196,7 +194,7 @@ describe("Dashboard Component", () => {
         "Academic Institution",
         "Research Field",
         "Total Emissions",
-        "Email"
+        "Email",
       ]);
     });
   });
@@ -294,9 +292,4 @@ describe("Dashboard Component - Table headers", () => {
       expect(screen.queryByRole("columnheader")).not.toBeInTheDocument();
     });
   });
-
-
-  
-  
-
 });
