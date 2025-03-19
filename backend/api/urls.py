@@ -19,6 +19,9 @@ urlpatterns = [
         name="dashboard-show-user-result-data",
     ),
     path("get-all-report-data/", views.get_all_report_data, name="get-all-report-data"),
+    path("update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"),
+    path("get-all-carbon-impact/",views.get_all_carbon_impact, name='get-all-carbon-impact'),
+    path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
     path(
         "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
     ),
