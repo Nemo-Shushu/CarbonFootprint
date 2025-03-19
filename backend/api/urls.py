@@ -35,6 +35,14 @@ urlpatterns = [
         views.approve_or_reject_request,
         name="approve_or_reject_request",
     ),
-    path('store-unsubmitted-reports-backend/', views.store_unsubmitted_reports_backend, name='store_unsubmitted_reports_backend'),
-    path('retrieve-and-delete-temp-report/', views.retrieve_and_delete_temp_report, name='retrieve_and_delete_temp_report')
+    path(
+        "store-unsubmitted-reports-backend/",
+        views.store_unsubmitted_reports_backend,
+        name="store_unsubmitted_reports_backend",
+    ),
+    path(
+        "retrieve-and-delete-temp-report/",
+        views.retrieve_and_delete_temp_report,
+        name="retrieve_and_delete_temp_report",
+    ),
 ]

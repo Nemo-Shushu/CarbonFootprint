@@ -894,6 +894,7 @@ def get_all_carbon_impact(request):
             return JsonResponse(data, safe=False, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 def submit_admin_request(request):
@@ -1082,13 +1083,11 @@ def approve_or_reject_request(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
+
 def store_unsubmitted_reports_backend(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Please login first."},
-                status=403
-            )
+            return JsonResponse({"error": "Please login first."}, status=403)
 
         user_id = request.user.id
 
@@ -1098,17 +1097,13 @@ def store_unsubmitted_reports_backend(request):
             if TempReport.objects.filter(user_id=user_id).exists():
                 return JsonResponse(
                     {"success": False, "message": "You already have a draft."},
-                    status=400
+                    status=400,
                 )
 
-            TempReport.objects.create(
-                user_id=user_id,
-                data=data
-            )
+            TempReport.objects.create(user_id=user_id, data=data)
 
             return JsonResponse(
-                {"success": True, "message": "Draft successfully saved."},
-                status=201
+                {"success": True, "message": "Draft successfully saved."}, status=201
             )
 
         except json.JSONDecodeError:
@@ -1118,13 +1113,11 @@ def store_unsubmitted_reports_backend(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
+
 def retrieve_and_delete_temp_report(request):
     if request.method == "GET":
         if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Please login first."},
-                status=403
-            )
+            return JsonResponse({"error": "Please login first."}, status=403)
 
         user_id = request.user.id
 
@@ -1133,18 +1126,12 @@ def retrieve_and_delete_temp_report(request):
 
             if temp_report:
                 report_data = temp_report.data
-                
+
                 temp_report.delete()
 
-                return JsonResponse(
-                    {"data": report_data},
-                    status=200
-                )
+                return JsonResponse({"data": report_data}, status=200)
 
-            return JsonResponse(
-                {"success": "No draft now"},
-                status=404
-            )
+            return JsonResponse({"success": "No draft now"}, status=404)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
