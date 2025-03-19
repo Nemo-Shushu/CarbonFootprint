@@ -145,6 +145,14 @@ function TableComponent({ isAdmin }) {
     return val.toString().includes(searchString);
   }
 
+  const filteredData = data.filter((row) => {
+    return (
+      findString(row.id) && 
+      (filter.institute === "" || filter.institute === row.institution) &&
+      (filter.research_field === "" || filter.research_field === row.field)
+    );
+  });
+
   return (
     <main className="ms-sm-auto px-md-4">
       <Modal show={visibleReport} onHide={() => setVisibleReport(false)} centered size="lg">
@@ -163,7 +171,6 @@ function TableComponent({ isAdmin }) {
           <Modal.Title>Filter Reports</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Dropdown for Academic Institution, not searchable at the moment  */}
           <div className="input-group">
             <select
               name="institute"
@@ -182,7 +189,6 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
-          {/* Dropdown for Research Field, need to be updated */}
           <div className="input-group">
             <select
               name="research_field"
@@ -225,7 +231,7 @@ function TableComponent({ isAdmin }) {
         </button>
       </div>
       <div className="table-responsive small">
-        {Array.isArray(data) && data.length > 0 ? (
+        {Array.isArray(data) && filteredData.length > 0 ? (
           <table className="table table-striped table-hover table-sm">
             <thead>
               <tr>
@@ -237,10 +243,7 @@ function TableComponent({ isAdmin }) {
               </tr>
             </thead>
             <tbody>
-              {data.map((row, index) => (
-                findString(row.id) && 
-                (filter.institute === "" || filter.institute === row.institution) &&
-                (filter.research_field === "" || filter.research_field === row.field) && 
+              {filteredData.map((row, index) => (
                 <tr
                   key={index}
                   className="align-middle"
@@ -268,7 +271,7 @@ function TableComponent({ isAdmin }) {
               color: "gray",
             }}
           >
-            No data available
+            {data.length > 0 ? "No data available matching your filters or search parameters" : "No data available"}
           </div>
         )}
       </div>
