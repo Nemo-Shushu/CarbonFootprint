@@ -11,7 +11,7 @@ function SessionLayout({ children }) {
   useEffect(() => {
     const fetchSessionExpiry = async () => {
       try {
-        const response = await fetch(`${backendUrl}api2/session-expiry/`, {
+        const response = await fetch(`${backendUrl}api/session-expiry/`, {
           credentials: "include",
         });
         const data = await response.json();
@@ -37,7 +37,7 @@ function SessionLayout({ children }) {
   }, []);
 
   useEffect(() => {
-    if (remainingTime <= 300 && remainingTime > 0) {
+    if (remainingTime <= 60*5 && remainingTime > 0) {
       if (!showPopup) {
         setShowPopup(true);
       }
@@ -46,7 +46,7 @@ function SessionLayout({ children }) {
 
   const handleExtendSession = async () => {
     try {
-      const response = await fetch(`${backendUrl}api2/extend-session/`, {
+      const response = await fetch(`${backendUrl}api/extend-session/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
