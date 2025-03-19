@@ -2,7 +2,7 @@
 
 
 
-GET /api2/session/ HTTP/1.1
+GET /api/whoami/ HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
@@ -21,7 +21,7 @@ sec-ch-ua-platform: "Windows"
 
 ### test get id
 
-GET http://localhost:8000/api2/test/ HTTP/1.1
+GET http://localhost:8000/api/test/ HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
@@ -44,12 +44,12 @@ sec-ch-ua-platform: "Windows"
 
 
 ### test  get-csrf
-GET http://localhost:8000/api2/get-csrf/
+GET http://localhost:8000/api/get-csrf/
 
 
 
 ### test report
-POST http://localhost:8000/api2/report/
+POST http://localhost:8000/api/report/
 Content-Type: application/json
 Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
 X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
@@ -93,7 +93,7 @@ X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 }
 
 ### test submit
-POST http://localhost:8000/api2/submit/
+POST http://localhost:8000/api/submit/
 Content-Type: application/json
 Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
 X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
@@ -137,13 +137,12 @@ X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 }
 
 ### test getresult
-POST http://localhost:8000/api2/dashboard-show-user-result-data/
+POST http://localhost:8000/api/Dashboard_show_user_result_data/
 Content-Type: application/json
 Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
 X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 
-### 发送 POST 请求测试 get_all_report_data API
-POST http://localhost:8000/api2/get-all-report-data/
+POST http://localhost:8000/api/get_all_report_data/
 Content-Type: application/json
 Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
 X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
@@ -154,7 +153,7 @@ X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 
 
 ### test update_carbon_impact
-POST http://localhost:8000/api2/update-carbon-impact/
+POST http://localhost:8000/api/update-carbon-impact/
 Content-Type: application/json
 Cookie: csrftoken=dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0; sessionid=jblb5ri17cnbi7yglf3n9eecx99lxcrn
 X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
@@ -165,14 +164,14 @@ X-CSRFToken: dnUC3jC8z3JhBzeFSQBn9bHP9h2ZTud0
 }
 
 ### test get_all_carbon_impact
-GET http://localhost:8000/api2/get-all-carbon-impact/
+GET http://localhost:8000/api/get-all-carbon-impact/
 Content-Type: application/json
 Cookie: csrftoken=J1PwLcPb5S42lvqJ6mUBgNtXGKsa5I8T; sessionid=njhv0qeoibnmtpj242b1nk400qwrrckd
 X-CSRFToken: J1PwLcPb5S42lvqJ6mUBgNtXGKsa5I8T
 
 
 ### test submit-adminrequest
-POST http://localhost:8000/api2/submit-adminrequest/
+POST http://localhost:8000/api/submit-adminrequest/
 Content-Type: application/json
 Cookie: csrftoken=E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul; sessionid=bqz91luvpj3ma9oe7u5mzxm5j5g3z639
 X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
@@ -183,19 +182,19 @@ X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
 }
 
 ### test admin_request_list
-GET http://localhost:8000/api2/admin-request-list/
+GET http://localhost:8000/api/admin-request-list/
 Content-Type: application/json
 Cookie: csrftoken=c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y; sessionid=1lcpoki0emeu7ddrfjwat8ssloiizzcj
 X-CSRFToken: c5mJr7izDnPZsTgCGLdWp2YbpYW8AC1y
 
 ### test user_request_list
-GET http://localhost:8000/api2/user-request-status/
+GET http://localhost:8000/api/user-request-status/
 Content-Type: application/json
 Cookie: csrftoken=E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul; sessionid=bqz91luvpj3ma9oe7u5mzxm5j5g3z639
 X-CSRFToken: E8E0tSEPlUwg6COlHsTJMX4maKLL34Ul
 
 ### test submit-adminrequest
-POST http://localhost:8000/api2/approve-or-reject-request/
+POST http://localhost:8000/api/approve-or-reject-request/
 Content-Type: application/json
 Cookie: csrftoken=VF8mkuem98Zfai5uG1NCBrewdOnewR2U; sessionid=eqydrdab3rphbkkjwdg85vcucbs5w1ib
 X-CSRFToken: VF8mkuem98Zfai5uG1NCBrewdOnewR2U
