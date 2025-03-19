@@ -10,6 +10,21 @@ import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 async function checkEmail(email) {
   return fetch(backendUrl + "api/accounts/check-email/", {
     method: "POST",
@@ -208,11 +223,13 @@ function SignInForm() {
       alert("Passwords do not match!");
       return;
     }
+    const csrfToken = getCookie("csrftoken");
     fetch(backendUrl.concat("api/accounts/update-password/"), {
       method: "PATCH",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
       },
       body: JSON.stringify({email:email, password:newPassword}),
     })
