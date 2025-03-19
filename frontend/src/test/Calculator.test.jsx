@@ -54,20 +54,16 @@ describe("Calculator Component", () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText((content) => content.includes("Personnel")),
+        screen.getByText((content) => content.includes("PERSONNEL")),
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) =>
-          content.includes(
-            "Type of space (for calculation of electricity and gas consumption)",
-          ),
+          content.includes("For calculating electricity and gas consumption"),
         ),
       ).toBeInTheDocument();
       expect(
         screen.getByText((content) =>
-          content.includes(
-            "ype of space (for calculation of water consumption)",
-          ),
+          content.includes("For calculating water consumption"),
         ),
       ).toBeInTheDocument();
     });
@@ -79,13 +75,13 @@ describe("Calculator Component", () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText((content) => content.includes("Air travel")),
+        screen.getByText((content) => content.includes("AIR TRAVEL")),
       ).toBeInTheDocument();
       expect(
-        screen.getByText((content) => content.includes("Sea travel")),
+        screen.getByText((content) => content.includes("SEA TRAVEL")),
       ).toBeInTheDocument();
       expect(
-        screen.getByText((content) => content.includes("Land travel")),
+        screen.getByText((content) => content.includes("LAND TRAVEL")),
       ).toBeInTheDocument();
     });
 
@@ -96,10 +92,10 @@ describe("Calculator Component", () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText((content) => content.includes("Recycling")),
+        screen.getByText((content) => content.includes("RECYCLING")),
       ).toBeInTheDocument();
       expect(
-        screen.getByText((content) => content.includes("Waste")),
+        screen.getByText((content) => content.includes("WASTE")),
       ).toBeInTheDocument();
     });
 
@@ -111,7 +107,7 @@ describe("Calculator Component", () => {
     await waitFor(() => {
       expect(
         screen.getByText((content) =>
-          content.includes("Press to add new lines"),
+          content.includes("Press + to add new lines"),
         ),
       ).toBeInTheDocument();
       expect(
@@ -251,7 +247,11 @@ describe("Procurement Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Press to add new lines/i)).toBeInTheDocument();
+      expect(
+        screen.getByText((content) =>
+          content.includes("Press + to add new lines"),
+        ),
+      ).toBeInTheDocument();
     });
 
     expect(screen.getByRole("button", { name: "+" })).toBeInTheDocument();
