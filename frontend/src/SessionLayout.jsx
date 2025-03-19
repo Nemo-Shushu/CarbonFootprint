@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import Cookies from "js-cookie";
 import PropTypes from "prop-types";
@@ -35,7 +35,6 @@ function SessionLayout({ children }) {
     }, 1000);
     return () => clearInterval(localTimerId);
   }, []);
-
 
   useEffect(() => {
     if (remainingTime <= 300 && remainingTime > 0) {
