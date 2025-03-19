@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import {
-  handleBulkUpdateProcurementSubmissionAPI,
-} from "../api/apiFactors.jsx";
+import { handleBulkUpdateProcurementSubmissionAPI } from "../api/apiFactors.jsx";
 import "../assets/ManageFactors.css";
 
 FactorTable.propTypes = {
@@ -20,14 +18,12 @@ function FactorTable({ tableName, conversionFactors }) {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    conversionFactors(setEditedFactors)
-    conversionFactors(setOriginalFactors)
+    conversionFactors(setEditedFactors);
+    conversionFactors(setOriginalFactors);
   }, [setEditedFactors, setOriginalFactors]);
 
   const filteredFactors = editedFactors.filter((factor) =>
-    `${factor.category}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()),
+    `${factor.category}`.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const sortedFactors = [...filteredFactors].sort((a, b) => {
@@ -81,11 +77,16 @@ function FactorTable({ tableName, conversionFactors }) {
 
   // Function to check if a factor has been modified
   function hasFactorChanged(editedFactor) {
-    const originalFactor = originalFactors.find(f => f.id === editedFactor.id);
+    const originalFactor = originalFactors.find(
+      (f) => f.id === editedFactor.id,
+    );
     if (!originalFactor) return true; // New factor
-    
+
     // Convert to same type before comparison (both as numbers)
-    return Number(editedFactor.carbon_impact) !== Number(originalFactor.carbon_impact);
+    return (
+      Number(editedFactor.carbon_impact) !==
+      Number(originalFactor.carbon_impact)
+    );
   }
 
   async function handleBulkSave(event) {
@@ -97,7 +98,7 @@ function FactorTable({ tableName, conversionFactors }) {
     // Filter only changed factors
     const changedFactors = editedFactors
       .filter(hasFactorChanged)
-      .map(factor => ({
+      .map((factor) => ({
         ...factor,
         carbon_impact: Number(factor.carbon_impact),
       }));
@@ -109,7 +110,7 @@ function FactorTable({ tableName, conversionFactors }) {
 
     await handleBulkUpdateProcurementSubmissionAPI(event, changedFactors);
     setEditing(false);
-    
+
     // Refresh data after save
     await conversionFactors(setEditedFactors);
     setOriginalFactors(editedFactors);
@@ -143,8 +144,10 @@ function FactorTable({ tableName, conversionFactors }) {
           <button
             className="btn btn-success m-1 flex-grow-1 text-nowrap"
             onClick={handleBulkSave}
-            disabled={Object.keys(errors).length > 0 || 
-              !editedFactors.some(hasFactorChanged)} // Disable when no changes
+            disabled={
+              Object.keys(errors).length > 0 ||
+              !editedFactors.some(hasFactorChanged)
+            } // Disable when no changes
           >
             Save Changes
           </button>
@@ -154,28 +157,26 @@ function FactorTable({ tableName, conversionFactors }) {
       <table className="table table-hover">
         <thead>
           <tr className="align-middle text-start">
-            {["category", "carbon_impact"].map(
-              (field) => (
-                <th
-                  key={field}
-                  scope="col"
-                  onClick={() => {
-                    setSortField(field);
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {field.replace("_", " ")}{" "}
-                  {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                </th>
-              ),
-            )}
+            {["category", "carbon_impact"].map((field) => (
+              <th
+                key={field}
+                scope="col"
+                onClick={() => {
+                  setSortField(field);
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                {field.replace("_", " ")}{" "}
+                {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="table-group-divider">
           {sortedFactors.map((factor) => (
-            <tr 
-              className={`align-middle text-start ${editing && hasFactorChanged(factor) ? "table-warning" : ""}`} 
+            <tr
+              className={`align-middle text-start ${editing && hasFactorChanged(factor) ? "table-warning" : ""}`}
               key={factor.id}
             >
               <td>{factor.category}</td>

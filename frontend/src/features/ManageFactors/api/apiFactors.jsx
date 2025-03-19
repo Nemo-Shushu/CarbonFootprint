@@ -75,28 +75,28 @@ export async function handleBulkUpdateProcurementSubmissionAPI(event, items) {
 
   try {
     const response = await fetch(`${backendUrl}api/update-carbon-impact/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrftoken,
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
       },
-      credentials: 'include',
-      body: JSON.stringify(items)
+      credentials: "include",
+      body: JSON.stringify(items),
     });
-    
+
     const data = await response.json();
     if (response.ok) {
-      console.log('Bulk update successful:', data);
+      console.log("Bulk update successful:", data);
       return data;
     } else {
-      console.error('Bulk update failed:', data.error);
+      console.error("Bulk update failed:", data.error);
       throw new Error(data.error);
     }
   } catch (error) {
-    console.error('Error with bulk update:', error);
+    console.error("Error with bulk update:", error);
     throw error;
   }
-};
+}
 
 // // Example usage
 // const items = [

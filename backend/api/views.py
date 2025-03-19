@@ -939,7 +939,7 @@ def update_carbon_impact(request):
                 
                 if not category or carbon_impact is None:
                     return Response(
-                        {"error": f"Both 'category' and 'carbon_impact' are required for each item."},
+                        {"error": "Both 'category' and 'carbon_impact' are required for each item."},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 
