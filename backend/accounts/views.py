@@ -8,12 +8,10 @@ from rest_framework.permissions import AllowAny
 from .models import User, EmailVerification
 from .serializers import (
     RegisterSerializer,
-    UserSerializer,
     CreateUserSerializer,
     UpdateSerializer,
 )
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
