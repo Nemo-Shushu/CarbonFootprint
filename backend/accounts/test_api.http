@@ -22,6 +22,7 @@ sec-ch-ua-platform: "Windows"
 ### test get id
 
 GET http://localhost:8000/api/test/ HTTP/1.1
+GET http://localhost:8000/api/test/ HTTP/1.1
 Accept: */*
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8

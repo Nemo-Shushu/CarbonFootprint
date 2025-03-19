@@ -52,7 +52,7 @@ function Sidebar({ onAdminStatusChange }) {
   }
 
   function handleLogout() {
-    fetch(backendUrl + "api/logout", {
+    fetch(`${backendUrl}api/logout`, {
       credentials: "include",
     })
       .then(isResponseOk)
@@ -66,7 +66,7 @@ function Sidebar({ onAdminStatusChange }) {
   }
 
   function getName() {
-    fetch(backendUrl + "api/whoami/", {
+    fetch(`${backendUrl}api/whoami/`, {
       credentials: "include",
     })
       .then((res) => res.json())

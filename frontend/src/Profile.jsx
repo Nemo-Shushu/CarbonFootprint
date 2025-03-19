@@ -10,7 +10,7 @@ import "./static/profile.css";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 async function updateEmail(currentEmail, newEmail) {
-  return fetch(backendUrl + "api/accounts/update-email/", {
+  return fetch(`${backendUrl}api/accounts/update-email/`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -36,7 +36,7 @@ async function updateEmail(currentEmail, newEmail) {
 }
 
 async function sendCode(email) {
-  return fetch(backendUrl + "api/accounts/send-email-confirmation-token/", {
+  return fetch(`${backendUrl}api/accounts/send-email-confirmation-token/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +62,7 @@ async function sendCode(email) {
 }
 
 async function verifyCode(email, code) {
-  return fetch(backendUrl + "api/accounts/confirm-email/", {
+  return fetch(`${backendUrl}api/accounts/confirm-email/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -222,7 +222,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api/institutions/"))
+    fetch(`${backendUrl}api/institutions/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get university lists.");
@@ -238,7 +238,7 @@ const Profile = () => {
   }, [backendUrl]);
 
   useEffect(() => {
-    fetch(backendUrl.concat("api/fields/"))
+    fetch(`${backendUrl}api/fields/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Fail to get field lists.");
@@ -254,7 +254,7 @@ const Profile = () => {
   }, [backendUrl]);
 
   function getSession() {
-    fetch(backendUrl.concat("api/session/"), {
+    fetch("http://localhost:8000/api/session/", {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -297,7 +297,7 @@ const Profile = () => {
       return;
     }
     const csrfToken = getCookie("csrftoken");
-    fetch(backendUrl.concat("api/accounts/update/"), {
+    fetch(`${backendUrl}api/accounts/update/`, {
       method: "PATCH",
       credentials: "include",
       headers: {

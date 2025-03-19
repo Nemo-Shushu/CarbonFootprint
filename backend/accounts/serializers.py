@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, ConversionFactor, University, ResearchField
+from .models import User, University, ResearchField
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 
@@ -102,13 +102,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                 "A user with this username already exists."
             )
         return value
-
-
-class ConversionFactorsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConversionFactor
-        fields = "__all__"
-
 
 class CreateUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
