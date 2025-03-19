@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, ConversionFactor, University, ResearchField
+from .models import User, University, ResearchField
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueValidator
 
@@ -102,11 +102,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                 "A user with this username already exists."
             )
         return value
-
-class ConversionFactorsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConversionFactor
-        fields = "__all__"
 
 class CreateUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
@@ -213,75 +208,72 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
-    
+
+
 class UpdateSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(
-        required=False,
-        allow_blank=True
-    )
-    last_name = serializers.CharField(
-        required=False,
-        allow_blank=True
-    )
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
     institute = serializers.SlugRelatedField(
-        slug_field='name',
+        slug_field="name",
         queryset=University.objects.all(),
         required=False,
-        allow_null=True
+        allow_null=True,
     )
     research_field = serializers.SlugRelatedField(
-        slug_field='name',
+        slug_field="name",
         queryset=ResearchField.objects.all(),
         required=False,
-        allow_null=True
+        allow_null=True,
     )
     password = serializers.CharField(
         write_only=True,
         required=False,
         allow_blank=True,
         validators=[validate_password],
-        style={'input_type': 'password'},
+        style={"input_type": "password"},
     )
     password2 = serializers.CharField(
         write_only=True,
         required=False,
         allow_blank=True,
-        style={'input_type': 'password'},
+        style={"input_type": "password"},
     )
 
     class Meta:
         model = User
         fields = (
-            'password', 
-            'password2', 
-            'institute', 
-            'research_field',
-            'first_name',
-            'last_name',
+            "password",
+            "password2",
+            "institute",
+            "research_field",
+            "first_name",
+            "last_name",
         )
-    
+
     def validate(self, attrs):
-        password = attrs.get('password', '')
-        password2 = attrs.get('password2', '')
+        password = attrs.get("password", "")
+        password2 = attrs.get("password2", "")
         if password or password2:
             if password != password2:
-                raise serializers.ValidationError({"password": "Password fields didn't match."})
+                raise serializers.ValidationError(
+                    {"password": "Password fields didn't match."}
+                )
         return attrs
 
     def update(self, instance, validated_data):
-        if 'first_name' in validated_data:
-            if validated_data['first_name'].strip():
-                instance.first_name = validated_data['first_name']
-        if 'last_name' in validated_data:
-            if validated_data['last_name'].strip():
-                instance.last_name = validated_data['last_name']
-        if 'institute' in validated_data:
-            if validated_data['institute']:
-                instance.institute = validated_data['institute']
-        if 'research_field' in validated_data:
-            if validated_data['research_field']:
-                instance.research_field = validated_data['research_field']
-        password = validated_data.get('password')
+        if "first_name" in validated_data:
+            if validated_data["first_name"].strip():
+                instance.first_name = validated_data["first_name"]
+        if "last_name" in validated_data:
+            if validated_data["last_name"].strip():
+                instance.last_name = validated_data["last_name"]
+        if "institute" in validated_data:
+            if validated_data["institute"]:
+                instance.institute = validated_data["institute"]
+        if "research_field" in validated_data:
+            if validated_data["research_field"]:
+                instance.research_field = validated_data["research_field"]
+        password = validated_data.get("password")
         if password and password.strip():
             instance.set_password(password)
         instance.save()

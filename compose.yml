@@ -12,7 +12,7 @@ services:
       - my-network
 
   db:
-    image: postgres:15
+    image: postgres:17
     build: .
     volumes:
       - postgres_data:/var/lib/postgresql/data/

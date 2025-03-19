@@ -6,17 +6,21 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from api.models import Result
+from api.models import AdminRequest, Result, TempReport
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
-# from api.models import User
 from accounts.models import User
-
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework import status
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
-from .serializers import InstitutionSerializer, ResearchFieldSerializer
+from .serializers import (
+    InstitutionSerializer,
+    ResearchFieldSerializer,
+    GetIntensitySerializer,
+    UpdateIntensitySerializer,
+)
 
 
 def get_csrf(request):
@@ -63,22 +67,24 @@ def session_view(request):
 
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return JsonResponse({'isAuthenticated': False})
+        return JsonResponse({"isAuthenticated": False})
 
     print(type(request.user))
     user = request.user
-    return JsonResponse({
-        'isAuthenticated': True,
-        'username': user.username,
-        'forename': user.first_name,
-        'lastname': user.last_name,
-        'email': user.email,
-        'institute': user.institute.name,
-        'research_field':user.research_field.name,
-        'isAdmin': user.is_admin,
-        'isResearcher': user.is_researcher,
-        'dateJoined': user.date_joined,
-    })
+    return JsonResponse(
+        {
+            "isAuthenticated": True,
+            "username": user.username,
+            "forename": user.first_name,
+            "lastname": user.last_name,
+            "email": user.email,
+            "institute": user.institute.name,
+            "research_field": user.research_field.name,
+            "isAdmin": user.is_admin,
+            "isResearcher": user.is_researcher,
+            "dateJoined": user.date_joined,
+        }
+    )
 
 
 @api_view(["GET"])
@@ -95,10 +101,6 @@ def field_list(request):
     fields = ResearchField.objects.all()
     serializer_class = ResearchFieldSerializer(fields, many=True)
     return Response(serializer_class.data)
-
-
-def test_view(request):
-    return JsonResponse({"user": request.user.id})
 
 
 class ProcurementCalculatorView:
@@ -692,102 +694,108 @@ class ReportcalculateView:
 
 @require_POST
 def report_view(request):
-    try:
-        data = json.loads(request.body)  # Parse JSON data
-        print(f" Data received: {data}")  # Debug
-        utilities = data.get("utilities", {})
-        travel = data.get("travel", {})
-        waste = data.get("waste", {})
-        procurement = data.get("procurement", {})
-        if not all(
-            isinstance(d, dict) for d in [utilities, travel, waste, procurement]
-        ):
-            return JsonResponse({"error": "Invalid input format"}, status=400)
-        report_calculator = ReportcalculateView()
-        report_data = report_calculator.calculate_report_emissions(data)
-        if "error" in report_data:
-            return JsonResponse({"error": report_data["error"]}, status=400)
-        procurement_calculator = ProcurementCalculatorView()
-        procurement_data = procurement_calculator.calculate_procurement_emissions(
-            procurement
-        )
-        total_procurement_emissions = sum(
-            category_data["carbon_impact"]
-            for category_data in procurement_data.values()
-        )
-        total_carbon_emissions = (
-            report_data["total_electricity_emissions"]
-            + report_data["total_gas_emissions"]
-            + report_data["total_water_emissions"]
-            + report_data["total_travel_emissions"]
-            + report_data["total_waste_emissions"]
-            + total_procurement_emissions
-        )
-        response_data = {
-            **report_data,
-            "total_procurement_emissions": round(total_procurement_emissions, 2),
-            "total_carbon_emissions": round(total_carbon_emissions, 2),
-        }
-        return JsonResponse(response_data, status=200)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+        try:
+            data = json.loads(request.body)  # Parse JSON data
+            print(f" Data received: {data}")  # Debug
+            utilities = data.get("utilities", {})
+            travel = data.get("travel", {})
+            waste = data.get("waste", {})
+            procurement = data.get("procurement", {})
+            if not all(
+                isinstance(d, dict) for d in [utilities, travel, waste, procurement]
+            ):
+                return JsonResponse({"error": "Invalid input format"}, status=400)
+            report_calculator = ReportcalculateView()
+            report_data = report_calculator.calculate_report_emissions(data)
+            if "error" in report_data:
+                return JsonResponse({"error": report_data["error"]}, status=400)
+            procurement_calculator = ProcurementCalculatorView()
+            procurement_data = procurement_calculator.calculate_procurement_emissions(
+                procurement
+            )
+            total_procurement_emissions = sum(
+                category_data["carbon_impact"]
+                for category_data in procurement_data.values()
+            )
+            total_carbon_emissions = (
+                report_data["total_electricity_emissions"]
+                + report_data["total_gas_emissions"]
+                + report_data["total_water_emissions"]
+                + report_data["total_travel_emissions"]
+                + report_data["total_waste_emissions"]
+                + total_procurement_emissions
+            )
+            response_data = {
+                **report_data,
+                "total_procurement_emissions": round(total_procurement_emissions, 2),
+                "total_carbon_emissions": round(total_carbon_emissions, 2),
+            }
+            return JsonResponse(response_data, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
 
 @require_POST
 def submit_view(request):
-    try:
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
         try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-        utilities = data.get("utilities", {})
-        travel = data.get("travel", {})
-        waste = data.get("waste", {})
-        procurement = data.get("procurement", {})
-        # Ensure data format is correct
-        if not all(
-            isinstance(d, dict) for d in [utilities, travel, waste, procurement]
-        ):
-            return JsonResponse({"error": "Invalid input format"}, status=400)
-        # Calculate carbon emissions
-        report_calculator = ReportcalculateView()
-        report_data = report_calculator.calculate_report_emissions(data)
-        if "error" in report_data:
-            return JsonResponse({"error": report_data["error"]}, status=400)
-        procurement_calculator = ProcurementCalculatorView()
-        procurement_data = procurement_calculator.calculate_procurement_emissions(
-            procurement
-        )
-        total_procurement_emissions = sum(
-            category_data["carbon_impact"]
-            for category_data in procurement_data.values()
-        )
-        total_carbon_emissions = (
-            report_data["total_electricity_emissions"]
-            + report_data["total_gas_emissions"]
-            + report_data["total_water_emissions"]
-            + report_data["total_travel_emissions"]
-            + report_data["total_waste_emissions"]
-            + total_procurement_emissions
-        )
-        # Store to database
-        result_entry = Result.objects.create(
-            user_id=request.user.id,
-            total_electricity_emissions=report_data["total_electricity_emissions"],
-            total_gas_emissions=report_data["total_gas_emissions"],
-            total_water_emissions=report_data["total_water_emissions"],
-            total_travel_emissions=report_data["total_travel_emissions"],
-            total_waste_emissions=report_data["total_waste_emissions"],
-            total_procurement_emissions=total_procurement_emissions,
-            total_carbon_emissions=total_carbon_emissions,
-            report_data=data,
-        )
-        result_entry.save()
-        return JsonResponse({"success": True}, status=200)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse({"error": "Invalid JSON format"}, status=400)
+            utilities = data.get("utilities", {})
+            travel = data.get("travel", {})
+            waste = data.get("waste", {})
+            procurement = data.get("procurement", {})
+            # Ensure data format is correct
+            if not all(
+                isinstance(d, dict) for d in [utilities, travel, waste, procurement]
+            ):
+                return JsonResponse({"error": "Invalid input format"}, status=400)
+            # Calculate carbon emissions
+            report_calculator = ReportcalculateView()
+            report_data = report_calculator.calculate_report_emissions(data)
+            if "error" in report_data:
+                return JsonResponse({"error": report_data["error"]}, status=400)
+            procurement_calculator = ProcurementCalculatorView()
+            procurement_data = procurement_calculator.calculate_procurement_emissions(
+                procurement
+            )
+            total_procurement_emissions = sum(
+                category_data["carbon_impact"]
+                for category_data in procurement_data.values()
+            )
+            total_carbon_emissions = (
+                report_data["total_electricity_emissions"]
+                + report_data["total_gas_emissions"]
+                + report_data["total_water_emissions"]
+                + report_data["total_travel_emissions"]
+                + report_data["total_waste_emissions"]
+                + total_procurement_emissions
+            )
+            # Store to database
+            result_entry = Result.objects.create(
+                user_id=request.user.id,
+                total_electricity_emissions=report_data["total_electricity_emissions"],
+                total_gas_emissions=report_data["total_gas_emissions"],
+                total_water_emissions=report_data["total_water_emissions"],
+                total_travel_emissions=report_data["total_travel_emissions"],
+                total_waste_emissions=report_data["total_waste_emissions"],
+                total_procurement_emissions=total_procurement_emissions,
+                total_carbon_emissions=total_carbon_emissions,
+                report_data=data,
+            )
+            result_entry.save()
+            return JsonResponse({"success": True}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
 
 #  CSRF Token Retrieval API
@@ -797,6 +805,8 @@ def get_csrf_token(request):
 
 
 def dashboard_show_user_result_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please login first."}, status=403)
     try:
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
@@ -819,6 +829,8 @@ def dashboard_show_user_result_data(request):
 
 def get_all_report_data(request):
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
         try:
             data = json.loads(request.body)
             report_id = data.get("report_id")
@@ -848,34 +860,348 @@ def get_all_report_data(request):
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
+
+@api_view(["GET", "PUT"])
+@permission_classes([IsAdminUser])
+def update_intensity_view(request):
+    if request.method == "GET":
+        queryset = BenchmarkData.objects.values(
+            "id", "category", "intensity", "consumption_type", "unit"
+        ).order_by("category")
+        serializer = GetIntensitySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    elif request.method == "PUT":
+        if not isinstance(request.data, list):
+            return Response(
+                {"detail": "Expected a list of objects."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        updated_objects = []
+        errors = []
+
+        for item in request.data:
+            id = item.get("id")
+
+            if not id:
+                errors.append({"detail": "id is required.", "data": item})
+                continue
+
+            try:
+                benchmark_instance = BenchmarkData.objects.get(id=id)
+            except BenchmarkData.DoesNotExist:
+                errors.append(
+                    {"detail": f"intensity factor with id {id} not found", "data": item}
+                )
+                continue
+
+            # Update the existing object
+            serializer = UpdateIntensitySerializer(
+                benchmark_instance, data=item, partial=True
+            )
+            if serializer.is_valid():
+                serializer.save()
+                updated_objects.append(serializer.data)
+            else:
+                errors.append(
+                    {
+                        "detail": "Validation failed.",
+                        "errors": serializer.errors,
+                        "data": item,
+                    }
+                )
+
+        response_data = {"updated": updated_objects}
+        if errors:
+            response_data["errors"] = errors
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK
+            if updated_objects
+            else status.HTTP_400_BAD_REQUEST,
+        )
 def update_carbon_impact(request):
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
         try:
             data = json.loads(request.body)
             category = data.get("category")
             carbon_impact = data.get("carbon_impact")
 
             if not category or carbon_impact is None:
-                return JsonResponse({"error": "Both 'category' and 'carbon_impact' are required."}, status=400)
+                return JsonResponse(
+                    {"error": "Both 'category' and 'carbon_impact' are required."},
+                    status=400,
+                )
 
             updated, _ = CategoryCarbonImpact.objects.update_or_create(
-                category=category,
-                defaults={"carbon_impact": carbon_impact}
+                category=category, defaults={"carbon_impact": carbon_impact}
             )
 
             return JsonResponse({"success": True if updated else False}, status=200)
-        
+
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-    
+
     return JsonResponse({"error": "Invalid request method"}, status=405)
-    
+
+
 def get_all_carbon_impact(request):
     if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
         try:
-            data = list(CategoryCarbonImpact.objects.values("id", "category", "carbon_impact"))
+            data = list(
+                CategoryCarbonImpact.objects.values("id", "category", "carbon_impact")
+            )
             return JsonResponse(data, safe=False, status=200)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+def submit_admin_request(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        user_id = request.user.id
+
+        try:
+            data = json.loads(request.body)
+
+            requested_role = data.get("requested_role")
+            reason = data.get("reason")
+
+            if not requested_role or not reason:
+                return JsonResponse(
+                    {"error": "requested_role and reason can't be empty."}, status=400
+                )
+
+            if requested_role == "admin" and request.user.is_admin:
+                return JsonResponse(
+                    {"success": False, "message": "You already have this role."},
+                    status=400,
+                )
+
+            if requested_role == "researcher" and request.user.is_researcher:
+                return JsonResponse(
+                    {"success": False, "message": "You already have this role."},
+                    status=400,
+                )
+
+            if AdminRequest.objects.filter(user_id=user_id).exists():
+                return JsonResponse(
+                    {"success": False, "message": "You already have a request."},
+                    status=400,
+                )
+
+            AdminRequest.objects.create(
+                user_id=user_id,
+                requested_role=requested_role,
+                reason=reason,
+                status="Pending",
+            )
+
+            return JsonResponse(
+                {"success": True, "message": "Successfully submitted."}, status=201
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def admin_request_list(request):
+    if request.method == "GET":
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "Please login first."}, status=403)
+
+            if not request.user.is_admin:
+                return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+            requests = AdminRequest.objects.select_related("user").values(
+                "user_id", "user__email", "requested_role", "reason", "status"
+            )
+
+            request_list = list(requests)
+
+            return JsonResponse(request_list, safe=False, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def user_request_status(request):
+    if request.method == "GET":
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "Please login first."}, status=403)
+
+            try:
+                user_request = AdminRequest.objects.get(user_id=request.user.id)
+            except AdminRequest.DoesNotExist:
+                return JsonResponse(
+                    {"success": False, "message": "You haven't requested yet"},
+                    status=404,
+                )
+
+            if user_request.status == "Pending":
+                return JsonResponse(
+                    {
+                        "user_id": user_request.user_id,
+                        "requested_role": user_request.requested_role,
+                        "reason": user_request.reason,
+                        "status": user_request.status,
+                    },
+                    status=200,
+                )
+
+            response_data = {
+                "user_id": user_request.user_id,
+                "requested_role": user_request.requested_role,
+                "reason": user_request.reason,
+                "status": user_request.status,
+            }
+            user_request.delete()
+
+            return JsonResponse(response_data, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def approve_or_reject_request(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        if not request.user.is_admin:
+            return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+        try:
+            data = json.loads(request.body)
+
+            user_id = data.get("user_id")
+            state = data.get("state")
+
+            if state not in ["Approved", "Rejected"]:
+                return JsonResponse(
+                    {"error": "state Just could be 'Approved' or 'Rejected'。"},
+                    status=400,
+                )
+
+            try:
+                user_request = AdminRequest.objects.get(user_id=user_id)
+            except AdminRequest.DoesNotExist:
+                return JsonResponse(
+                    {"success": False, "message": "This user did not apply."},
+                    status=404,
+                )
+
+            user_request.status = state
+            user_request.save()
+
+            if state == "Approved":
+                try:
+                    user = User.objects.get(id=user_id)
+                    if user_request.requested_role == "admin":
+                        user.is_admin = True
+                        user.is_researcher = False
+                    elif user_request.requested_role == "researcher":
+                        user.is_admin = False
+                        user.is_researcher = True
+                    elif user_request.requested_role == "User":
+                        user.is_admin = False
+                        user.is_researcher = False
+
+                    user.save()
+
+                except User.DoesNotExist:
+                    return JsonResponse(
+                        {"error": "The User was not found in the User table."},
+                        status=404,
+                    )
+
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": f"The request has been marked as {state} and updates the user status.",
+                },
+                status=200,
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def store_unsubmitted_reports_backend(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        user_id = request.user.id
+
+        try:
+            data = json.loads(request.body)
+
+            if TempReport.objects.filter(user_id=user_id).exists():
+                return JsonResponse(
+                    {"success": False, "message": "You already have a draft."},
+                    status=400,
+                )
+
+            TempReport.objects.create(user_id=user_id, data=data)
+
+            return JsonResponse(
+                {"success": True, "message": "Draft successfully saved."}, status=201
+            )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def retrieve_and_delete_temp_report(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        user_id = request.user.id
+
+        try:
+            temp_report = TempReport.objects.filter(user_id=user_id).first()
+
+            if temp_report:
+                report_data = temp_report.data
+
+                temp_report.delete()
+
+                return JsonResponse({"data": report_data}, status=200)
+
+            return JsonResponse({"success": "No draft now"}, status=404)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
