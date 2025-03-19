@@ -297,11 +297,11 @@ describe("Profile Component", () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("api2/session"),
+        expect.stringContaining("api/session"),
         expect.any(Object),
       );
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("api2/whoami"),
+        expect.stringContaining("api/whoami"),
         expect.any(Object),
       );
     });
