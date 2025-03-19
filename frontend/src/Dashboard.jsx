@@ -224,9 +224,8 @@ function TableComponent({ isAdmin }) {
           />
           <button
             className="btn btn-secondary btn-sm"
-            onClick={() => {
-              setVisibleFilter(true);
-            }}
+            onClick={() => {setVisibleFilter(true);}}
+            title="Filter by Research Field and Academic Institution"
             >
             <i class="bi bi-funnel"></i>
           </button>
