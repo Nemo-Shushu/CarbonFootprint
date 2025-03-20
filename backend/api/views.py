@@ -7,13 +7,17 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
+from rest_framework.views import APIView
+from rest_framework import status
 from api.models import AccountsUniversity, AdminRequest, Result, TempReport
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
 from accounts.models import User
+from django.utils import timezone
+from datetime import datetime
+from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
-from rest_framework import status
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
 from .serializers import (
@@ -45,7 +49,7 @@ def login_view(request):
 
     if user is None:
         return JsonResponse({"detail": "Invalid credentials."}, status=400)
-
+    request.session['login_time'] = timezone.now().isoformat()
     login(request, user)
     return JsonResponse({"detail": "Successfully logged in."})
 
@@ -1386,3 +1390,32 @@ def update_accounts_university(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
+
+        
+class SessionExpiryView(APIView):
+     def get(self, request, format=None):
+        login_time = request.session.get('login_time')
+        if login_time:
+            login_time_dt = datetime.fromisoformat(login_time)
+            now = timezone.now()
+            elapsed = (now - login_time_dt).total_seconds()
+            remaining_time = settings.SESSION_COOKIE_AGE - elapsed
+            remaining_time = max(remaining_time, 0)
+            remaining_time = round(remaining_time, 0)
+        else:
+            remaining_time = request.session.get_expiry_age()
+            remaining_time = round(remaining_time, 0)
+        return Response({"remaining_time": remaining_time}, status=status.HTTP_200_OK)
+
+
+class ExtendSessionView(APIView):
+    def post(self, request, format=None):
+        new_expiry = settings.SESSION_COOKIE_AGE
+        request.session.set_expiry(new_expiry)
+        request.session['login_time'] = timezone.now().isoformat()
+        request.session.save()
+        remaining_time = request.session.get_expiry_age()
+        return Response(
+            {"message": "Session extended", "remaining_time": remaining_time},
+            status=200
+        )
