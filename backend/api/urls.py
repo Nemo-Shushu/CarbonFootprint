@@ -19,8 +19,14 @@ urlpatterns = [
         name="dashboard-show-user-result-data",
     ),
     path("get-all-report-data/", views.get_all_report_data, name="get-all-report-data"),
-    path("update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"),
-    path("get-all-carbon-impact/",views.get_all_carbon_impact, name='get-all-carbon-impact'),
+    path(
+        "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
+    ),
+    path(
+        "get-all-carbon-impact/",
+        views.get_all_carbon_impact,
+        name="get-all-carbon-impact",
+    ),
     path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
     path(
         "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
@@ -47,5 +53,15 @@ urlpatterns = [
         "retrieve-and-delete-temp-report/",
         views.retrieve_and_delete_temp_report,
         name="retrieve_and_delete_temp_report",
+    ),
+    path(
+        "retrieve_accounts_university/",
+        views.retrieve_accounts_university,
+        name="accounts_university",
+    ),
+    path(
+        "update-accounts-university/",
+        views.update_accounts_university,
+        name="update_accounts_university",
     ),
 ]

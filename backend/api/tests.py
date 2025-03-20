@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.test import SimpleTestCase, RequestFactory
 from django.contrib.auth.models import AnonymousUser
 from api.views import (
@@ -6,10 +7,12 @@ from api.views import (
     get_csrf,
     login_view,
     logout_view,
+    retrieve_accounts_university,
     retrieve_and_delete_temp_report,
     session_view,
     store_unsubmitted_reports_backend,
     submit_admin_request,
+    update_accounts_university,
     user_request_status,
     whoami_view,
     institution_list,
@@ -27,7 +30,7 @@ from api.views import (
 )
 import json
 from unittest.mock import patch, MagicMock
-from api.models import Result, AdminRequest
+from api.models import AccountsUniversity, Result, AdminRequest
 from backend.modified_libraries.response import JsonResponse
 
 
@@ -889,3 +892,184 @@ class TempReportTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertJSONEqual(response.content, {"success": "No draft now"})
+
+
+class AccountsUniversityTests(SimpleTestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    # ---------------------- RETRIEVE TESTS ---------------------- #
+    @patch("api.views.AccountsUniversity")
+    def test_retrieve_accounts_university_success(self, mock_university):
+        mock_university.objects.values.return_value = [
+            {"name": "University of Glasgow", "floor_area_gia": 1000.0}
+        ]
+
+        request = self.factory.get("/fake-url/")
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = retrieve_accounts_university(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content,
+            {"data": [{"name": "University of Glasgow", "floor_area_gia": 1000.0}]},
+        )
+
+    @patch("api.views.AccountsUniversity")
+    def test_retrieve_accounts_university_no_data(self, mock_university):
+        mock_university.objects.values.return_value = []
+
+        request = self.factory.get("/fake-url/")
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = retrieve_accounts_university(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"data": []})
+
+    @patch("api.views.AccountsUniversity")
+    def test_retrieve_accounts_university_unprivileged(self, mock_university):
+        request = self.factory.get("/fake-url/")
+        request.user = MagicMock(
+            is_authenticated=True, is_admin=False, is_researcher=False
+        )
+
+        response = retrieve_accounts_university(request)
+
+        self.assertEqual(response.status_code, 403)
+
+    # ---------------------- UPDATE TESTS ---------------------- #
+    def update_accounts_university(request):
+        if request.method == "POST":
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "Please login first."}, status=403)
+
+            if not request.user.is_admin and not request.user.is_researcher:
+                return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+            try:
+                data = json.loads(request.body)
+                if isinstance(data, dict):
+                    data = [data]
+
+                updated_data = []
+                update_made = False
+
+                for entry in data:
+                    university_name = entry.get("name")
+                    if not university_name:
+                        continue
+
+                    university = AccountsUniversity.objects.filter(
+                        name=university_name
+                    ).first()
+                    if not university:
+                        continue
+
+                    restricted_fields = [
+                        "name",
+                        "total_gas_benchmark",
+                        "total_electricity_benchmark",
+                        "academic_laboratory_gas",
+                        "academic_laboratory_electricity",
+                        "academic_office_gas",
+                        "academic_office_electricity",
+                        "admin_office_gas",
+                        "admin_office_electricity",
+                    ]
+
+                    updated_fields = {}
+                    for key, value in entry.items():
+                        if key not in restricted_fields and hasattr(university, key):
+                            field_type = AccountsUniversity._meta.get_field(
+                                key
+                            ).get_internal_type()
+                            if field_type == "DecimalField":
+                                setattr(university, key, Decimal(str(value)))
+                            else:
+                                setattr(university, key, value)
+                            updated_fields[key] = value
+                            update_made = True
+
+                    if update_made:
+                        university.save()
+                        updated_data.append(
+                            {"name": university.name, "updated_fields": updated_fields}
+                        )
+
+                if updated_data:
+                    return JsonResponse(
+                        {
+                            "success": "Data updated successfully",
+                            "updated_data": updated_data,
+                        },
+                        status=200,
+                    )
+                else:
+                    return JsonResponse(
+                        {"error": "No valid data provided or no updates made"},
+                        status=400,
+                    )
+
+            except json.JSONDecodeError:
+                return JsonResponse({"error": "Invalid JSON format"}, status=400)
+            except Exception as e:
+                return JsonResponse(
+                    {"error": f"Unexpected error occurred: {str(e)}"}, status=500
+                )
+
+        return JsonResponse({"error": "Invalid request method."}, status=405)
+
+    @patch("api.views.AccountsUniversity")
+    def test_update_accounts_university_unprivileged(self, mock_university):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps(
+                [{"name": "University of Glasgow", "floor_area_gia": 1500.0}]
+            ),
+        )
+
+        request.user = MagicMock(
+            is_authenticated=True, is_admin=False, is_researcher=False
+        )
+
+        response = update_accounts_university(request)
+
+        self.assertEqual(response.status_code, 403)
+
+    @patch("api.views.AccountsUniversity")
+    def test_update_accounts_university_invalid_json(self, mock_university):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data="Invalid JSON String",
+        )
+
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = update_accounts_university(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {"error": "Invalid JSON format"})
+
+    @patch("api.views.AccountsUniversity")
+    def test_update_accounts_university_no_updates_made(self, mock_university):
+        mock_instance = MagicMock()
+        mock_university.objects.filter.return_value.first.return_value = mock_instance
+
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps([{"name": "University of Glasgow"}]),
+        )
+
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = update_accounts_university(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(
+            response.content, {"error": "No valid data provided or no updates made"}
+        )

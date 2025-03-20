@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 
 from django.contrib.auth import authenticate, login, logout
@@ -566,15 +567,16 @@ class ProcurementCalculatorView:
                 result[category_found]["carbon_impact"] += total_carbon_impact
         return result
 
+
 class ReportcalculateView:
     def __init__(self, user_institute_id=None):
         self.user_institute_id = user_institute_id
-        
+
     def get_factor(self, category, consumption_type):
         """Retrieve emission factors from the `accounts_benchmarkdata` database"""
         print(
             f"Querying database: category={category}, consumption_type={consumption_type}"
-        ) 
+        )
         factor = BenchmarkData.objects.filter(
             category__iexact=consumption_type.strip(),
             consumption_type__iexact=category.strip(),
@@ -586,12 +588,8 @@ class ReportcalculateView:
                 if factor.transmission_distribution is not None
                 else 0.0
             )
-            amount = (
-                float(factor.amount) if factor.amount is not None else 1.0
-            )
-            total_intensity = (
-                intensity + transmission_distribution
-            )
+            amount = float(factor.amount) if factor.amount is not None else 1.0
+            total_intensity = intensity + transmission_distribution
             print(
                 f"Query successful: {category} ({consumption_type}) → Intensity: {intensity}, Transmission: {transmission_distribution}, Consumption Amount: {amount}"
             )
@@ -601,21 +599,25 @@ class ReportcalculateView:
                 f"Query failed: {category} ({consumption_type}) → No matching data found in the database"
             )
             return 0.0, 1.0
-        
+
     def get_university_energy_data(self, energy_type, space_type):
         """Retrieve energy data from `accounts_university` for specific space types."""
         if not self.user_institute_id:
             print("No valid institute ID provided.")
             return 0.0
 
-        university = AccountsUniversity.objects.filter(name=self.user_institute_id).first()
+        university = AccountsUniversity.objects.filter(
+            name=self.user_institute_id
+        ).first()
         if not university:
             print(f"No university data found for {self.user_institute_id}")
             return 0.0
 
         mapping = {
             "electricity": {
-                "Academic Laboratory": float(university.academic_laboratory_electricity or 0.0),
+                "Academic Laboratory": float(
+                    university.academic_laboratory_electricity or 0.0
+                ),
                 "Academic Office": float(university.academic_office_electricity or 0.0),
                 "Admin Office": float(university.admin_office_electricity or 0.0),
             },
@@ -623,11 +625,11 @@ class ReportcalculateView:
                 "Academic Laboratory": float(university.academic_laboratory_gas or 0.0),
                 "Academic Office": float(university.academic_office_gas or 0.0),
                 "Admin Office": float(university.admin_office_gas or 0.0),
-            }
+            },
         }
 
         return mapping.get(energy_type, {}).get(space_type, 0.0)
-    
+
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
         utilities = request.get("utilities", {})
@@ -645,9 +647,13 @@ class ReportcalculateView:
         total_waste_emissions = 0
         for space_type in ["Academic Laboratory", "Academic Office", "Admin Office"]:
             total_area = float(utilities.get(space_type, 0))
-            print(f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}")
+            print(
+                f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}"
+            )
 
-            electricity_amount = self.get_university_energy_data("electricity", space_type)
+            electricity_amount = self.get_university_energy_data(
+                "electricity", space_type
+            )
             gas_amount = self.get_university_energy_data("gas", space_type)
 
             electricity_factor, _ = self.get_factor("electricity", space_type)
@@ -659,9 +665,7 @@ class ReportcalculateView:
                 electricity_emission = (
                     electricity_consumption * electricity_factor * proportion
                 )
-                gas_emission = (
-                    gas_consumption * gas_factor * proportion
-                )
+                gas_emission = gas_consumption * gas_factor * proportion
                 print(
                     f"Calculating electricity emissions: {total_area}m² × {electricity_amount} × {electricity_factor} × {proportion} = {electricity_emission}"
                 )
@@ -948,6 +952,8 @@ def update_intensity_view(request):
             if updated_objects
             else status.HTTP_400_BAD_REQUEST,
         )
+
+
 def update_carbon_impact(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -1229,5 +1235,100 @@ def retrieve_and_delete_temp_report(request):
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def retrieve_accounts_university(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        if not request.user.is_admin and not request.user.is_researcher:
+            return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+        try:
+            university_data = list(AccountsUniversity.objects.values())
+            if not university_data:
+                return JsonResponse({"data": university_data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def update_accounts_university(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        if not request.user.is_admin and not request.user.is_researcher:
+            return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+        try:
+            data = json.loads(request.body)
+
+            if isinstance(data, dict):
+                data = [data]
+
+            updated_data = []
+            update_made = False
+
+            for entry in data:
+                university_name = entry.get("name")
+                if not university_name:
+                    continue
+
+                university = AccountsUniversity.objects.filter(
+                    name=university_name
+                ).first()
+                if not university:
+                    continue
+
+                restricted_fields = [
+                    "name",
+                    "total_gas_benchmark",
+                    "total_electricity_benchmark",
+                    "academic_laboratory_gas",
+                    "academic_laboratory_electricity",
+                    "academic_office_gas",
+                    "academic_office_electricity",
+                    "admin_office_gas",
+                    "admin_office_electricity",
+                ]
+
+                updated_fields = {}
+                for key, value in entry.items():
+                    if key not in restricted_fields and hasattr(university, key):
+                        setattr(university, key, Decimal(value))
+                        updated_fields[key] = value
+                        update_made = True
+
+                if update_made:
+                    university.save()
+                    updated_data.append(
+                        {"name": university.name, "updated_fields": updated_fields}
+                    )
+
+            if updated_data:
+                return JsonResponse(
+                    {
+                        "success": "Data updated successfully",
+                        "updated_data": updated_data,
+                    },
+                    status=200,
+                )
+            else:
+                return JsonResponse(
+                    {"error": "No valid data provided or no updates made"}, status=400
+                )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse(
+                {"error": f"Unexpected error occurred: {str(e)}"}, status=500
+            )
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
