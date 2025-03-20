@@ -18,8 +18,8 @@ from datetime import datetime
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
-from rest_framework import status
 from accounts.models import University, ResearchField
+from rest_framework import status
 from rest_framework.response import Response
 from .serializers import (
     InstitutionSerializer,
