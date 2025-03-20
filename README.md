@@ -10,9 +10,16 @@ The Carbon Footprint Calculator is a web-based tool built with React (frontend) 
 
 This tool is designed to raise awareness of individual and corporate carbon footprints and provide actionable insights to reduce carbon emissions.
 
+## Badges
+
+[![GitLab Pipeline Status](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/pipeline.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
+[![Build Status](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/build.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
+[![Coverage](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/coverage.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
+![Tests Passed](https://img.shields.io/badge/tests-passed-brightgreen)
+
 ## Visuals
 
-![README](frontend\public\images\Readme.png)
+![README](frontend/public/images/Readme.png)
 
 ## Installation
 
@@ -124,8 +131,11 @@ For Admin uesr:
 ## Support
 
 If you encounter any bugs, errors, or missing features, please report them on our issue tracker:
+
 [🔗 GitLab Issues](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/issues)
+
 For detailed usage instructions, API references, and frequently asked questions, refer to our official documentation:
+
 [📄 Full Documentation](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/wikis/home/Documentation?redirected_from=Documentation)
 
 ## Roadmap
@@ -142,7 +152,8 @@ You can also document commands to lint the code or run tests. These steps help t
 
 ## Authors and acknowledgment
 
-Show your appreciation to those who have contributed to the project.
+A huge thanks to everyone who contributed to this project!
+🔗 [GitLab Contributors](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/graphs/main)
 
 ## License
 
