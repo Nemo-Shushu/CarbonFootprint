@@ -30,6 +30,7 @@ function TableComponent({ isAdmin }) {
   const [filter, setFilter] = useState({
     institute: "",
     research_field: "",
+    own_reports: false,
   });
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -146,6 +147,14 @@ function TableComponent({ isAdmin }) {
     }));
   };
 
+  const handleOwnReportsChange = (event) => {
+    const isChecked = event.target.checked;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      own_reports: isChecked,
+    }));
+  };
+
   function handleSearchChange(event) {
     setSearchString(event.target.value);
   }
@@ -159,7 +168,8 @@ function TableComponent({ isAdmin }) {
     return (
       findString(row.id) &&
       (filter.institute === "" || filter.institute === row.institution) &&
-      (filter.research_field === "" || filter.research_field === row.field)
+      (filter.research_field === "" || filter.research_field === row.field) &&
+      (!filter.own_reports || row.own_report)
     );
   });
 
@@ -214,10 +224,11 @@ function TableComponent({ isAdmin }) {
           <Modal.Title>Filter Reports</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="input-group">
+          <div className="mb-3">
+            <label className="form-label">Institution</label>
             <select
               name="institute"
-              className="input-field"
+              className="form-select"
               value={filter.institute}
               onChange={handleInstitutionsChange}
             >
@@ -232,10 +243,11 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
-          <div className="input-group">
+          <div className="mb-3">
+            <label className="form-label">Research Field</label>
             <select
               name="research_field"
-              className="input-field"
+              className="form-select"
               value={filter.research_field}
               onChange={handleFieldsChange}
             >
@@ -250,9 +262,32 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
+          <div className="form-check mb-3">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="own-reports"
+              checked={filter.own_reports}
+              onChange={handleOwnReportsChange}
+            />
+            <label
+              className="form-check-label"
+              htmlFor="own-reports"
+              style={{ userSelect: "none" }}
+            >
+              Show Only My Own Reports
+            </label>
+          </div>
+
           <button
             className="btn btn-moss"
-            onClick={() => setFilter({ institute: "", research_field: "" })}
+            onClick={() =>
+              setFilter({
+                institute: "",
+                research_field: "",
+                own_reports: false,
+              })
+            }
           >
             Reset Filter
           </button>
