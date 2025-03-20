@@ -848,6 +848,7 @@ def dashboard_show_user_result_data(request):
                 "institution": user_profile.institute_id,
                 "field": user_profile.research_field_id,
                 "emissions": float(Result.total_carbon_emissions),
+                "email":user_profile.email
             }
             for Result in calculation_result
         ]
@@ -857,6 +858,29 @@ def dashboard_show_user_result_data(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
+def admin_get_all_results(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please login first."}, status=403)
+    if not request.user.is_admin and not request.user.is_researcher:
+        return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+    try:
+        all_results = Result.objects.all().select_related('user')
+        data = [
+            {
+                "id": result.id,
+                "institution": result.user.institute_id,
+                "field": result.user.research_field_id,
+                "emissions": float(result.total_carbon_emissions),
+                "email": result.user.email
+            }
+            for result in all_results
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 def get_all_report_data(request):
     if request.method == "POST":

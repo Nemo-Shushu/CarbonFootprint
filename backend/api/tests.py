@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.test import SimpleTestCase, RequestFactory
 from django.contrib.auth.models import AnonymousUser
 from api.views import (
+    admin_get_all_results,
     admin_request_list,
     approve_or_reject_request,
     get_csrf,
@@ -455,31 +456,6 @@ class Submit_Get_Tests(SimpleTestCase):
         response = submit_view(request)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True})
-
-    @patch("api.views.Result.objects.filter")
-    @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_success(
-        self, mock_get_object, mock_result_filter
-    ):
-        mock_get_object.return_value = MagicMock(institute_id=1, research_field_id=2)
-
-        mock_result_filter.return_value = [
-            MagicMock(id=101, total_carbon_emissions=300.5),
-            MagicMock(id=102, total_carbon_emissions=450.2),
-        ]
-
-        request = self.factory.get("/fake-url/")
-        request.user = MagicMock(is_authenticated=True)
-
-        response = dashboard_show_user_result_data(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(
-            response.content,
-            [
-                {"id": 101, "institution": 1, "field": 2, "emissions": 300.5},
-                {"id": 102, "institution": 1, "field": 2, "emissions": 450.2},
-            ],
-        )
 
     @patch("api.views.Result.objects.filter")
     @patch("api.views.get_object_or_404")
@@ -1073,3 +1049,186 @@ class AccountsUniversityTests(SimpleTestCase):
         self.assertJSONEqual(
             response.content, {"error": "No valid data provided or no updates made"}
         )
+        
+class DashboardUserResultDataTests(SimpleTestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @patch("api.views.Result")
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_success(self, mock_get_object_or_404, mock_result):
+        mock_user = MagicMock(
+            id=1,
+            institute_id="University of Glasgow",
+            research_field_id="Climate Change Studies",
+            email="user@example.com"
+        )
+        mock_get_object_or_404.return_value = mock_user
+
+        mock_result.objects.filter.return_value = [
+            MagicMock(id=1, total_carbon_emissions=4730.58),
+            MagicMock(id=2, total_carbon_emissions=75329.98)
+        ]
+
+        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+        request.user = MagicMock(is_authenticated=True, id=1)
+
+        response = dashboard_show_user_result_data(request)
+
+        expected_data = [
+            {
+                "id": 1,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 4730.58,
+                "email": "user@example.com"
+            },
+            {
+                "id": 2,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 75329.98,
+                "email": "user@example.com"
+            }
+        ]
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, expected_data)
+
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_not_authenticated(self, mock_get_object_or_404):
+        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+        request.user = MagicMock(is_authenticated=False)
+
+        response = dashboard_show_user_result_data(request)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertJSONEqual(response.content, {"error": "Please login first."})
+
+    @patch("api.views.Result")
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_no_results(self, mock_get_object_or_404, mock_result):
+        mock_user = MagicMock(
+            id=1,
+            institute_id="University of Glasgow",
+            research_field_id="Climate Change Studies",
+            email="user@example.com"
+        )
+        mock_get_object_or_404.return_value = mock_user
+
+        mock_result.objects.filter.return_value = []
+
+        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+        request.user = MagicMock(is_authenticated=True, id=1)
+
+        response = dashboard_show_user_result_data(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, [])
+
+    @patch("api.views.get_object_or_404")
+    def test_dashboard_show_user_result_data_exception(self, mock_get_object_or_404):
+        mock_get_object_or_404.side_effect = Exception("Unexpected error")
+
+        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+        request.user = MagicMock(is_authenticated=True, id=1)
+
+        response = dashboard_show_user_result_data(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {"error": "Unexpected error"})
+        
+class AdminGetAllResultsTests(SimpleTestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    @patch("api.views.Result")
+    def test_admin_get_all_results_success(self, mock_result):
+        mock_result.objects.all.return_value.select_related.return_value = [
+            MagicMock(
+                id=1,
+                user=MagicMock(
+                    institute_id="University of Glasgow",
+                    research_field_id="Climate Change Studies",
+                    email="user1@example.com"
+                ),
+                total_carbon_emissions=4730.58
+            ),
+            MagicMock(
+                id=2,
+                user=MagicMock(
+                    institute_id="University of Glasgow",
+                    research_field_id="Renewable Energy Systems",
+                    email="user2@example.com"
+                ),
+                total_carbon_emissions=75329.98
+            )
+        ]
+
+        request = self.factory.get("/admin/get-all-results/")
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = admin_get_all_results(request)
+
+        expected_data = [
+            {
+                "id": 1,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 4730.58,
+                "email": "user1@example.com"
+            },
+            {
+                "id": 2,
+                "institution": "University of Glasgow",
+                "field": "Renewable Energy Systems",
+                "emissions": 75329.98,
+                "email": "user2@example.com"
+            }
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, expected_data)
+
+    @patch("api.views.Result")
+    def test_admin_get_all_results_no_data(self, mock_result):
+        mock_result.objects.all.return_value.select_related.return_value = []
+
+        request = self.factory.get("/admin/get-all-results/")
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = admin_get_all_results(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, [])
+
+    def test_admin_get_all_results_not_authenticated(self):
+        request = self.factory.get("/admin/get-all-results/")
+        request.user = MagicMock(is_authenticated=False)
+
+        response = admin_get_all_results(request)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertJSONEqual(response.content, {"error": "Please login first."})
+
+    def test_admin_get_all_results_unprivileged_access(self):
+        request = self.factory.get("/admin/get-all-results/")
+        request.user = MagicMock(is_authenticated=True, is_admin=False, is_researcher=False)
+
+        response = admin_get_all_results(request)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertJSONEqual(response.content, {"error": "Unprivileged access"})
+
+    @patch("api.views.Result")
+    def test_admin_get_all_results_exception(self, mock_result):
+        mock_result.objects.all.side_effect = Exception("Unexpected error")
+
+        request = self.factory.get("/admin/get-all-results/")
+        request.user = MagicMock(is_authenticated=True, is_admin=True)
+
+        response = admin_get_all_results(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {"error": "Unexpected error"})
