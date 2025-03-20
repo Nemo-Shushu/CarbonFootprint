@@ -858,6 +858,35 @@ def dashboard_show_user_result_data(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
+def show_same_effect_user_result_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please login first."}, status=403)
+
+    try:
+        user_id = request.user.id
+        user_profile = get_object_or_404(User, id=user_id)
+        calculation_result = Result.objects.filter(
+            user__institute_id=user_profile.institute_id
+        ) | Result.objects.filter(
+            user__research_field_id=user_profile.research_field_id
+        )
+
+        data = [
+            {
+                "id": result.id,
+                "institution": result.user.institute_id,
+                "field": result.user.research_field_id,
+                "emissions": float(result.total_carbon_emissions),
+                "email": result.user.email
+            }
+            for result in calculation_result
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
 def admin_get_all_results(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Please login first."}, status=403)
@@ -1355,3 +1384,4 @@ def update_accounts_university(request):
             )
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+

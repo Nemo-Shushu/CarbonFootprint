@@ -65,4 +65,5 @@ urlpatterns = [
         name="update_accounts_university",
     ),
     path('admin-get-all-results/', views.admin_get_all_results, name='admin-get-all-results'),
+    path('show-same-effect-user-result-data/', views.show_same_effect_user_result_data, name='dashboard_show_same_effect_user_result_data'),
 ]

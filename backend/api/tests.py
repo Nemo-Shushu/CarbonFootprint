@@ -11,6 +11,7 @@ from api.views import (
     retrieve_accounts_university,
     retrieve_and_delete_temp_report,
     session_view,
+    show_same_effect_user_result_data,
     store_unsubmitted_reports_backend,
     submit_admin_request,
     update_accounts_university,
