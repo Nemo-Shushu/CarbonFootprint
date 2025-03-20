@@ -1,6 +1,17 @@
+variables:
+  DEBUG: "False"
+  DJANGO_ALLOWED_HOSTS: "https://sh14main-django2-1.onrender.com/ localhost 134.209.19.90"
+  SQL_ENGINE: "django.db.backends.postgresql"
+  SQL_DATABASE: "carbon_foot_data"
+  SQL_USER: "carbon_foot"
+  SQL_HOST: "db"
+  SQL_PORT: "5432"
+  VITE_BACKEND_URL: "http://134.209.19.90:8000/"
+
 stages:
   - lint
   - build
+  - test
 
 lint-backend:
   stage: lint
@@ -17,6 +28,22 @@ lint-frontend:
     - npm install
     - npm install -g eslint
     - eslint .
+    
+test-backend:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - cd backend
+    - pip install --no-cache-dir -r requirements.txt
+    - python manage.py test
+
+test-frontend:
+  stage: test
+  image: node:23
+  script:
+    - cd frontend
+    - npm install
+    - npm run test
 
 build-job:
   stage: build

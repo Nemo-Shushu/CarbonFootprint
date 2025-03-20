@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 import { useAuth } from "./useAuth";
 import Modal from "react-bootstrap/Modal";
+import PropTypes from "prop-types";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -114,7 +115,7 @@ async function verifyCode(user, code) {
     });
 }
 
-function RegisterForm() {
+function RegisterForm({ forceVisible = false }) {
   const [user, setUser] = useState({
     username: "",
     first_name: "",
@@ -136,7 +137,7 @@ function RegisterForm() {
   const [fields, setFields] = useState([]);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(forceVisible);
   const { isAuthenticated, loading } = useAuth();
   const [verifyDisabled, setVerifyDisabled] = useState(false);
   const toggleShowPassword = () => {
@@ -271,7 +272,7 @@ function RegisterForm() {
 
   return (
     <div className="sign-in-wrapper">
-      <Modal show={visible} centered size="lg">
+      <Modal show={visible} centered size="lg" data-testid="verification-modal">
         {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
         <Modal.Header>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
@@ -459,5 +460,9 @@ function RegisterForm() {
     </div>
   );
 }
+
+RegisterForm.propTypes = {
+  forceVisible: PropTypes.bool,
+};
 
 export default RegisterForm;

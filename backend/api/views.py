@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 
 from django.contrib.auth import authenticate, login, logout
@@ -6,13 +7,17 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from api.models import AdminRequest, Result, TempReport
+from rest_framework.views import APIView
+from rest_framework import status
+from api.models import AccountsUniversity, AdminRequest, Result, TempReport
 from api.models import ProcurementData, CategoryCarbonImpact
 from api.models import BenchmarkData
 from accounts.models import User
+from django.utils import timezone
+from datetime import datetime
+from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
-from rest_framework import status
 from accounts.models import University, ResearchField
 from rest_framework.response import Response
 from .serializers import (
@@ -44,7 +49,7 @@ def login_view(request):
 
     if user is None:
         return JsonResponse({"detail": "Invalid credentials."}, status=400)
-
+    request.session['login_time'] = timezone.now().isoformat()
     login(request, user)
     return JsonResponse({"detail": "Successfully logged in."})
 
@@ -568,11 +573,14 @@ class ProcurementCalculatorView:
 
 
 class ReportcalculateView:
+    def __init__(self, user_institute_id=None):
+        self.user_institute_id = user_institute_id
+
     def get_factor(self, category, consumption_type):
         """Retrieve emission factors from the `accounts_benchmarkdata` database"""
         print(
             f"Querying database: category={category}, consumption_type={consumption_type}"
-        )  # Debugging query parameters
+        )
         factor = BenchmarkData.objects.filter(
             category__iexact=consumption_type.strip(),
             consumption_type__iexact=category.strip(),
@@ -584,12 +592,8 @@ class ReportcalculateView:
                 if factor.transmission_distribution is not None
                 else 0.0
             )
-            amount = (
-                float(factor.amount) if factor.amount is not None else 1.0
-            )  # Default to 1.0 to avoid division issues
-            total_intensity = (
-                intensity + transmission_distribution
-            )  # Sum intensity and transmission
+            amount = float(factor.amount) if factor.amount is not None else 1.0
+            total_intensity = intensity + transmission_distribution
             print(
                 f"Query successful: {category} ({consumption_type}) → Intensity: {intensity}, Transmission: {transmission_distribution}, Consumption Amount: {amount}"
             )
@@ -598,7 +602,37 @@ class ReportcalculateView:
             print(
                 f"Query failed: {category} ({consumption_type}) → No matching data found in the database"
             )
-            return 0.0, 1.0  # Return (0.0, 1.0) if no data is found
+            return 0.0, 1.0
+
+    def get_university_energy_data(self, energy_type, space_type):
+        """Retrieve energy data from `accounts_university` for specific space types."""
+        if not self.user_institute_id:
+            print("No valid institute ID provided.")
+            return 0.0
+
+        university = AccountsUniversity.objects.filter(
+            name=self.user_institute_id
+        ).first()
+        if not university:
+            print(f"No university data found for {self.user_institute_id}")
+            return 0.0
+
+        mapping = {
+            "electricity": {
+                "Academic Laboratory": float(
+                    university.academic_laboratory_electricity or 0.0
+                ),
+                "Academic Office": float(university.academic_office_electricity or 0.0),
+                "Admin Office": float(university.admin_office_electricity or 0.0),
+            },
+            "gas": {
+                "Academic Laboratory": float(university.academic_laboratory_gas or 0.0),
+                "Academic Office": float(university.academic_office_gas or 0.0),
+                "Admin Office": float(university.admin_office_gas or 0.0),
+            },
+        }
+
+        return mapping.get(energy_type, {}).get(space_type, 0.0)
 
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
@@ -609,33 +643,33 @@ class ReportcalculateView:
         fte_members = int(utilities.get("FTE-members", 0))
         if fte_members == 0:
             return {"error": "Total FTE members cannot be zero."}
-        proportion = fte_staff / fte_members  # Adjust for staff proportion
+        proportion = fte_staff / fte_members
         total_electricity_emissions = 0
         total_gas_emissions = 0
         total_water_emissions = 0
         total_travel_emissions = 0
         total_waste_emissions = 0
-        # **Calculate electricity and gas emissions**
         for space_type in ["Academic Laboratory", "Academic Office", "Admin Office"]:
-            total_area = float(
-                utilities.get(space_type, 0)
-            )  # Match key directly in `utilities`
+            total_area = float(utilities.get(space_type, 0))
             print(
                 f"Checking `{space_type}`: Received={utilities.get(space_type, 'None')} → Converted={total_area}"
             )
-            electricity_factor, electricity_amount = self.get_factor(
+
+            electricity_amount = self.get_university_energy_data(
                 "electricity", space_type
             )
-            gas_factor, gas_amount = self.get_factor("gas", space_type)
+            gas_amount = self.get_university_energy_data("gas", space_type)
+
+            electricity_factor, _ = self.get_factor("electricity", space_type)
+            gas_factor, _ = self.get_factor("gas", space_type)
+
             if total_area > 0:
                 electricity_consumption = total_area * electricity_amount
                 gas_consumption = total_area * gas_amount
                 electricity_emission = (
                     electricity_consumption * electricity_factor * proportion
                 )
-                gas_emission = (
-                    gas_consumption * gas_factor * proportion
-                )  # Multiply by `proportion`
+                gas_emission = gas_consumption * gas_factor * proportion
                 print(
                     f"Calculating electricity emissions: {total_area}m² × {electricity_amount} × {electricity_factor} × {proportion} = {electricity_emission}"
                 )
@@ -645,7 +679,6 @@ class ReportcalculateView:
                 total_electricity_emissions += electricity_emission
                 total_gas_emissions += gas_emission
 
-        # **Calculate water emissions**
         for space_type in [
             "Physical Sciences Laboratory",
             "Medical/Life Sciences Laboratory",
@@ -667,17 +700,17 @@ class ReportcalculateView:
         # **Calculate travel emissions**
         for mode, distance in travel.items():
             travel_factor, _ = self.get_factor("travel", mode)
-            travel_emission = float(distance) * travel_factor * proportion
+            travel_emission = float(distance) * travel_factor
             print(
-                f" Calculating travel emissions: {distance}km × {travel_factor} × {proportion} = {travel_emission}"
+                f" Calculating travel emissions: {distance}km × {travel_factor}  = {travel_emission}"
             )
             total_travel_emissions += travel_emission
         # **Calculate waste emissions**
         for waste_type, amount in waste.items():
             waste_factor, _ = self.get_factor("waste", waste_type)
-            waste_emission = float(amount) * waste_factor * proportion
+            waste_emission = float(amount) * waste_factor
             print(
-                f"Calculating waste emissions: {amount}kg × {waste_factor} × {proportion} = {waste_emission}"
+                f"Calculating waste emissions: {amount}kg × {waste_factor}= {waste_emission}"
             )
             total_waste_emissions += waste_emission
         print(
@@ -708,7 +741,9 @@ def report_view(request):
                 isinstance(d, dict) for d in [utilities, travel, waste, procurement]
             ):
                 return JsonResponse({"error": "Invalid input format"}, status=400)
-            report_calculator = ReportcalculateView()
+            user = request.user
+            user_institute_id = user.institute_id
+            report_calculator = ReportcalculateView(user_institute_id)
             report_data = report_calculator.calculate_report_emissions(data)
             if "error" in report_data:
                 return JsonResponse({"error": report_data["error"]}, status=400)
@@ -817,6 +852,7 @@ def dashboard_show_user_result_data(request):
                 "institution": user_profile.institute_id,
                 "field": user_profile.research_field_id,
                 "emissions": float(Result.total_carbon_emissions),
+                "email":user_profile.email
             }
             for Result in calculation_result
         ]
@@ -826,6 +862,58 @@ def dashboard_show_user_result_data(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
+def show_same_effect_user_result_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please login first."}, status=403)
+
+    try:
+        user_id = request.user.id
+        user_profile = get_object_or_404(User, id=user_id)
+        calculation_result = Result.objects.filter(
+            user__institute_id=user_profile.institute_id
+        ) | Result.objects.filter(
+            user__research_field_id=user_profile.research_field_id
+        )
+
+        data = [
+            {
+                "id": result.id,
+                "institution": result.user.institute_id,
+                "field": result.user.research_field_id,
+                "emissions": float(result.total_carbon_emissions),
+                "email": result.user.email
+            }
+            for result in calculation_result
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+def admin_get_all_results(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please login first."}, status=403)
+    if not request.user.is_admin and not request.user.is_researcher:
+        return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+    try:
+        all_results = Result.objects.all().select_related('user')
+        data = [
+            {
+                "id": result.id,
+                "institution": result.user.institute_id,
+                "field": result.user.research_field_id,
+                "emissions": float(result.total_carbon_emissions),
+                "email": result.user.email
+            }
+            for result in all_results
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 def get_all_report_data(request):
     if request.method == "POST":
@@ -921,6 +1009,8 @@ def update_intensity_view(request):
             if updated_objects
             else status.HTTP_400_BAD_REQUEST,
         )
+
+
 def update_carbon_impact(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -1204,3 +1294,127 @@ def retrieve_and_delete_temp_report(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def retrieve_accounts_university(request):
+    if request.method == "GET":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        if not request.user.is_admin and not request.user.is_researcher:
+            return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+        try:
+            university_data = list(AccountsUniversity.objects.values())
+            return JsonResponse({"data": university_data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def update_accounts_university(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Please login first."}, status=403)
+
+        if not request.user.is_admin and not request.user.is_researcher:
+            return JsonResponse({"error": "Unprivileged access"}, status=403)
+
+        try:
+            data = json.loads(request.body)
+
+            if isinstance(data, dict):
+                data = [data]
+
+            updated_data = []
+            update_made = False
+
+            for entry in data:
+                university_name = entry.get("name")
+                if not university_name:
+                    continue
+
+                university = AccountsUniversity.objects.filter(
+                    name=university_name
+                ).first()
+                if not university:
+                    continue
+
+                restricted_fields = [
+                    "name",
+                    "total_gas_benchmark",
+                    "total_electricity_benchmark",
+                    "academic_laboratory_gas",
+                    "academic_laboratory_electricity",
+                    "academic_office_gas",
+                    "academic_office_electricity",
+                    "admin_office_gas",
+                    "admin_office_electricity",
+                ]
+
+                updated_fields = {}
+                for key, value in entry.items():
+                    if key not in restricted_fields and hasattr(university, key):
+                        setattr(university, key, Decimal(value))
+                        updated_fields[key] = value
+                        update_made = True
+
+                if update_made:
+                    university.save()
+                    updated_data.append(
+                        {"name": university.name, "updated_fields": updated_fields}
+                    )
+
+            if updated_data:
+                return JsonResponse(
+                    {
+                        "success": "Data updated successfully",
+                        "updated_data": updated_data,
+                    },
+                    status=200,
+                )
+            else:
+                return JsonResponse(
+                    {"error": "No valid data provided or no updates made"}, status=400
+                )
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse(
+                {"error": f"Unexpected error occurred: {str(e)}"}, status=500
+            )
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+        
+class SessionExpiryView(APIView):
+     def get(self, request, format=None):
+        login_time = request.session.get('login_time')
+        if login_time:
+            login_time_dt = datetime.fromisoformat(login_time)
+            now = timezone.now()
+            elapsed = (now - login_time_dt).total_seconds()
+            remaining_time = settings.SESSION_COOKIE_AGE - elapsed
+            remaining_time = max(remaining_time, 0)
+            remaining_time = round(remaining_time, 0)
+        else:
+            remaining_time = request.session.get_expiry_age()
+            remaining_time = round(remaining_time, 0)
+        return Response({"remaining_time": remaining_time}, status=status.HTTP_200_OK)
+
+
+class ExtendSessionView(APIView):
+    def post(self, request, format=None):
+        new_expiry = settings.SESSION_COOKIE_AGE
+        request.session.set_expiry(new_expiry)
+        request.session['login_time'] = timezone.now().isoformat()
+        request.session.save()
+        remaining_time = request.session.get_expiry_age()
+        return Response(
+            {"message": "Session extended", "remaining_time": remaining_time},
+            status=200
+        )
