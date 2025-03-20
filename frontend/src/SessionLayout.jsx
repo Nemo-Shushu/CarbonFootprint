@@ -37,7 +37,7 @@ function SessionLayout({ children }) {
   }, []);
 
   useEffect(() => {
-    if (remainingTime <= 60*5 && remainingTime > 0) {
+    if (remainingTime <= 60 * 5 && remainingTime > 0) {
       if (!showPopup) {
         setShowPopup(true);
       }
