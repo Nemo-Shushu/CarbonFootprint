@@ -43,7 +43,7 @@ describe("SignInForm Component", () => {
       </MemoryRouter>,
     );
 
-    const usernameInput = screen.getByPlaceholderText("Email Address");
+    const usernameInput = screen.getByPlaceholderText("Username");
     const passwordInput = screen.getByPlaceholderText("Password");
     const signInButton = screen.getByRole("button", { name: "Login" });
 
