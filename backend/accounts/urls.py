@@ -9,6 +9,8 @@ from accounts.views import (
     CreateView,
     UpdateView,
     UpdateUserEmailAPIView,
+    UpdateUserPasswordAPIView,
+    CheckEmailAPIView,
 )
 
 app_name = "accounts"
@@ -24,7 +26,9 @@ urlpatterns = [
         name="send_email_confirmation_token",
     ),
     path("confirm-email/", ConfirmEmailAPIView.as_view(), name="confirm_email"),
-    path("create-user/", CreateView.as_view(), name="confirm_user"),
-    path("update/", UpdateView.as_view(), name="update"),
-    path("update-email/", UpdateUserEmailAPIView.as_view(), name="update_email"),
+     path("create-user/", CreateView.as_view(), name="confirm_user"),
+    path('update/', UpdateView.as_view(), name='update'),
+    path('update-email/', UpdateUserEmailAPIView.as_view(), name='update_email'),
+    path('update-password/',UpdateUserPasswordAPIView.as_view(), name='update_password'),
+    path('check-email/',CheckEmailAPIView.as_view(),name='check_email'),
 ]
