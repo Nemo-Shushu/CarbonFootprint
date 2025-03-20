@@ -794,8 +794,9 @@ def submit_view(request):
                 isinstance(d, dict) for d in [utilities, travel, waste, procurement]
             ):
                 return JsonResponse({"error": "Invalid input format"}, status=400)
-            # Calculate carbon emissions
-            report_calculator = ReportcalculateView()
+            user = request.user
+            user_institute_id = user.institute_id
+            report_calculator = ReportcalculateView(user_institute_id)
             report_data = report_calculator.calculate_report_emissions(data)
             if "error" in report_data:
                 return JsonResponse({"error": report_data["error"]}, status=400)
