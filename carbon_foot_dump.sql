@@ -593,10 +593,10 @@ COPY public.accounts_benchmarkdata (id, consumption_type, category, amount, unit
 57	travel	land-national-rail	1.00	km	2025	DEFRA 2025 Report	0.035000	\N
 58	travel	land-international-rail	1.00	km	2025	DEFRA 2025 Report	0.004000	\N
 59	travel	land-light-rail-tram	1.00	km	2025	DEFRA 2025 Report	0.029000	\N
-60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.421000	0.2720
+60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
+61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.421000	0
+62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
+63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.421000	0
 64	electricity	Academic Laboratory	207.99	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 65	electricity	Academic Office	108.47	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 66	electricity	Admin Office	115.17	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190

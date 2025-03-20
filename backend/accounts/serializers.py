@@ -103,6 +103,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
         return value
 
+
 class CreateUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,

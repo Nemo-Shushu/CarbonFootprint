@@ -2,6 +2,7 @@ from django.db import models
 
 from accounts.models import User
 
+
 class CalculationRecord(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     input_data = models.JSONField()
@@ -55,8 +56,6 @@ class Result(models.Model):
         managed = False
 
 
-
-
 class BenchmarkData(models.Model):
     consumption_type = models.CharField(max_length=50)
     category = models.CharField(max_length=150)
@@ -70,6 +69,7 @@ class BenchmarkData(models.Model):
     class Meta:
         db_table = "accounts_benchmarkdata"
         managed = False
+
 
 class AdminRequest(models.Model):
     STATUS_CHOICES = [
@@ -99,3 +99,79 @@ class TempReport(models.Model):
 
     class Meta:
         db_table = "calculate_temp_reports"
+
+
+class AccountsUniversity(models.Model):
+    name = models.CharField(max_length=255, primary_key=True)
+    floor_area_gia = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    electricity_non_residential = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    electricity_residential = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    gas_non_residential = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    gas_residential = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    total_electricity_benchmark = models.DecimalField(
+        max_digits=10, decimal_places=4, null=True, blank=True
+    )
+    total_gas_benchmark = models.DecimalField(
+        max_digits=10, decimal_places=4, null=True, blank=True
+    )
+    avg_electricity_consumption_all_buildings = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    electricity_benchmark_multiplier = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_gas_consumption_all_buildings = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    gas_benchmark_multiplier = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    academic_laboratory_gas = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    academic_laboratory_electricity = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    academic_office_gas = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    academic_office_electricity = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    admin_office_gas = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    admin_office_electricity = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_gas_consumption_academic_lab_workshop = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_electricity_consumption_academic_lab_workshop = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_gas_consumption_academic_office = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_electricity_consumption_academic_office = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_gas_consumption_admin_office = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+    avg_electricity_consumption_admin_office = models.DecimalField(
+        max_digits=10, decimal_places=6, null=True, blank=True
+    )
+
+    class Meta:
+        db_table = "accounts_university"
