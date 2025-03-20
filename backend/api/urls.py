@@ -55,7 +55,7 @@ urlpatterns = [
         name="retrieve_and_delete_temp_report",
     ),
     path(
-        "retrieve_accounts_university/",
+        "retrieve-accounts-university/",
         views.retrieve_accounts_university,
         name="accounts_university",
     ),

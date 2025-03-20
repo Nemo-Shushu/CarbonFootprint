@@ -877,7 +877,6 @@ def get_all_report_data(request):
                     "total_water_emissions": float(report.total_water_emissions),
                     "total_travel_emissions": float(report.total_travel_emissions),
                     "total_waste_emissions": float(report.total_waste_emissions),
-                    "total_procurement_emissions": float(report.total_procurement_emissions),
                     "total_carbon_emissions": float(report.total_carbon_emissions),
                 },
                 "report_data": report.report_data,
@@ -1250,8 +1249,7 @@ def retrieve_accounts_university(request):
 
         try:
             university_data = list(AccountsUniversity.objects.values())
-            if not university_data:
-                return JsonResponse({"data": university_data}, status=200)
+            return JsonResponse({"data": university_data}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
