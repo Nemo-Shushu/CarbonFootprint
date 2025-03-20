@@ -93,7 +93,7 @@ function SignInForm() {
                 type="text"
                 name="username"
                 className="input-field"
-                placeholder="User Name"
+                placeholder="Email Address"
                 value={username}
                 onChange={handleUserNameChange}
               />
