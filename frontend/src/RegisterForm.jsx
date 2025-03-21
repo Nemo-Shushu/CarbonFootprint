@@ -5,6 +5,7 @@ import "./static/sign-in.css";
 import { useAuth } from "./useAuth";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
+import { Button } from "react-bootstrap";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -140,6 +141,8 @@ function RegisterForm({ forceVisible = false }) {
   const [visible, setVisible] = useState(forceVisible);
   const { isAuthenticated, loading } = useAuth();
   const [verifyDisabled, setVerifyDisabled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [sendDisabled, setSendDisabled] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -195,6 +198,7 @@ function RegisterForm({ forceVisible = false }) {
         console.log("Code verified:", data);
         setError("");
         setIsVerified(true);
+        setVerificationError(false);
         setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
       })
@@ -221,6 +225,21 @@ function RegisterForm({ forceVisible = false }) {
         setModalError(true);
       });
   };
+
+  const handleSend = (event) => {
+    // when the user submits their details, handleModal first tries to validate user details,
+    // and make sure that when the user next submits their request to create an account, there will be no errors.
+    // if the new user's details could not be verified, error messages are displayed, to instruct the user on what went wrong.
+    // if the new user's details are verified successfuly, the confirmation code is sent to the user through sendCode backend API call, and the modal is set visible
+    sendCode(user)
+      .then(() => {
+        setTimer(180);
+        setSendDisabled(true);
+      })
+      .catch((error) => {
+        console.error("Error sending code:", error);
+      });
+  };
   const handleModal = (event) => {
     // when the user submits their details, handleModal first tries to validate user details,
     // and make sure that when the user next submits their request to create an account, there will be no errors.
@@ -231,8 +250,16 @@ function RegisterForm({ forceVisible = false }) {
       .then((data) => {
         console.log("User valid:", data);
         setError("");
-        sendCode(user);
         setVisible(true);
+        setVerificationError(false);
+        sendCode(user)
+        .then(() => {
+          setTimer(180);
+          setSendDisabled(true);
+        })
+        .catch((error) => {
+          console.error("Error sending code:", error);
+        });
       })
       .catch((err) => {
         console.error("Error validating new user details:", err);
@@ -246,6 +273,21 @@ function RegisterForm({ forceVisible = false }) {
         }
       });
   };
+
+  useEffect(() => {
+    let intervalId;
+    if (timer > 0) {
+      intervalId = setInterval(() => {
+        setTimer((prevTime) => {
+          const newTime = prevTime - 1;
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      setSendDisabled(false);
+    }
+    return () => clearInterval(intervalId);
+  }, [timer]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -270,11 +312,28 @@ function RegisterForm({ forceVisible = false }) {
     navigate("/dashboard");
   };
 
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  };
+
+  const handleClose = () => {
+    setVisible(false);
+    setCode("");
+    setError("");
+    setVerificationError(false);
+    setVerifiedMessage("");
+    setSendDisabled(false);
+    setVerifyDisabled(false)
+    setIsVerified(false)
+  };
+
   return (
     <div className="sign-in-wrapper">
-      <Modal show={visible} centered size="lg" data-testid="verification-modal">
+      <Modal show={visible} onHide={handleClose} centered size="lg" data-testid="verification-modal">
         {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -294,7 +353,13 @@ function RegisterForm({ forceVisible = false }) {
               {verificationError && (
                 <p className="warning">
                   Your code is incorrect.{" "}
-                  <Link onClick={() => sendCode(user)}>Resend code</Link>
+                  <Button
+                    variant="primary"
+                    onClick={() => handleSend(user)}
+                    disabled={sendDisabled}
+                  >
+                    {sendDisabled ? `Resend code in ${formatTime(timer)}` : "Send code"}
+                  </Button>
                 </p>
               )}
               {modalError && (
