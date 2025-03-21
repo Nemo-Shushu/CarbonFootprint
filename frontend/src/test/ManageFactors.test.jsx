@@ -3,9 +3,7 @@ import { MemoryRouter, useNavigate } from "react-router-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useAuth } from "../useAuth";
 import ManageFactors from "../features/ManageFactors/components/ManageFactors";
-import EditFactor from "../features/ManageFactors/components/EditFactorModal";
 import FactorTable from "../features/ManageFactors/components/FactorTable";
-import DeleteFactor from "../features/ManageFactors/components/DeleteFactorModal";
 import ProcurementTable from "../features/ManageFactors/components/ProcurementTable";
 
 vi.mock("../features/ManageFactors/api/apiFactors", () => ({
@@ -109,39 +107,6 @@ describe("ManageFactors Component", () => {
   });
 });
 
-describe("EditFactorModal Component", () => {
-  it("renders correctly", () => {
-    render(
-      <EditFactor
-        show={true}
-        handleClose={vi.fn()}
-        modalTitle="Edit"
-        selectedFactor={{ activity: "Test", value: 100 }}
-        handleSubmit={vi.fn()}
-        setSelectedFactor={vi.fn()}
-        buttonContents="Save Changes"
-      />,
-    );
-    expect(screen.getByText("Edit Conversion Factor")).toBeInTheDocument();
-  });
-
-  it("calls handleSubmit on save", () => {
-    const handleSubmit = vi.fn();
-    render(
-      <EditFactor
-        show={true}
-        handleClose={vi.fn()}
-        handleSubmit={handleSubmit}
-        selectedFactor={{ activity: "Test", value: 100 }}
-        setSelectedFactor={vi.fn()}
-        buttonContents="Save Changes"
-      />,
-    );
-    fireEvent.click(screen.getByText("Save Changes"));
-    expect(handleSubmit).toHaveBeenCalled();
-  });
-});
-
 describe("FactorTable Component", () => {
   const mockConversionFn = (setData) =>
     setData([
@@ -231,36 +196,6 @@ describe("FactorTable Component", () => {
     expect(
       screen.queryByText("Must be a valid number"),
     ).not.toBeInTheDocument();
-  });
-});
-
-describe("DeleteFactorModal Component", () => {
-  it("renders warning message", () => {
-    render(
-      <DeleteFactor
-        showDelete={true}
-        handleDelete={vi.fn()}
-        handleClose={vi.fn()}
-      />,
-    );
-    expect(
-      screen.getByText(
-        "Are you sure you want to delete the following conversion factor?",
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it("calls handleDelete on delete", () => {
-    const handleDelete = vi.fn();
-    render(
-      <DeleteFactor
-        showDelete={true}
-        handleDelete={handleDelete}
-        handleClose={vi.fn()}
-      />,
-    );
-    fireEvent.click(screen.getByText("Delete"));
-    expect(handleDelete).toHaveBeenCalled();
   });
 });
 

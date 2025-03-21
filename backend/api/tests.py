@@ -750,6 +750,7 @@ class AdminRequestTests(SimpleTestCase):
             requested_role="admin",
             reason="Manage system",
             status="Pending",
+            success="True",
         )
 
         request = self.factory.get("/fake-url/")
@@ -764,6 +765,7 @@ class AdminRequestTests(SimpleTestCase):
                 "requested_role": "admin",
                 "reason": "Manage system",
                 "status": "Pending",
+                "success": True,
             },
         )
 
