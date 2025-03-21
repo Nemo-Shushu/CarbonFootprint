@@ -972,34 +972,54 @@ def update_intensity_view(request):
             else status.HTTP_400_BAD_REQUEST,
         )
 
-
+@api_view(["POST"])
 def update_carbon_impact(request):
-    if request.method == "POST":
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "Please login first."}, status=403)
-        try:
-            data = json.loads(request.body)
+    if not request.user.is_authenticated:
+        return Response({"error": "Please login first."}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+        data = request.data
+        
+        # Check if data is a list for bulk operations
+        if isinstance(data, list):
+            results = []
+            for item in data:
+                category = item.get("category")
+                carbon_impact = item.get("carbon_impact")
+                
+                if not category or carbon_impact is None:
+                    return Response(
+                        {"error": "Both 'category' and 'carbon_impact' are required for each item."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                
+                updated, created = CategoryCarbonImpact.objects.update_or_create(
+                    category=category, defaults={"carbon_impact": carbon_impact}
+                )
+                results.append({
+                    "category": category,
+                    "updated": updated is not None,
+                    "created": created
+                })
+            
+            return Response({"success": True, "results": results}, status=status.HTTP_200_OK)
+        
+        # Handle single item update
+        else:
             category = data.get("category")
             carbon_impact = data.get("carbon_impact")
-
             if not category or carbon_impact is None:
-                return JsonResponse(
+                return Response(
                     {"error": "Both 'category' and 'carbon_impact' are required."},
-                    status=400,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-
-            updated, _ = CategoryCarbonImpact.objects.update_or_create(
+            updated, created = CategoryCarbonImpact.objects.update_or_create(
                 category=category, defaults={"carbon_impact": carbon_impact}
             )
-
-            return JsonResponse({"success": True if updated else False}, status=200)
-
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+            return Response({"success": True, "created": created}, status=status.HTTP_200_OK)
+                
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def get_all_carbon_impact(request):
