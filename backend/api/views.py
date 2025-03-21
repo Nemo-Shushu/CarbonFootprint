@@ -717,11 +717,11 @@ class ReportcalculateView:
             f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}"
         )
         return {
-            "total_electricity_emissions": round(total_electricity_emissions, 2),
-            "total_gas_emissions": round(total_gas_emissions, 2),
-            "total_water_emissions": round(total_water_emissions, 2),
-            "total_travel_emissions": round(total_travel_emissions, 2),
-            "total_waste_emissions": round(total_waste_emissions, 2),
+            "total_electricity_emissions": round(total_electricity_emissions/ 1000, 2),
+            "total_gas_emissions": round(total_gas_emissions/ 1000, 2),
+            "total_water_emissions": round(total_water_emissions/ 1000, 2),
+            "total_travel_emissions": round(total_travel_emissions/ 1000, 2),
+            "total_waste_emissions": round(total_waste_emissions/ 1000, 2),
         }
 
 
