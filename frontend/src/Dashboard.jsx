@@ -15,11 +15,11 @@ import PropTypes from "prop-types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 TableComponent.propTypes = {
-  isAdmin: PropTypes.boolean,
+  isAdmin: PropTypes.bool,
   isResearcher: PropTypes.bool,
 };
 
-function TableComponent({ isAdmin, isResearcher, userInstitution }) {
+function TableComponent({ isAdmin, isResearcher }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
@@ -435,7 +435,7 @@ function Dashboard() {
   const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isResearcher, setIsResearcher] = useState(false);
-  const [userInstitution, setUserInstitution] = useState("");
+
 
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
@@ -485,7 +485,7 @@ function Dashboard() {
         style={{ flex: "0 0 17%" }}
         onAdminStatusChange={handleAdminStatusChange}
         onResearcherStatusChange={handleResearcherStatusChange}
-        onInstitutionChange={setUserInstitution}
+
       />
 
       {/* Main Content */}
@@ -532,7 +532,6 @@ function Dashboard() {
         <TableComponent 
           isAdmin={isAdmin} 
           isResearcher={isResearcher} 
-          userInstitution={userInstitution}
         />
       </main>
     </div>

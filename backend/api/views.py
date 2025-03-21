@@ -19,6 +19,8 @@ from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from accounts.models import University, ResearchField
+from django.http import JsonResponse
+from rest_framework.decorators import api_view  
 from rest_framework.response import Response
 from .serializers import (
     InstitutionSerializer,
@@ -840,13 +842,15 @@ def get_csrf_token(request):
     return JsonResponse({"csrftoken": csrf_token})
 
 
+
 def dashboard_show_user_result_data(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Please login first."}, status=403)
 
     try:
         user = request.user
-        body = {}
+        user_id = request.user.id
+        user_profile = get_object_or_404(User, id=user_id)
         
         if request.method == "POST" and request.content_type == "application/json":
             try:
@@ -859,7 +863,11 @@ def dashboard_show_user_result_data(request):
 
         else:
             results = Result.objects.filter(
-                user=user
+                user=user_profile
+            ) | Result.objects.filter(
+                user__institute=user_profile.institute
+            ) and Result.objects.filter(
+                user__research_field=user_profile.research_field
             ).select_related("user", "user__institute", "user__research_field")
 
         data = [
@@ -878,6 +886,9 @@ def dashboard_show_user_result_data(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+
+
 
 def get_all_report_data(request):
     if request.method == "POST":
