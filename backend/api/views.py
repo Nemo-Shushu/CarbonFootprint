@@ -49,7 +49,7 @@ def login_view(request):
 
     if user is None:
         return JsonResponse({"detail": "Invalid credentials."}, status=400)
-    request.session['login_time'] = timezone.now().isoformat()
+    request.session["login_time"] = timezone.now().isoformat()
     login(request, user)
     return JsonResponse({"detail": "Successfully logged in."})
 
@@ -847,12 +847,14 @@ def dashboard_show_user_result_data(request):
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
         if request.user.is_admin or request.user.is_researcher:
-            calculation_result = Result.objects.all().select_related('user')
+            calculation_result = Result.objects.all().select_related("user")
         else:
-            calculation_result = Result.objects.filter(user_id=user_id) | Result.objects.filter(
-                user__institute_id=user_profile.institute_id
-            ) | Result.objects.filter(
-                user__research_field_id=user_profile.research_field_id
+            calculation_result = (
+                Result.objects.filter(user_id=user_id)
+                | Result.objects.filter(user__institute_id=user_profile.institute_id)
+                | Result.objects.filter(
+                    user__research_field_id=user_profile.research_field_id
+                )
             )
         data = [
             {
@@ -870,6 +872,7 @@ def dashboard_show_user_result_data(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
 
 def get_all_report_data(request):
     if request.method == "POST":
@@ -890,7 +893,9 @@ def get_all_report_data(request):
                     "total_water_emissions": float(report.total_water_emissions),
                     "total_travel_emissions": float(report.total_travel_emissions),
                     "total_waste_emissions": float(report.total_waste_emissions),
-                    "total_procurement_emissions": float(report.total_procurement_emissions),
+                    "total_procurement_emissions": float(
+                        report.total_procurement_emissions
+                    ),
                     "total_carbon_emissions": float(report.total_carbon_emissions),
                 },
                 "report_data": report.report_data,
@@ -1228,16 +1233,18 @@ def store_unsubmitted_reports_backend(request):
         try:
             data = json.loads(request.body)
 
-            if TempReport.objects.filter(user_id=user_id).exists():
-                return JsonResponse(
-                    {"success": False, "message": "You already have a draft."},
-                    status=400,
-                )
-
-            TempReport.objects.create(user_id=user_id, data=data)
+            temp_report, created = TempReport.objects.update_or_create(
+                user_id=user_id, defaults={"data": data}
+            )
 
             return JsonResponse(
-                {"success": True, "message": "Draft successfully saved."}, status=201
+                {
+                    "success": True,
+                    "message": "Draft successfully saved."
+                    if created
+                    else "Draft successfully updated.",
+                },
+                status=201 if created else 200,
             )
 
         except json.JSONDecodeError:
@@ -1265,7 +1272,7 @@ def retrieve_and_delete_temp_report(request):
 
                 return JsonResponse({"data": report_data}, status=200)
 
-            return JsonResponse({"success": "No draft now"}, status=404)
+            return JsonResponse({"data": []}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -1367,10 +1374,9 @@ def update_accounts_university(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-        
 class SessionExpiryView(APIView):
-     def get(self, request, format=None):
-        login_time = request.session.get('login_time')
+    def get(self, request, format=None):
+        login_time = request.session.get("login_time")
         if login_time:
             login_time_dt = datetime.fromisoformat(login_time)
             now = timezone.now()
@@ -1388,10 +1394,10 @@ class ExtendSessionView(APIView):
     def post(self, request, format=None):
         new_expiry = settings.SESSION_COOKIE_AGE
         request.session.set_expiry(new_expiry)
-        request.session['login_time'] = timezone.now().isoformat()
+        request.session["login_time"] = timezone.now().isoformat()
         request.session.save()
         remaining_time = request.session.get_expiry_age()
         return Response(
             {"message": "Session extended", "remaining_time": remaining_time},
-            status=200
+            status=200,
         )
