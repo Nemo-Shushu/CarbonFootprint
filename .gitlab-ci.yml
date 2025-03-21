@@ -10,8 +10,8 @@ variables:
 
 stages:
   - lint
-  - build
   - test
+  - build
 
 lint-backend:
   stage: lint
@@ -26,9 +26,9 @@ lint-frontend:
   script:
     - cd frontend
     - npm install
-    - npm install -g eslint
-    - eslint .
-    
+    - npm run lint
+  timeout: 10m
+
 test-backend:
   stage: test
   image: python:3.11-slim
@@ -49,7 +49,7 @@ build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "http://134.209.19.90:3000/"
+    VITE_BACKEND_URL: "http://134.209.19.90:8000/"
   script:
     - cd frontend
     - npm install
