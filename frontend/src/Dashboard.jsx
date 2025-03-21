@@ -16,9 +16,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 TableComponent.propTypes = {
   isAdmin: PropTypes.boolean,
+  isResearcher: PropTypes.bool,
 };
 
-function TableComponent({ isAdmin }) {
+function TableComponent({ isAdmin, isResearcher, userInstitution }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
@@ -39,7 +40,7 @@ function TableComponent({ isAdmin }) {
 
   useEffect(() => {
     getReports();
-  }, []);
+  },[]);
 
   useEffect(() => {
     if (repId !== null && repId !== undefined) {
@@ -81,6 +82,9 @@ function TableComponent({ isAdmin }) {
 
   async function getReports() {
     try {
+
+      const body = {};
+
       const response = await fetch(
         `${backendUrl}api/dashboard-show-user-result-data/`,
         {
@@ -90,6 +94,7 @@ function TableComponent({ isAdmin }) {
             "Content-Type": "application/json",
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
+          body: JSON.stringify(body),
         },
       );
 
@@ -364,7 +369,7 @@ function TableComponent({ isAdmin }) {
                       <i className="bi bi-sort-down"></i>
                     ))}
                 </th>
-                {isAdmin && (
+                {(isAdmin || isResearcher) && (
                   <th
                     scope="col"
                     onClick={() => sortTable("email")}
@@ -395,7 +400,7 @@ function TableComponent({ isAdmin }) {
                   <td>{row.institution}</td>
                   <td>{row.field}</td>
                   <td>{row.emissions}</td>
-                  {isAdmin && <td>{row.email}</td>}
+                  {(isAdmin || isResearcher) && <td>{row.email}</td>}
                 </tr>
               ))}
             </tbody>
@@ -429,9 +434,15 @@ function Dashboard() {
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isResearcher, setIsResearcher] = useState(false);
+  const [userInstitution, setUserInstitution] = useState("");
 
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
+  }
+
+  function handleResearcherStatusChange(ResearcherStatus) {
+    setIsResearcher(ResearcherStatus);
   }
 
   /**
@@ -473,6 +484,8 @@ function Dashboard() {
       <Sidebar
         style={{ flex: "0 0 17%" }}
         onAdminStatusChange={handleAdminStatusChange}
+        onResearcherStatusChange={handleResearcherStatusChange}
+        onInstitutionChange={setUserInstitution}
       />
 
       {/* Main Content */}
@@ -516,7 +529,11 @@ function Dashboard() {
           </div>
         )}
 
-        <TableComponent isAdmin={isAdmin} />
+        <TableComponent 
+          isAdmin={isAdmin} 
+          isResearcher={isResearcher} 
+          userInstitution={userInstitution}
+        />
       </main>
     </div>
   );

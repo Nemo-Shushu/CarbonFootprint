@@ -843,27 +843,35 @@ def get_csrf_token(request):
 def dashboard_show_user_result_data(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Please login first."}, status=403)
+
     try:
-        user_id = request.user.id
-        user_profile = get_object_or_404(User, id=user_id)
-        if request.user.is_admin or request.user.is_researcher:
-            calculation_result = Result.objects.all().select_related('user')
+        user = request.user
+        body = {}
+        
+        if request.method == "POST" and request.content_type == "application/json":
+            try:
+                body = json.loads(request.body)
+            except json.JSONDecodeError:
+                body = {}
+
+        if user.is_admin or user.is_researcher:
+            results = Result.objects.select_related("user", "user__institute", "user__research_field")
+
         else:
-            calculation_result = Result.objects.filter(user_id=user_id) | Result.objects.filter(
-                user__institute_id=user_profile.institute_id
-            ) | Result.objects.filter(
-                user__research_field_id=user_profile.research_field_id
-            )
+            results = Result.objects.filter(
+                user=user
+            ).select_related("user", "user__institute", "user__research_field")
+
         data = [
             {
-                "id": Result.id,
-                "institution": Result.user.institute_id,
-                "field": Result.user.research_field_id,
-                "emissions": float(Result.total_carbon_emissions),
-                "email": Result.user.email,
-                "own_report": user_id == Result.user.id,
+                "id": r.id,
+                "institution": r.user.institute.name if r.user.institute else "",
+                "field": r.user.research_field.name if r.user.research_field else "",
+                "emissions": float(r.total_carbon_emissions),
+                "email": r.user.email,
+                "own_report": r.user == user,
             }
-            for Result in calculation_result
+            for r in results
         ]
 
         return JsonResponse(data, safe=False)
