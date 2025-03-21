@@ -26,11 +26,11 @@ lint-frontend:
   script:
     - cd frontend
     - npm install
-    - npm run lint
-  timeout: 10m
+    - npm install eslint --save-dev # Install ESLint locally instead of globally
+    - npx eslint . # Use npx to run the local ESLint
 
-lint-backend:
-  stage: lint
+test-backend:
+  stage: test
   image: python:3.11-slim
   script:
     - pip install ruff --break-system-packages
