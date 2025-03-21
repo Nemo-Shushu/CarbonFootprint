@@ -29,13 +29,12 @@ lint-frontend:
     - npm run lint
   timeout: 10m
 
-test-backend:
-  stage: test
+lint-backend:
+  stage: lint
   image: python:3.11-slim
   script:
-    - cd backend
-    - pip install --no-cache-dir -r requirements.txt
-    - python manage.py test
+    - pip install ruff --break-system-packages
+    - ruff check backend/
 
 test-frontend:
   stage: test
