@@ -8,7 +8,6 @@ import Profile from "./Profile";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
 import "./static/dashboard.css";
-import "./static/RequestAdmin.css";
 import "./static/Sidebar.css";
 import PropTypes from "prop-types";
 

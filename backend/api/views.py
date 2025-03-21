@@ -1148,6 +1148,7 @@ def user_request_status(request):
                         "requested_role": user_request.requested_role,
                         "reason": user_request.reason,
                         "status": user_request.status,
+                        "success": True,
                     },
                     status=200,
                 )
@@ -1157,6 +1158,7 @@ def user_request_status(request):
                 "requested_role": user_request.requested_role,
                 "reason": user_request.reason,
                 "status": user_request.status,
+                "success": True,
             }
             user_request.delete()
 
