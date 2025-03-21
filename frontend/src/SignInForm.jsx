@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
@@ -119,9 +119,10 @@ function SignInForm() {
   const [code, setCode] = useState("");
   const [modalError, setModalError] = useState("");
   const [verifyDisabled, setVerifyDisabled] = useState(true);
-  const handleEmailClose = () => setShowEmail(false);
   const handlePasswordClose = () => setShowPasswordModal(false);
   const navigate = useNavigate();
+  const [timer, setTimer] = useState(0);
+  const [sendDisabled, setSendDisabled] = useState(false);
 
   const handleEmail = (event) => {
     console.log("Email Entered:", event.target.value);
@@ -164,20 +165,44 @@ function SignInForm() {
     sendCode(email)
       .then(() => {
         setVerifyDisabled(false);
+        setTimer(180);
+        setSendDisabled(true);
       })
       .catch((error) => {
         console.error("Error sending code:", error);
       });
   };
 
+  useEffect(() => {
+    let intervalId;
+    if (timer > 0) {
+      intervalId = setInterval(() => {
+        setTimer((prevTime) => {
+          const newTime = prevTime - 1;
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      setSendDisabled(false);
+    }
+    return () => clearInterval(intervalId);
+  }, [timer]);
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  };
+
   const handleVerify = (event) => {
     event.preventDefault();
     verifyCode(email, code)
       .then(() => {
+        setError("");
         setIsVerified(true);
+        setVerificationError(false);
         setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
-        setVerificationError(false);
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
@@ -234,12 +259,31 @@ function SignInForm() {
       .then((response) => response.json())
       .then((data) => {
         if (data.message === "Password updated successfully.") {
+          setModalError("");
           handlePasswordClose();
         } else {
+          const errorKeys = Object.keys(data);
+          if (errorKeys.length > 0) {
+            const firstKey = errorKeys[0];
+            const firstMessage = data[firstKey][0] || data[firstKey];
+            setModalError(firstMessage);
+          } else {
+            setModalError("An unknown error occurred.");
+          }
           console.error("Update failed:", data.error || "Unknown error");
         }
       })
-      .catch((error) => console.error("Error updating Password:", error));
+      .catch((err) => {
+        console.error("Error updating Password:", err);
+        const errorKeys = Object.keys(err);
+        if (errorKeys.length > 0) {
+          const firstKey = errorKeys[0];
+          const firstMessage = err[firstKey][0] || err[firstKey];
+          setModalError(firstMessage);
+        } else {
+          setModalError("An unknown error occurred.");
+        }
+      });
   };
 
   async function login() {
@@ -272,6 +316,17 @@ function SignInForm() {
       console.log(err);
     }
   }
+
+  const handleEmailClose = () => {
+    setShowEmail(false);
+    setCode("");
+    setError("");
+    setVerificationError(false);
+    setVerifiedMessage("");
+    setSendDisabled(false);
+    setVerifyDisabled(false);
+    setIsVerified(false);
+  };
 
   return (
     <div className="sign-in-wrapper">
@@ -367,8 +422,11 @@ function SignInForm() {
                 className="verify-button"
                 type="button"
                 onClick={handleSend}
+                disabled={sendDisabled}
               >
-                Send code
+                {sendDisabled
+                  ? `Resend code in ${formatTime(timer)}`
+                  : "Send code"}
               </Button>
             </InputGroup>
             <div className="sign-in-form">
@@ -460,6 +518,7 @@ function SignInForm() {
               >
                 {showNewPassword ? "Hide" : "Show"}
               </Button>
+              {modalError && <p className="warning">{modalError}</p>}
             </InputGroup>
           </Modal.Body>
           <Modal.Footer>
