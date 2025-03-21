@@ -151,6 +151,7 @@ You can also document commands to lint the code or run tests. These steps help t
 ## Authors and acknowledgment
 
 A huge thanks to everyone who contributed to this project!
+
 🔗 [GitLab Contributors](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/graphs/main)
 
 ## License
