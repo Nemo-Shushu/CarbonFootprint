@@ -212,16 +212,16 @@ class UpdateUserEmailAPIView(APIView):
         user.save()
 
         return Response(
-            {"message": "Email updated successfully."},
-            status=status.HTTP_200_OK
-        ) 
-    
+            {"message": "Email updated successfully."}, status=status.HTTP_200_OK
+        )
+
+
 class UpdateUserPasswordAPIView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def patch(self, request, format=None):
         current_email = request.data.get("email")
-        password = request.data.get('password')
+        password = request.data.get("password")
 
         if not current_email:
             return Response(
@@ -234,20 +234,20 @@ class UpdateUserPasswordAPIView(APIView):
         except User.DoesNotExist:
             return Response(
                 {"error": "User with the provided email does not exist."},
-            status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         user.set_password(password)
         user.save()
 
         return Response(
-            {"message": "Password updated successfully."},
-            status=status.HTTP_200_OK
+            {"message": "Password updated successfully."}, status=status.HTTP_200_OK
         )
-    
-    
+
+
 class CheckEmailAPIView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
+
     def post(self, request):
         current_email = request.data.get("email")
 
@@ -259,20 +259,13 @@ class CheckEmailAPIView(APIView):
 
         try:
             user = User.objects.get(email=current_email)
-            if(user):
+            if user:
                 return Response(
-            {"message": "User with the provided email does exist "},
-            status=status.HTTP_200_OK        
-            )
+                    {"message": "User with the provided email does exist "},
+                    status=status.HTTP_200_OK,
+                )
         except User.DoesNotExist:
             return Response(
                 {"error": "User with the provided email does not exist."},
-            status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
-        
-
-
-    
-       
-    
-            

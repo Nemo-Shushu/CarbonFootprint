@@ -5,6 +5,7 @@ import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
+import Modal from "react-bootstrap/Modal";
 import "./static/Calculator.css";
 import "./static/dashboard.css";
 import "./static/Instruction.css";
@@ -15,8 +16,83 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
   const [report, setReport] = useState({});
+  const [isReportUpdated, setIsReportUpdated] = useState(false);
+  const [draft, setDraft] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
   const navigate = useNavigate();
+
+  const isObjectEmpty = (obj) => {
+    if (!obj || Object.keys(obj).length === 0) return true;
+
+    return Object.values(obj).every(
+      (value) => typeof value === "object" && isObjectEmpty(value),
+    );
+  };
+
+  async function saveDraft(data) {
+    try {
+      const response = await fetch(
+        `${backendUrl}api/store-unsubmitted-reports-backend/`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": Cookies.get("csrftoken"),
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Draft saved:", responseData, data);
+    } catch (error) {
+      console.error("Error saving draft:", error);
+    }
+  }
+
+  async function retrieveDraft() {
+    try {
+      const response = await fetch(
+        `${backendUrl}api/retrieve-and-delete-temp-report/`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": Cookies.get("csrftoken"),
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Draft retrieved:", responseData);
+      setDraft(responseData.data);
+      if (!isObjectEmpty(responseData.data)) setModalVisible(true);
+    } catch (error) {
+      console.error("Error retrieving draft:", error);
+    }
+  }
+
+  useEffect(() => {
+    console.log("useEffect runs");
+    retrieveDraft();
+
+    const interval = setInterval(() => {
+      saveDraft(report);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   async function submitReport() {
     try {
@@ -158,7 +234,9 @@ function Calculator() {
           <button
             type="button"
             className="btn btn-moss"
-            onClick={() => navigate("/calculator/utilities")}
+            onClick={() => {
+              navigate("/calculator/utilities");
+            }}
           >
             Start
           </button>
@@ -177,12 +255,24 @@ function Calculator() {
     }, []);
 
     function handleRoute() {
-      setReport((prevReport) => ({
-        ...prevReport,
-        ["utilities"]: utilitiesReport,
-      }));
-      navigate("/calculator/travel");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["utilities"]: utilitiesReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/travel");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
@@ -191,6 +281,41 @@ function Calculator() {
 
     return (
       <main className="ms-sm-auto px-md-4 calculator-content-container">
+        <Modal
+          show={modalVisible}
+          onHide={() => setModalVisible(false)}
+          centered
+          size="md"
+          backdrop="static"
+        >
+          <Modal.Body>
+            <p className="mb-3">
+              You have a draft saved – do you wish to use it or start from the
+              beginning?
+            </p>
+            <p className="text-danger fw-bold">
+              Discarding the draft is irreversible!
+            </p>
+          </Modal.Body>
+          <Modal.Footer className="d-flex justify-content-between">
+            <button
+              className="btn btn-moss"
+              onClick={() => {
+                setReport(draft);
+                saveDraft(draft);
+                setModalVisible(false);
+              }}
+            >
+              Use Saved Draft
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={() => setModalVisible(false)}
+            >
+              Discard Draft
+            </button>
+          </Modal.Footer>
+        </Modal>
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
         <form className="needs-validation calculator-form" noValidate>
           <div className="row g-2">
@@ -417,9 +542,24 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({ ...prevReport, ["travel"]: travelReport }));
-      navigate("/calculator/waste");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["travel"]: travelReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/waste");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
@@ -763,9 +903,24 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({ ...prevReport, ["waste"]: wasteReport }));
-      navigate("/calculator/procurement");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["waste"]: wasteReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/procurement");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
@@ -993,12 +1148,24 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({
-        ...prevReport,
-        ["procurement"]: procurementReport,
-      }));
-      navigate("/calculator/results");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["procurement"]: procurementReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/results");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleProcurementDelete(num) {
       //first the data is cleared from the report, then category is removed from the list of selected categories, finally the row is deleted
@@ -1190,6 +1357,12 @@ function Calculator() {
       navigate("/calculator/procurement");
     }
 
+    function handleSubmit() {
+      retrieveDraft();
+      setModalVisible(false);
+      submitReport();
+    }
+
     return (
       <main className="ms-sm-auto px-md-4">
         <h2>Results</h2>
@@ -1198,7 +1371,7 @@ function Calculator() {
           <button className="btn btn-outline-secondary" onClick={handleBack}>
             Back
           </button>
-          <button className="btn btn-moss" onClick={submitReport}>
+          <button className="btn btn-moss" onClick={handleSubmit}>
             Submit
           </button>
         </div>
