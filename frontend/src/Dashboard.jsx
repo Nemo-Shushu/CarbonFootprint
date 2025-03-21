@@ -40,7 +40,7 @@ function TableComponent({ isAdmin, isResearcher }) {
 
   useEffect(() => {
     getReports();
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (repId !== null && repId !== undefined) {
@@ -82,7 +82,6 @@ function TableComponent({ isAdmin, isResearcher }) {
 
   async function getReports() {
     try {
-
       const body = {};
 
       const response = await fetch(
@@ -434,7 +433,6 @@ function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isResearcher, setIsResearcher] = useState(false);
 
-
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
   }
@@ -470,7 +468,6 @@ function Dashboard() {
         style={{ flex: "0 0 17%" }}
         onAdminStatusChange={handleAdminStatusChange}
         onResearcherStatusChange={handleResearcherStatusChange}
-
       />
 
       {/* Main Content */}
@@ -509,10 +506,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <TableComponent 
-          isAdmin={isAdmin} 
-          isResearcher={isResearcher} 
-        />
+        <TableComponent isAdmin={isAdmin} isResearcher={isResearcher} />
       </main>
     </div>
   );

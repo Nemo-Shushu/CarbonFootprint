@@ -17,7 +17,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
   const [isAdmin, setIsAdmin] = useState(true); // isAdmin Status
-  const [isResearcher, setIsResearcher] = useState(false); // isResearcher Status
+  const [isResearcher, setIsResearcher] = useState(false); // eslint-disable-line no-unused-vars
 
   const navigate = useNavigate();
   const location = useLocation();
