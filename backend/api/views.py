@@ -1208,16 +1208,13 @@ def store_unsubmitted_reports_backend(request):
         try:
             data = json.loads(request.body)
 
-            if TempReport.objects.filter(user_id=user_id).exists():
-                return JsonResponse(
-                    {"success": False, "message": "You already have a draft."},
-                    status=400,
-                )
-
-            TempReport.objects.create(user_id=user_id, data=data)
+            temp_report, created = TempReport.objects.update_or_create(
+                user_id=user_id, defaults={"data": data}
+            )
 
             return JsonResponse(
-                {"success": True, "message": "Draft successfully saved."}, status=201
+                {"success": True, "message": "Draft successfully saved." if created else "Draft successfully updated."},
+                status=201 if created else 200,
             )
 
         except json.JSONDecodeError:
@@ -1245,7 +1242,7 @@ def retrieve_and_delete_temp_report(request):
 
                 return JsonResponse({"data": report_data}, status=200)
 
-            return JsonResponse({"success": "No draft now"}, status=404)
+            return JsonResponse({"data": []}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
