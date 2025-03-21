@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.test import SimpleTestCase, RequestFactory
 from django.contrib.auth.models import AnonymousUser
+from rest_framework import status
 from api.views import (
     admin_request_list,
     approve_or_reject_request,
@@ -12,6 +13,7 @@ from api.views import (
     session_view,
     submit_admin_request,
     update_accounts_university,
+    update_carbon_impact,
     user_request_status,
     whoami_view,
     institution_list,
@@ -520,80 +522,114 @@ class CarbonImpactTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    # @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    # def test_update_carbon_impact_success(self, mock_update_or_create):
-    #     mock_update_or_create.return_value = (True, None)
+    def test_update_carbon_impact_unauthenticated(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
+        )
+        request.user = MagicMock(is_authenticated=False)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
-    #     request = self.factory.post(
-    #         "/update-carbon-impact/",
-    #         data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
-    #         content_type="application/json",
-    #     )
-    #     request.user = MagicMock(is_authenticated=True)
+        response = update_carbon_impact(request)
+        self.assertEqual(response.data, {"error": "Please login first."})
 
-    #     response = update_carbon_impact(request)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertJSONEqual(response.content, {"success": True})
+    @patch("api.views.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_single_success(self, mock_update_or_create):
+        mock_update_or_create.return_value = (MagicMock(), True)
 
-    # @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    # def test_update_carbon_impact_missing_data(self, mock_update_or_create):
-    #     request = self.factory.post(
-    #         "/update-carbon-impact/",
-    #         data=json.dumps({"category": "Electricity"}),
-    #         content_type="application/json",
-    #     )
-    #     request.user = MagicMock(is_authenticated=True)
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
-    #     response = update_carbon_impact(request)
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertJSONEqual(
-    #         response.content,
-    #         {"error": "Both 'category' and 'carbon_impact' are required."},
-        # )
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"success": True, "created": True})
 
-    # def test_update_carbon_impact_invalid_json(self):
-    #     request = self.factory.post(
-    #         "/update-carbon-impact/",
-    #         data="INVALID_JSON",
-    #         content_type="application/json",
-    #     )
-    #     request.user = MagicMock(is_authenticated=True)
+    def test_update_carbon_impact_empty_data(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {}
 
-    #     response = update_carbon_impact(request)
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertJSONEqual(response.content, {"error": "Invalid JSON format"})
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
 
-    # @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    # def test_update_carbon_impact_unexpected_error(self, mock_update_or_create):
-    #     mock_update_or_create.side_effect = Exception("Unexpected error")
+    @patch("api.views.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_exception(self, mock_update_or_create):
+        mock_update_or_create.side_effect = Exception("Unexpected error occurred")
 
-    #     request = self.factory.post(
-    #         "/update-carbon-impact/",
-    #         data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
-    #         content_type="application/json",
-    #     )
-    #     request.user = MagicMock(is_authenticated=True)
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
-    #     response = update_carbon_impact(request)
-    #     self.assertEqual(response.status_code, 500)
-    #     self.assertJSONEqual(response.content, {"error": "Unexpected error"})
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.data["error"], "Unexpected error occurred")
 
-    # def test_update_carbon_impact_invalid_method(self):
-    #     request = self.factory.get("/update-carbon-impact/")
-    #     request.user = MagicMock(is_authenticated=True)
+    def test_update_carbon_impact_missing_category(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"carbon_impact": 150.0}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {"carbon_impact": 150.0}
 
-    #     response = update_carbon_impact(request)
-    #     self.assertEqual(response.status_code, 405)
-    #     self.assertJSONEqual(response.content, {"error": "Invalid request method"})
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
 
-    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_update_carbon_impact_missing_carbon_impact(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"category": "Electricity"}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity"}
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
+
+    def test_get_all_carbon_impact_unauthenticated(self):
+        request = self.factory.get("/fake-url/")
+        request.user = MagicMock(is_authenticated=False)
+
+        response = get_all_carbon_impact(request)
+        self.assertEqual(response.status_code, 403)
+        self.assertJSONEqual(response.content, {"error": "Please login first."})
+
+    @patch("api.views.CategoryCarbonImpact.objects.values")
     def test_get_all_carbon_impact_success(self, mock_values):
         mock_values.return_value = [
-            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-            {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+            {"id": 1, "category": "Electricity", "carbon_impact": 150.0},
+            {"id": 2, "category": "Gas", "carbon_impact": 200.0},
         ]
 
-        request = self.factory.get("/get-all-carbon-impact/")
+        request = self.factory.get("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)
@@ -601,16 +637,16 @@ class CarbonImpactTests(SimpleTestCase):
         self.assertJSONEqual(
             response.content,
             [
-                {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-                {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+                {"id": 1, "category": "Electricity", "carbon_impact": 150.0},
+                {"id": 2, "category": "Gas", "carbon_impact": 200.0},
             ],
         )
 
-    @patch("api.models.CategoryCarbonImpact.objects.values")
-    def test_get_all_carbon_impact_error(self, mock_values):
+    @patch("api.views.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_exception(self, mock_values):
         mock_values.side_effect = Exception("Database error")
 
-        request = self.factory.get("/get-all-carbon-impact/")
+        request = self.factory.get("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)
@@ -618,7 +654,7 @@ class CarbonImpactTests(SimpleTestCase):
         self.assertJSONEqual(response.content, {"error": "Database error"})
 
     def test_get_all_carbon_impact_invalid_method(self):
-        request = self.factory.post("/get-all-carbon-impact/")
+        request = self.factory.post("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)

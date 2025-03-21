@@ -636,9 +636,12 @@ class ReportcalculateView:
 
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
-        utilities = request.get("utilities", {})
-        travel = request.get("travel", {})
-        waste = request.get("waste", {})
+            # === 新增：用于移除空值（""）的函数 ===
+        def remove_empty_values(data):
+            return {k: v for k, v in data.items() if v != ""}
+        utilities = remove_empty_values(request.get("utilities", {}))
+        travel = remove_empty_values(request.get("travel", {}))
+        waste = remove_empty_values(request.get("waste", {}))
         fte_staff = int(utilities.get("FTE-staff", 0))
         fte_members = int(utilities.get("FTE-members", 0))
         if fte_members == 0:
@@ -717,11 +720,11 @@ class ReportcalculateView:
             f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}"
         )
         return {
-            "total_electricity_emissions": round(total_electricity_emissions, 2),
-            "total_gas_emissions": round(total_gas_emissions, 2),
-            "total_water_emissions": round(total_water_emissions, 2),
-            "total_travel_emissions": round(total_travel_emissions, 2),
-            "total_waste_emissions": round(total_waste_emissions, 2),
+            "total_electricity_emissions": round(total_electricity_emissions / 1000, 2),
+            "total_gas_emissions": round(total_gas_emissions / 1000, 2),
+            "total_water_emissions": round(total_water_emissions / 1000, 2),
+            "total_travel_emissions": round(total_travel_emissions / 1000, 2),
+            "total_waste_emissions": round(total_waste_emissions / 1000, 2),
         }
 
 
@@ -972,38 +975,46 @@ def update_intensity_view(request):
             else status.HTTP_400_BAD_REQUEST,
         )
 
-@api_view(["POST"])
+
 def update_carbon_impact(request):
     if not request.user.is_authenticated:
-        return Response({"error": "Please login first."}, status=status.HTTP_403_FORBIDDEN)
-    
+        return Response(
+            {"error": "Please login first."}, status=status.HTTP_403_FORBIDDEN
+        )
+
     try:
         data = request.data
-        
+
         # Check if data is a list for bulk operations
         if isinstance(data, list):
             results = []
             for item in data:
                 category = item.get("category")
                 carbon_impact = item.get("carbon_impact")
-                
+
                 if not category or carbon_impact is None:
                     return Response(
-                        {"error": "Both 'category' and 'carbon_impact' are required for each item."},
+                        {
+                            "error": "Both 'category' and 'carbon_impact' are required for each item."
+                        },
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-                
+
                 updated, created = CategoryCarbonImpact.objects.update_or_create(
                     category=category, defaults={"carbon_impact": carbon_impact}
                 )
-                results.append({
-                    "category": category,
-                    "updated": updated is not None,
-                    "created": created
-                })
-            
-            return Response({"success": True, "results": results}, status=status.HTTP_200_OK)
-        
+                results.append(
+                    {
+                        "category": category,
+                        "updated": updated is not None,
+                        "created": created,
+                    }
+                )
+
+            return Response(
+                {"success": True, "results": results}, status=status.HTTP_200_OK
+            )
+
         # Handle single item update
         else:
             category = data.get("category")
@@ -1016,8 +1027,10 @@ def update_carbon_impact(request):
             updated, created = CategoryCarbonImpact.objects.update_or_create(
                 category=category, defaults={"carbon_impact": carbon_impact}
             )
-            return Response({"success": True, "created": created}, status=status.HTTP_200_OK)
-                
+            return Response(
+                {"success": True, "created": created}, status=status.HTTP_200_OK
+            )
+
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
