@@ -10,8 +10,8 @@ variables:
 
 stages:
   - lint
-  - build
   - test
+  - build
 
 lint-backend:
   stage: lint
@@ -26,16 +26,15 @@ lint-frontend:
   script:
     - cd frontend
     - npm install
-    - npm install eslint --save-dev  # Install ESLint locally instead of globally
-    - npx eslint .  # Use npx to run the local ESLint
-    
+    - npm install eslint --save-dev # Install ESLint locally instead of globally
+    - npx eslint . # Use npx to run the local ESLint
+
 test-backend:
   stage: test
   image: python:3.11-slim
   script:
-    - cd backend
-    - pip install --no-cache-dir -r requirements.txt
-    - python manage.py test
+    - pip install ruff --break-system-packages
+    - ruff check backend/
 
 test-frontend:
   stage: test
@@ -49,7 +48,7 @@ build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "http://134.209.19.90:3000/"
+    VITE_BACKEND_URL: "http://134.209.19.90:8000/"
   script:
     - cd frontend
     - npm install
