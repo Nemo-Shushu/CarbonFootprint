@@ -53,12 +53,10 @@ describe("AdminTools Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Confirm Action")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /cancel/i })
-
+        screen.getByRole("button", { name: /cancel/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /confirm/i })
-
+        screen.getByRole("button", { name: /confirm/i }),
       ).toBeInTheDocument();
     });
   });
@@ -74,7 +72,9 @@ describe("AdminTools Component", () => {
 
     fireEvent.click(confirmButton);
 
-    const confirmActionButton = screen.getByRole("button", { name: /confirm/i });
+    const confirmActionButton = screen.getByRole("button", {
+      name: /confirm/i,
+    });
 
     fireEvent.click(confirmActionButton);
 
