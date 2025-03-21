@@ -145,10 +145,10 @@ const Profile = () => {
     setVerificationError(false);
     setVerifiedMessage("");
     setSendDisabled(false);
-    setVerifyDisabled(true)
-    setIsVerified(false)
+    setVerifyDisabled(true);
+    setIsVerified(false);
   };
-  
+
   const handleEmailShow = () => {
     setShowEmail(true);
   };
@@ -202,7 +202,6 @@ const Profile = () => {
     const seconds = timeInSeconds % 60;
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
-
 
   const handleVerify = (event) => {
     event.preventDefault();
@@ -347,26 +346,31 @@ const Profile = () => {
     try {
       const response = await fetch(`${backendUrl}api/accounts/update/`, {
         method: "PATCH",
-        credentials: "include", 
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify(updateForm),
       });
-  
+
       if (response.status === 401) {
-        setProfileError("Authentication credentials were not provided. Please log in.");
+        setProfileError(
+          "Authentication credentials were not provided. Please log in.",
+        );
         navigate("/sign-in");
         return;
       }
-  
+
       const data = await response.json();
-  
+
       if (response.status >= 200 && response.status < 300) {
         console.log("Update success branch reached");
         handleClose();
-        if (updateForm.password.trim() !="" && updateForm.password2.trim() != "") {
+        if (
+          updateForm.password.trim() != "" &&
+          updateForm.password2.trim() != ""
+        ) {
           navigate("/sign-in");
         } else {
           window.location.reload();
@@ -399,7 +403,6 @@ const Profile = () => {
       }
     }
   };
-  
 
   return (
     <div className="profile-card ">
@@ -560,10 +563,7 @@ const Profile = () => {
             {profileError && <p className="warning">{profileError}</p>}
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-            >
+            <Button variant="primary" onClick={handleSave}>
               Confirm
             </Button>
             <Button variant="secondary" onClick={handleClose}>
@@ -599,7 +599,9 @@ const Profile = () => {
                 onClick={handleSend}
                 disabled={sendDisabled}
               >
-                {sendDisabled ? `Resend code in ${formatTime(timer)}` : "Send code"}
+                {sendDisabled
+                  ? `Resend code in ${formatTime(timer)}`
+                  : "Send code"}
               </Button>
             </InputGroup>
             <div className="sign-in-form">
@@ -616,9 +618,7 @@ const Profile = () => {
                 {verificationError && (
                   <p className="warning">Your code is incorrect.</p>
                 )}
-                {modalError && (
-                  <p className="warning">{modalError}</p>
-                )}
+                {modalError && <p className="warning">{modalError}</p>}
                 {verifiedMessage && (
                   <p className="success">{verifiedMessage}</p>
                 )}
