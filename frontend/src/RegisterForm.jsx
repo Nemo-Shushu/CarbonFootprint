@@ -226,7 +226,7 @@ function RegisterForm({ forceVisible = false }) {
       });
   };
 
-  const handleSend = (event) => {
+  const handleSend = () => {
     // when the user submits their details, handleModal first tries to validate user details,
     // and make sure that when the user next submits their request to create an account, there will be no errors.
     // if the new user's details could not be verified, error messages are displayed, to instruct the user on what went wrong.
@@ -253,13 +253,13 @@ function RegisterForm({ forceVisible = false }) {
         setVisible(true);
         setVerificationError(false);
         sendCode(user)
-        .then(() => {
-          setTimer(180);
-          setSendDisabled(true);
-        })
-        .catch((error) => {
-          console.error("Error sending code:", error);
-        });
+          .then(() => {
+            setTimer(180);
+            setSendDisabled(true);
+          })
+          .catch((error) => {
+            console.error("Error sending code:", error);
+          });
       })
       .catch((err) => {
         console.error("Error validating new user details:", err);
@@ -325,13 +325,19 @@ function RegisterForm({ forceVisible = false }) {
     setVerificationError(false);
     setVerifiedMessage("");
     setSendDisabled(false);
-    setVerifyDisabled(false)
-    setIsVerified(false)
+    setVerifyDisabled(false);
+    setIsVerified(false);
   };
 
   return (
     <div className="sign-in-wrapper">
-      <Modal show={visible} onHide={handleClose} centered size="lg" data-testid="verification-modal">
+      <Modal
+        show={visible}
+        onHide={handleClose}
+        centered
+        size="lg"
+        data-testid="verification-modal"
+      >
         {/* when modal is set to visible, the input field takes the code from the user. when the user submits the code, handleSubmit is performed */}
         <Modal.Header closeButton>
           <Modal.Title>Enter Confirmation Code</Modal.Title>
@@ -358,7 +364,9 @@ function RegisterForm({ forceVisible = false }) {
                     onClick={() => handleSend(user)}
                     disabled={sendDisabled}
                   >
-                    {sendDisabled ? `Resend code in ${formatTime(timer)}` : "Send code"}
+                    {sendDisabled
+                      ? `Resend code in ${formatTime(timer)}`
+                      : "Send code"}
                   </Button>
                 </p>
               )}
