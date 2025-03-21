@@ -314,7 +314,7 @@ const Profile = () => {
   }
 
   const getName = () => {
-    fetch("http://localhost:8000/api/whoami/", {
+    fetch(backendUrl.concat("api/whoami/"), {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -403,13 +403,9 @@ const Profile = () => {
 
   return (
     <div className="profile-card ">
-      <div className="row align-items-center">
+      <div className="row align-items-center m-1">
         <div className="container ">
           <div className="row">
-            <p>
-              <strong>Role: </strong>{" "}
-              {isAdmin ? "admin" : isResearcher ? "researcher" : "user"}
-            </p>
             <p>
               <strong>Forename: </strong> {first_name || "Loading..."}
             </p>
@@ -425,6 +421,10 @@ const Profile = () => {
               <strong>ResearchField: </strong> {researchField || "Not provided"}
             </p>
             <p>
+              <strong>Role: </strong>{" "}
+              {isAdmin ? "admin" : isResearcher ? "researcher" : "user"}
+            </p>
+            <p>
               <strong>Email: </strong> {email || "Not provided"}
             </p>
           </div>
@@ -437,8 +437,6 @@ const Profile = () => {
             <i className="bi bi-envelope-fill"></i> Update Email
           </button>
         </div>
-
-        <div className="profile-image"></div>
 
         {/* Profile Update Modal */}
         <Modal show={show} onHide={handleClose} className="profile-modal">

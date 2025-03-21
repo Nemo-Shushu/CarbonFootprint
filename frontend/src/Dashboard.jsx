@@ -1,7 +1,7 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useLocation } from "react-router-dom";
 import Profile from "./Profile";
@@ -218,7 +218,7 @@ function TableComponent({ isAdmin }) {
         show={visibleFilter}
         onHide={() => setVisibleFilter(false)}
         centered
-        size="lg"
+        size="md"
       >
         <Modal.Header closeButton>
           <Modal.Title>Filter Reports</Modal.Title>
@@ -426,8 +426,6 @@ function Dashboard() {
   const [showProfile, setShowProfile] = useState(
     queryParams.get("showProfile") === "true",
   );
-  const dropdownRef = useRef(null);
-  const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   function handleAdminStatusChange(adminStatus) {
@@ -441,34 +439,21 @@ function Dashboard() {
     setShowProfile((prev) => !prev);
   }
 
-  /**
-   * Toggles the visibility of the DropDown.
-   */
-  function toggleDropdown(event) {
-    event.stopPropagation();
-  }
-
-  /**
-   * Closes the Profile & Dropdown when clicking outside of it.
-   */
-  function handleClickOutside(event) {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      // setShowDropdown(false);
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
   return (
-    <div
-      style={{ display: "flex", height: "100vh" }}
-      onClick={handleClickOutside}
-    >
+    <div style={{ display: "flex", height: "100vh" }}>
+      <Modal
+        show={showProfile}
+        onHide={() => setShowProfile(false)}
+        centered
+        size="md"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Profile />
+        </Modal.Body>
+      </Modal>
       {/* SideBar */}
       <Sidebar
         style={{ flex: "0 0 17%" }}
@@ -481,7 +466,7 @@ function Dashboard() {
           <h1 className="h2">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
 
           {/* Setting */}
-          <div className="position-relative" ref={dropdownRef}>
+          <div className="position-relative">
             <i
               className="bi bi-person-circle"
               alt="Profile"
@@ -494,7 +479,9 @@ function Dashboard() {
                 padding: "5px",
                 borderRadius: "100%",
               }}
-              onClick={toggleDropdown}
+              onClick={() => {
+                toggleProfile();
+              }}
             />
 
             <button
@@ -508,13 +495,6 @@ function Dashboard() {
             </button>
           </div>
         </div>
-
-        {/* Profile */}
-        {showProfile && (
-          <div ref={profileRef}>
-            <Profile />
-          </div>
-        )}
 
         <TableComponent isAdmin={isAdmin} />
       </main>
