@@ -600,9 +600,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-short"
+                  name="air-eco-short-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-short"]}
+                  value={travelReport["air-eco-short-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -618,9 +618,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-short"
+                  name="air-business-short-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-short"]}
+                  value={travelReport["air-business-short-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -638,9 +638,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-long"
+                  name="air-eco-long-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-long"]}
+                  value={travelReport["air-eco-long-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -656,9 +656,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-long"
+                  name="air-business-long-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-long"]}
+                  value={travelReport["air-business-long-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -676,9 +676,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-inter"
+                  name="air-eco-international"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-inter"]}
+                  value={travelReport["air-eco-international"]}
                   onChange={handleChange}
                   required
                 />
@@ -694,9 +694,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-inter"
+                  name="air-business-international"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-inter"]}
+                  value={travelReport["air-business-international"]}
                   onChange={handleChange}
                   required
                 />
@@ -762,9 +762,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-motor"
+                  name="land-motorbike"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-motor"]}
+                  value={travelReport["land-motorbike"]}
                   onChange={handleChange}
                   required
                 />
@@ -800,9 +800,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-bus"
+                  name="land-local-bus"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-bus"]}
+                  value={travelReport["land-local-bus"]}
                   onChange={handleChange}
                   required
                 />
@@ -856,9 +856,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-inter-rail"
+                  name="land-international-rail"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-inter-rail"]}
+                  value={travelReport["land-international-rail"]}
                   onChange={handleChange}
                   required
                 />
@@ -874,9 +874,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-light-rail"
+                  name="land-light-rail-tram"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-light-rail"]}
+                  value={travelReport["land-light-rail-tram"]}
                   onChange={handleChange}
                   required
                 />

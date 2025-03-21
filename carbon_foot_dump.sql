@@ -742,6 +742,7 @@ COPY public.accounts_benchmarkdata (id, consumption_type, category, amount, unit
 72	waste	clinical-waste	1.00	kg	2025	DEFRA 2025 Report	297.000000	\N
 73	waste	chemical-waste	1.00	kg	2025	DEFRA 2025 Report	273.000000	\N
 74	waste	bio-waste	1.00	kg	2025	DEFRA 2025 Report	1000.000000	\N
+75	waste	WEEEmixed-recycle	1.00	kg	2025	DEFRA 2025 Report	21.294000	\N
 \.
 
 
