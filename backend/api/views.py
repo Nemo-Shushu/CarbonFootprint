@@ -636,9 +636,12 @@ class ReportcalculateView:
 
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
-        utilities = request.get("utilities", {})
-        travel = request.get("travel", {})
-        waste = request.get("waste", {})
+            # === 新增：用于移除空值（""）的函数 ===
+        def remove_empty_values(data):
+            return {k: v for k, v in data.items() if v != ""}
+        utilities = remove_empty_values(request.get("utilities", {}))
+        travel = remove_empty_values(request.get("travel", {}))
+        waste = remove_empty_values(request.get("waste", {}))
         fte_staff = int(utilities.get("FTE-staff", 0))
         fte_members = int(utilities.get("FTE-members", 0))
         if fte_members == 0:
