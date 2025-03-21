@@ -25,7 +25,7 @@ vi.mock("../features/ManageFactors/api/apiFactors", () => ({
         intensity: 200,
         unit: "kg CO2e",
       },
-    ])
+    ]),
   ),
   getProcurementFactors: vi.fn((setState) =>
     setState([
@@ -35,7 +35,7 @@ vi.mock("../features/ManageFactors/api/apiFactors", () => ({
         carbon_impact: 300,
         unit: "kg CO2e",
       },
-    ])
+    ]),
   ),
   handleUpdateSubmissionAPI: vi.fn(),
   handleCreateSubmissionAPI: vi.fn(),
@@ -63,7 +63,7 @@ describe("ManageFactors Component", () => {
     render(
       <MemoryRouter>
         <ManageFactors />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(mockNavigate).toHaveBeenCalledWith("/sign-in");
@@ -75,7 +75,7 @@ describe("ManageFactors Component", () => {
     render(
       <MemoryRouter>
         <ManageFactors />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     expect(screen.getByText(/Manage Intensity Factors/i)).toBeInTheDocument();
   });
@@ -85,7 +85,7 @@ describe("ManageFactors Component", () => {
     render(
       <MemoryRouter>
         <ManageFactors />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     const bulkEditButtons = screen.getAllByRole("button", {
       name: /Bulk Edit Mode/i,
@@ -99,7 +99,7 @@ describe("ManageFactors Component", () => {
     render(
       <MemoryRouter>
         <ManageFactors />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Manage Intensity Factors")).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe("EditFactorModal Component", () => {
         handleSubmit={vi.fn()}
         setSelectedFactor={vi.fn()}
         buttonContents="Save Changes"
-      />
+      />,
     );
     expect(screen.getByText("Edit Conversion Factor")).toBeInTheDocument();
   });
@@ -135,7 +135,7 @@ describe("EditFactorModal Component", () => {
         selectedFactor={{ activity: "Test", value: 100 }}
         setSelectedFactor={vi.fn()}
         buttonContents="Save Changes"
-      />
+      />,
     );
     fireEvent.click(screen.getByText("Save Changes"));
     expect(handleSubmit).toHaveBeenCalled();
@@ -162,7 +162,9 @@ describe("FactorTable Component", () => {
     ]);
 
   it("renders factors correctly", () => {
-    render(<FactorTable conversionFactors={mockConversionFn} tableName="Test" />);
+    render(
+      <FactorTable conversionFactors={mockConversionFn} tableName="Test" />,
+    );
 
     expect(screen.getByText("Electricity")).toBeInTheDocument();
     expect(screen.getByText("Residential")).toBeInTheDocument();
@@ -171,10 +173,12 @@ describe("FactorTable Component", () => {
   });
 
   it("filters factors based on search query", () => {
-    render(<FactorTable conversionFactors={mockConversionFn} tableName="Test" />);
+    render(
+      <FactorTable conversionFactors={mockConversionFn} tableName="Test" />,
+    );
 
     const searchInput = screen.getByPlaceholderText(
-      "Search category or consumption type..."
+      "Search category or consumption type...",
     );
     fireEvent.change(searchInput, { target: { value: "Electricity" } });
 
@@ -183,23 +187,26 @@ describe("FactorTable Component", () => {
   });
 
   it("sorts factors by column when header is clicked", () => {
-    render(<FactorTable conversionFactors={mockConversionFn} tableName="Test" />);
-  
+    render(
+      <FactorTable conversionFactors={mockConversionFn} tableName="Test" />,
+    );
+
     const headers = screen.getAllByRole("columnheader");
     const categoryHeader = headers.find((el) =>
-      el.textContent.toLowerCase().includes("category")
+      el.textContent.toLowerCase().includes("category"),
     );
-  
-    expect(categoryHeader).toBeTruthy(); 
+
+    expect(categoryHeader).toBeTruthy();
     fireEvent.click(categoryHeader);
-  
+
     const firstRow = screen.getAllByRole("row")[1];
     expect(firstRow).toHaveTextContent("Gas");
   });
-  
 
   it("toggles Bulk Edit Mode", () => {
-    render(<FactorTable conversionFactors={mockConversionFn} tableName="Test" />);
+    render(
+      <FactorTable conversionFactors={mockConversionFn} tableName="Test" />,
+    );
 
     const editButton = screen.getByText("Bulk Edit Mode");
     fireEvent.click(editButton);
@@ -208,16 +215,22 @@ describe("FactorTable Component", () => {
   });
 
   it("validates and updates intensity input", () => {
-    render(<FactorTable conversionFactors={mockConversionFn} tableName="Test" />);
+    render(
+      <FactorTable conversionFactors={mockConversionFn} tableName="Test" />,
+    );
 
     fireEvent.click(screen.getByText("Bulk Edit Mode"));
     const input = screen.getByDisplayValue("100");
 
     fireEvent.change(input, { target: { value: "abc" } });
-    expect(screen.queryByText("Must be a valid number")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Must be a valid number"),
+    ).not.toBeInTheDocument();
 
     fireEvent.change(input, { target: { value: "150" } });
-    expect(screen.queryByText("Must be a valid number")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Must be a valid number"),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -228,12 +241,12 @@ describe("DeleteFactorModal Component", () => {
         showDelete={true}
         handleDelete={vi.fn()}
         handleClose={vi.fn()}
-      />
+      />,
     );
     expect(
       screen.getByText(
-        "Are you sure you want to delete the following conversion factor?"
-      )
+        "Are you sure you want to delete the following conversion factor?",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -244,7 +257,7 @@ describe("DeleteFactorModal Component", () => {
         showDelete={true}
         handleDelete={handleDelete}
         handleClose={vi.fn()}
-      />
+      />,
     );
     fireEvent.click(screen.getByText("Delete"));
     expect(handleDelete).toHaveBeenCalled();
@@ -269,13 +282,23 @@ describe("ProcurementTable Component", () => {
     ]);
 
   it("renders procurement factors correctly", () => {
-    render(<ProcurementTable conversionFactors={mockConversionFn} tableName="Procurement" />);
+    render(
+      <ProcurementTable
+        conversionFactors={mockConversionFn}
+        tableName="Procurement"
+      />,
+    );
     expect(screen.getByText("Office Supplies")).toBeInTheDocument();
     expect(screen.getByText("300")).toBeInTheDocument();
   });
 
   it("filters procurement factors based on search query", () => {
-    render(<ProcurementTable conversionFactors={mockConversionFn} tableName="Procurement" />);
+    render(
+      <ProcurementTable
+        conversionFactors={mockConversionFn}
+        tableName="Procurement"
+      />,
+    );
 
     const searchInput = screen.getByPlaceholderText("Search category");
     fireEvent.change(searchInput, { target: { value: "Furniture" } });
@@ -285,7 +308,12 @@ describe("ProcurementTable Component", () => {
   });
 
   it("toggles edit mode and validates input", () => {
-    render(<ProcurementTable conversionFactors={mockConversionFn} tableName="Procurement" />);
+    render(
+      <ProcurementTable
+        conversionFactors={mockConversionFn}
+        tableName="Procurement"
+      />,
+    );
     fireEvent.click(screen.getByText("Bulk Edit Mode"));
 
     const input = screen.getByDisplayValue("300");
@@ -295,10 +323,17 @@ describe("ProcurementTable Component", () => {
   });
 
   it("sorts procurement factors by column when header is clicked", () => {
-    render(<ProcurementTable conversionFactors={mockConversionFn} tableName="Procurement" />);
+    render(
+      <ProcurementTable
+        conversionFactors={mockConversionFn}
+        tableName="Procurement"
+      />,
+    );
 
     const headers = screen.getAllByRole("columnheader");
-    const categoryHeader = headers.find((el) => el.textContent.toLowerCase().includes("category"));
+    const categoryHeader = headers.find((el) =>
+      el.textContent.toLowerCase().includes("category"),
+    );
     expect(categoryHeader).toBeTruthy();
 
     fireEvent.click(categoryHeader);
@@ -306,4 +341,3 @@ describe("ProcurementTable Component", () => {
     expect(firstRow).toHaveTextContent("Office");
   });
 });
-

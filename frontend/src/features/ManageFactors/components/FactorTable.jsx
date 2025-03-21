@@ -23,7 +23,6 @@ function FactorTable({ tableName, conversionFactors }) {
       conversionFactors(setOriginalFactors);
     }
   }, [setEditedFactors, setOriginalFactors]);
-  
 
   const filteredFactors = editedFactors.filter((factor) =>
     `${factor.category} ${factor.consumption_type}`
