@@ -15,6 +15,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 class RegisterView(generics.GenericAPIView):
@@ -193,6 +195,15 @@ class UpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateUserEmailAPIView(APIView):
     permission_classes = [AllowAny]
@@ -204,6 +215,12 @@ class UpdateUserEmailAPIView(APIView):
         if not current_email or not new_email:
             return Response(
                 {"error": "Both current_email and new_email are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(email=new_email).exists():
+            return Response(
+                {"error": "A user with the new email already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -236,7 +253,13 @@ class UpdateUserPasswordAPIView(APIView):
                 {"error": "User with the provided email does not exist."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
+        try:
+            validate_password(password, user)
+        except ValidationError as e:
+            return Response(
+                {"error": e.messages},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user.set_password(password)
         user.save()
 
