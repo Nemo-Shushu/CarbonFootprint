@@ -277,15 +277,15 @@ function Calculator() {
     function handleChange(event) {
       const { name, value } = event.target;
       setUtilitiesReport((prevReport) => {
-          const updatedReport = { ...prevReport };
-          if (value === "") {
-              delete updatedReport[name];
-          } else {
-              updatedReport[name] = value;
-          }
-          return updatedReport;
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
       });
-  }
+    }
 
     return (
       <main className="ms-sm-auto px-md-4 calculator-content-container">
@@ -572,15 +572,15 @@ function Calculator() {
     function handleChange(event) {
       const { name, value } = event.target;
       setTravelReport((prevReport) => {
-          const updatedReport = { ...prevReport };
-          if (value === "") {
-              delete updatedReport[name];
-          } else {
-              updatedReport[name] = value;
-          }
-          return updatedReport;
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
       });
-  }
+    }
 
     return (
       <main className="ms-sm-auto px-md-4 calculator-content-container">
@@ -941,15 +941,15 @@ function Calculator() {
     function handleChange(event) {
       const { name, value } = event.target;
       setWasteReport((prevReport) => {
-          const updatedReport = { ...prevReport };
-          if (value === "") {
-              delete updatedReport[name];  // ❗️删除空值对应的键
-          } else {
-              updatedReport[name] = value;
-          }
-          return updatedReport;
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
       });
-  }
+    }
 
     return (
       <main className="ms-sm-auto px-md-4 calculator-content-container">
