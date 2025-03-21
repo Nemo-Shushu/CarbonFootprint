@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
@@ -285,7 +285,6 @@ function SignInForm() {
         }
       });
   };
-  
 
   async function login() {
     await fetch(`${backendUrl}api/login/`, {
@@ -325,10 +324,10 @@ function SignInForm() {
     setVerificationError(false);
     setVerifiedMessage("");
     setSendDisabled(false);
-    setVerifyDisabled(false)
-    setIsVerified(false)
+    setVerifyDisabled(false);
+    setIsVerified(false);
   };
-  
+
   return (
     <div className="sign-in-wrapper">
       <div className="sign-in-container">
@@ -425,7 +424,9 @@ function SignInForm() {
                 onClick={handleSend}
                 disabled={sendDisabled}
               >
-                {sendDisabled ? `Resend code in ${formatTime(timer)}` : "Send code"}
+                {sendDisabled
+                  ? `Resend code in ${formatTime(timer)}`
+                  : "Send code"}
               </Button>
             </InputGroup>
             <div className="sign-in-form">
