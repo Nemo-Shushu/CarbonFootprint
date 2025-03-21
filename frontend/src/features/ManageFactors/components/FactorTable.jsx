@@ -18,9 +18,12 @@ function FactorTable({ tableName, conversionFactors }) {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    conversionFactors(setEditedFactors);
-    conversionFactors(setOriginalFactors);
+    if (typeof conversionFactors === "function") {
+      conversionFactors(setEditedFactors);
+      conversionFactors(setOriginalFactors);
+    }
   }, [setEditedFactors, setOriginalFactors]);
+  
 
   const filteredFactors = editedFactors.filter((factor) =>
     `${factor.category} ${factor.consumption_type}`
