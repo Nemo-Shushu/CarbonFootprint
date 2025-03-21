@@ -1,6 +1,6 @@
-import { describe, test, expect } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
+import { describe, expect, test } from "vitest";
 import AdminTool from "../AdminTools";
 
 describe("AdminTools Component", () => {
@@ -25,7 +25,8 @@ describe("AdminTools Component", () => {
       </BrowserRouter>,
     );
 
-    const confirmButton = screen.getAllByText("Confirm")[0];
+    const confirmButton = screen.getAllByText(/confirm/i)[0];
+
     fireEvent.click(confirmButton);
 
     await waitFor(() => {
@@ -52,10 +53,12 @@ describe("AdminTools Component", () => {
     await waitFor(() => {
       expect(screen.getByText("Confirm Action")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "cancel" }),
+        screen.getByRole("button", { name: /cancel/i })
+
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "confirm" }),
+        screen.getByRole("button", { name: /confirm/i })
+
       ).toBeInTheDocument();
     });
   });
@@ -67,10 +70,12 @@ describe("AdminTools Component", () => {
       </BrowserRouter>,
     );
 
-    const confirmButton = screen.getAllByText("Confirm")[0];
+    const confirmButton = screen.getAllByText(/confirm/i)[0];
+
     fireEvent.click(confirmButton);
 
-    const confirmActionButton = screen.getByRole("button", { name: "confirm" });
+    const confirmActionButton = screen.getByRole("button", { name: /confirm/i });
+
     fireEvent.click(confirmActionButton);
 
     await waitFor(() => {
