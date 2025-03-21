@@ -54,8 +54,8 @@ urlpatterns = [
         views.retrieve_and_delete_temp_report,
         name="retrieve_and_delete_temp_report",
     ),
-    path('session-expiry/', SessionExpiryView.as_view(), name='session-expiry'),
-    path('extend-session/', ExtendSessionView.as_view(), name='extend-session'),
+    path("session-expiry/", SessionExpiryView.as_view(), name="session-expiry"),
+    path("extend-session/", ExtendSessionView.as_view(), name="extend-session"),
     path(
         "retrieve-accounts-university/",
         views.retrieve_accounts_university,

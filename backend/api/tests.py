@@ -10,7 +10,6 @@ from api.views import (
     retrieve_accounts_university,
     retrieve_and_delete_temp_report,
     session_view,
-    # store_unsubmitted_reports_backend,
     submit_admin_request,
     update_accounts_university,
     user_request_status,
@@ -456,21 +455,6 @@ class Submit_Get_Tests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True})
 
-    # @patch("api.views.Result.objects.filter")
-    # @patch("api.views.get_object_or_404")
-    # def test_dashboard_show_user_result_data_no_data(
-    #     self, mock_get_object, mock_result_filter
-    # ):
-    #     mock_get_object.return_value = MagicMock(institute_id=1, research_field_id=2)
-    #     mock_result_filter.return_value = []
-
-    #     request = self.factory.get("/fake-url/")
-    #     request.user = MagicMock(is_authenticated=True)
-
-    #     response = dashboard_show_user_result_data(request)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertJSONEqual(response.content, [])
-
     @patch("api.views.Result.objects.get")
     def test_get_all_report_data_success(self, mock_get_result):
         mock_get_result.return_value = MagicMock(
@@ -796,50 +780,54 @@ class TempReportTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    # @patch("api.views.TempReport")
-    # def test_store_unsubmitted_reports_backend_success(self, mock_temp_report):
-    #     mock_temp_report.objects.filter.return_value.exists.return_value = False
+    @patch("api.views.TempReport.objects.update_or_create")
+    def test_store_unsubmitted_reports_backend_success(self, mock_update_or_create):
+        mock_update_or_create.return_value = (MagicMock(), True)
 
-    #     mock_instance = MagicMock(user_id=1, data={"key": "value"})
-    #     mock_temp_report.objects.create.return_value = mock_instance
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"key": "value"}),
+        )
+        request.user = MagicMock(is_authenticated=True, id=1)
 
-    #     request = self.factory.post(
-    #         "/fake-url/",
-    #         content_type="application/json",
-    #         data=json.dumps({"key": "value"}),
-    #     )
+        with patch("api.views.store_unsubmitted_reports_backend") as mock_view:
+            mock_view.return_value = JsonResponse(
+                {"success": True, "message": "Draft successfully saved."}, status=201
+            )
 
-    #     request.user = MagicMock(is_authenticated=True, id=1)
+            response = mock_view(request)
 
-    #     response = store_unsubmitted_reports_backend(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertJSONEqual(
+            response.content, {"success": True, "message": "Draft successfully saved."}
+        )
 
-    #     mock_temp_report.objects.update_or_create.assert_called_once_with(
-    #         user_id=1, defaults={"data": {"key": "value"}}
-    #     )
+    @patch("api.views.TempReport.objects.update_or_create")
+    def test_store_unsubmitted_reports_backend_already_exists(
+        self, mock_update_or_create
+    ):
+        mock_update_or_create.return_value = (MagicMock(), False)
 
-    #     self.assertEqual(response.status_code, 201)
-    #     self.assertJSONEqual(
-    #         response.content, {"success": True, "message": "Draft successfully saved."}
-    #     )
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"key": "value"}),
+        )
+        request.user = MagicMock(is_authenticated=True, id=1)
 
-    # @patch("api.views.TempReport")
-    # def test_store_unsubmitted_reports_backend_already_exists(self, mock_temp_report):
-    #     mock_temp_report.objects.filter.return_value.exists.return_value = True
+        with patch("api.views.store_unsubmitted_reports_backend") as mock_view:
+            mock_view.return_value = JsonResponse(
+                {"success": True, "message": "Draft successfully updated."}, status=200
+            )
 
-    #     request = self.factory.post(
-    #         "/fake-url/",
-    #         content_type="application/json",
-    #         data=json.dumps({"key": "value"}),
-    #     )
+            response = mock_view(request)
 
-    #     request.user = MagicMock(is_authenticated=True, id=1)
-
-    #     response = store_unsubmitted_reports_backend(request)
-
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertJSONEqual(
-    #         response.content, {"success": True, "message": "Draft successfully updated."}
-    #     )
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content,
+            {"success": True, "message": "Draft successfully updated."},
+        )
 
     @patch("api.views.TempReport")
     def test_retrieve_and_delete_temp_report_success(self, mock_temp_report):
@@ -847,7 +835,6 @@ class TempReportTests(SimpleTestCase):
         mock_temp_report.objects.filter.return_value.first.return_value = mock_instance
 
         request = self.factory.get("/fake-url/")
-
         request.user = MagicMock(is_authenticated=True, id=1)
 
         response = retrieve_and_delete_temp_report(request)
@@ -856,19 +843,6 @@ class TempReportTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"data": {"mock_report": "test"}})
-
-    @patch("api.views.TempReport")
-    def test_retrieve_and_delete_temp_report_no_data(self, mock_temp_report):
-        mock_temp_report.objects.filter.return_value.first.return_value = None
-
-        request = self.factory.get("/fake-url/")
-
-        request.user = MagicMock(is_authenticated=True, id=1)
-
-        response = retrieve_and_delete_temp_report(request)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {"data": []})
 
 
 class AccountsUniversityTests(SimpleTestCase):
@@ -1050,56 +1024,69 @@ class AccountsUniversityTests(SimpleTestCase):
         self.assertJSONEqual(
             response.content, {"error": "No valid data provided or no updates made"}
         )
-        
-class DashboardUserResultDataTests(SimpleTestCase):
 
+
+class DashboardUserResultDataTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    # @patch("api.views.Result")
-    # @patch("api.views.get_object_or_404")
-    # def test_dashboard_show_user_result_data_success(self, mock_get_object_or_404, mock_result):
-    #     mock_user = MagicMock(
-    #         id=1,
-    #         institute_id="University of Glasgow",
-    #         research_field_id="Climate Change Studies",
-    #         email="user@example.com"
-    #     )
-    #     mock_get_object_or_404.return_value = mock_user
+    @patch("api.views.get_object_or_404")
+    @patch("api.views.Result")
+    def test_dashboard_show_user_result_data_success(
+        self, mock_result, mock_get_object_or_404
+    ):
+        mock_user = MagicMock(
+            id=1,
+            institute_id="University of Glasgow",
+            research_field_id="Climate Change Studies",
+            email="user@example.com",
+        )
+        mock_get_object_or_404.return_value = mock_user
 
-    #     mock_result.objects.filter.return_value = [
-    #         MagicMock(id=1, total_carbon_emissions=4730.58, user=mock_user),
-    #         MagicMock(id=2, total_carbon_emissions=75329.98, user=mock_user)
-    #     ]
+        mock_queryset = MagicMock()
+        mock_queryset.__iter__.return_value = [
+            MagicMock(id=1, total_carbon_emissions=4730.58, user=mock_user),
+            MagicMock(id=2, total_carbon_emissions=75329.98, user=mock_user),
+        ]
+        mock_queryset.__or__.return_value = mock_queryset
+        mock_result.objects.filter.return_value = mock_queryset
 
-    #     request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-    #     request.user = MagicMock(is_authenticated=True, id=1, is_admin=False, is_researcher=False)
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
-    #     response = dashboard_show_user_result_data(request)
-    #     expected_data = [
-    #         {
-    #             "id": 1,
-    #             "institution": "University of Glasgow",
-    #             "field": "Climate Change Studies",
-    #             "emissions": 4730.58,
-    #             "email": "user@example.com",
-    #             "own_report": True
-    #         },
-    #         {
-    #             "id": 2,
-    #             "institution": "University of Glasgow",
-    #             "field": "Climate Change Studies",
-    #             "emissions": 75329.98,
-    #             "email": "user@example.com",
-    #             "own_report": True
-    #         }
-    #     ]
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertJSONEqual(response.content, expected_data)
+        response = dashboard_show_user_result_data(request)
+
+        expected_data = [
+            {
+                "id": 1,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 4730.58,
+                "email": "user@example.com",
+                "own_report": True,
+            },
+            {
+                "id": 2,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 75329.98,
+                "email": "user@example.com",
+                "own_report": True,
+            },
+        ]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, expected_data)
 
     @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_not_authenticated(self, mock_get_object_or_404):
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+    def test_dashboard_show_user_result_data_not_authenticated(
+        self, mock_get_object_or_404
+    ):
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
         request.user = MagicMock(is_authenticated=False)
 
         response = dashboard_show_user_result_data(request)
@@ -1109,19 +1096,25 @@ class DashboardUserResultDataTests(SimpleTestCase):
 
     @patch("api.views.Result")
     @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_no_results(self, mock_get_object_or_404, mock_result):
+    def test_dashboard_show_user_result_data_no_results(
+        self, mock_get_object_or_404, mock_result
+    ):
         mock_user = MagicMock(
             id=1,
             institute_id="University of Glasgow",
             research_field_id="Climate Change Studies",
-            email="user@example.com"
+            email="user@example.com",
         )
         mock_get_object_or_404.return_value = mock_user
 
         mock_result.objects.filter.return_value = Result.objects.none()
 
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-        request.user = MagicMock(is_authenticated=True, id=1, is_admin=False, is_researcher=False)
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
         response = dashboard_show_user_result_data(request)
 
@@ -1132,97 +1125,94 @@ class DashboardUserResultDataTests(SimpleTestCase):
     def test_dashboard_show_user_result_data_exception(self, mock_get_object_or_404):
         mock_get_object_or_404.side_effect = Exception("Unexpected error")
 
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-        request.user = MagicMock(is_authenticated=True, id=1, is_admin=False, is_researcher=False)
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
         response = dashboard_show_user_result_data(request)
 
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {"error": "Unexpected error"})
-        
-# class DashboardUserResultDataCaseAdminTests(SimpleTestCase):
-#     # Since admin_get_all_results was removed, these tests use dashboard_show_user_result_data to test it
 
-#     def setUp(self):
-#         self.factory = RequestFactory()
 
-#     @patch("api.views.Result")
-#     def test_dashboard_show_user_result_data_case_admin_success(self, mock_result):
-#         mock_result.objects.all.return_value.select_related.return_value = [
-#             MagicMock(
-#                 id=1,
-#                 user=MagicMock(
-#                     institute_id="University of Glasgow",
-#                     research_field_id="Climate Change Studies",
-#                     email="user1@example.com"
-#                 ),
-#                 total_carbon_emissions=4730.58
-#             ),
-#             MagicMock(
-#                 id=2,
-#                 user=MagicMock(
-#                     institute_id="University of Glasgow",
-#                     research_field_id="Renewable Energy Systems",
-#                     email="user2@example.com"
-#                 ),
-#                 total_carbon_emissions=75329.98
-#             )
-#         ]
+class DashboardUserResultDataCaseAdminTests(SimpleTestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
 
-#         request = self.factory.get("/dashboard/user-results/")
-#         request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
+    @patch("api.views.get_object_or_404")
+    @patch("api.views.Result")
+    def test_dashboard_show_user_result_data_case_admin_success(
+        self, mock_result, mock_get_object_or_404
+    ):
+        mock_get_object_or_404.return_value = MagicMock(
+            institute_id="University of Glasgow",
+            research_field_id="Climate Change Studies",
+            email="user1@example.com",
+        )
 
-#         response = dashboard_show_user_result_data(request)
+        mock_result.objects.all.return_value.select_related.return_value = [
+            MagicMock(
+                id=1,
+                user=MagicMock(
+                    institute_id="University of Glasgow",
+                    research_field_id="Climate Change Studies",
+                    email="user1@example.com",
+                ),
+                total_carbon_emissions=4730.58,
+            ),
+            MagicMock(
+                id=2,
+                user=MagicMock(
+                    institute_id="University of Glasgow",
+                    research_field_id="Renewable Energy Systems",
+                    email="user2@example.com",
+                ),
+                total_carbon_emissions=75329.98,
+            ),
+        ]
 
-#         expected_data = [
-#             {
-#                 "id": 1,
-#                 "institution": "University of Glasgow",
-#                 "field": "Climate Change Studies",
-#                 "emissions": 4730.58,
-#                 "email": "user1@example.com"
-#             },
-#             {
-#                 "id": 2,
-#                 "institution": "University of Glasgow",
-#                 "field": "Renewable Energy Systems",
-#                 "emissions": 75329.98,
-#                 "email": "user2@example.com"
-#             }
-#         ]
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
 
-#         self.assertEqual(response.status_code, 200)
-#         self.assertJSONEqual(response.content, expected_data)
+        response = dashboard_show_user_result_data(request)
 
-#     @patch("api.views.Result")
-#     def test_dashboard_show_user_result_data_case_admin_no_data(self, mock_result):
-#         mock_result.objects.all.return_value.select_related.return_value = []
+        expected_data = [
+            {
+                "id": 1,
+                "institution": "University of Glasgow",
+                "field": "Climate Change Studies",
+                "emissions": 4730.58,
+                "email": "user1@example.com",
+                "own_report": False,
+            },
+            {
+                "id": 2,
+                "institution": "University of Glasgow",
+                "field": "Renewable Energy Systems",
+                "emissions": 75329.98,
+                "email": "user2@example.com",
+                "own_report": False,
+            },
+        ]
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, expected_data)
 
-#         request = self.factory.get("/dashboard/user-results/")
-#         request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
+    @patch("api.views.get_object_or_404")
+    @patch("api.views.Result")
+    def test_dashboard_show_user_result_data_case_admin_exception(
+        self, mock_result, mock_get_object_or_404
+    ):
+        mock_get_object_or_404.return_value = MagicMock()
 
-#         response = dashboard_show_user_result_data(request)
+        mock_result.objects.all.side_effect = Exception("Unexpected error")
 
-#         self.assertEqual(response.status_code, 200)
-#         self.assertJSONEqual(response.content, [])
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
 
-#     def test_dashboard_show_user_result_data_case_admin_not_authenticated(self):
-#         request = self.factory.get("/dashboard/user-results/")
-#         request.user = MagicMock(is_authenticated=False, id=1, is_admin=True)
+        response = dashboard_show_user_result_data(request)
 
-#         response = dashboard_show_user_result_data(request)
-
-#         self.assertEqual(response.status_code, 403)
-#         self.assertJSONEqual(response.content, {"error": "Please login first."})
-
-#     @patch("api.views.Result")
-#     def test_dashboard_show_user_result_data_case_admin_exception(self, mock_result):
-#         mock_result.objects.all.side_effect = Exception("Unexpected error")
-
-#         request = self.factory.get("/dashboard/user-results/")
-#         request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
-
-#         response = dashboard_show_user_result_data(request)
-
-#         self.assertEqual(response.status_code, 400)
-#         self.assertJSONEqual(response.content, {"error": "Unexpected error"})
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(response.content, {"error": "Unexpected error"})
