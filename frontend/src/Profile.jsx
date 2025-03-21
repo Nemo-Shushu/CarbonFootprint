@@ -267,7 +267,7 @@ const Profile = () => {
   }
 
   const getName = () => {
-    fetch("http://localhost:8000/api/whoami/", {
+    fetch(backendUrl.concat("api/whoami/"), {
       credentials: "include",
     })
       .then((res) => res.json())
