@@ -25,7 +25,7 @@ describe("AdminTools Component", () => {
       </BrowserRouter>,
     );
 
-    const confirmButton = screen.getAllByText(/confirm/i)[0];
+    const confirmButton = screen.getAllByText(/Accept/i)[0];
 
     fireEvent.click(confirmButton);
 
@@ -47,7 +47,7 @@ describe("AdminTools Component", () => {
       </BrowserRouter>,
     );
 
-    const denyButton = screen.getAllByText("Deny")[0];
+    const denyButton = screen.getAllByText("Reject")[0];
     fireEvent.click(denyButton);
 
     await waitFor(() => {
@@ -68,7 +68,7 @@ describe("AdminTools Component", () => {
       </BrowserRouter>,
     );
 
-    const confirmButton = screen.getAllByText(/confirm/i)[0];
+    const confirmButton = screen.getAllByText(/Accept/i)[0];
 
     fireEvent.click(confirmButton);
 
