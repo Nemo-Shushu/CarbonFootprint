@@ -103,7 +103,7 @@ class TempReport(models.Model):
 
 class AccountsUniversity(models.Model):
     name = models.CharField(max_length=255, primary_key=True)
-    floor_area_gia = models.DecimalField(
+    floor_area = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     electricity_non_residential = models.DecimalField(

@@ -1279,6 +1279,7 @@ def retrieve_accounts_university(request):
 
 
 def update_accounts_university(request):
+    
     if request.method == "POST":
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Please login first."}, status=403)

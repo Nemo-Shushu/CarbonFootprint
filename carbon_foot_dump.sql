@@ -57,7 +57,7 @@ CREATE FUNCTION public.calculate_total_electricity_benchmark() RETURNS trigger
     AS $$
 BEGIN
     NEW.total_electricity_benchmark = 
-        (NEW.electricity_non_residential + NEW.electricity_residential) / NEW.floor_area_gia;
+        (NEW.electricity_non_residential + NEW.electricity_residential) / NEW.floor_area;
     RETURN NEW;
 END;
 $$;
@@ -74,7 +74,7 @@ CREATE FUNCTION public.calculate_total_gas_benchmark() RETURNS trigger
     AS $$
 BEGIN
     NEW.total_gas_benchmark := 
-        (NEW.gas_non_residential + NEW.gas_residential) / NULLIF(NEW.floor_area_gia, 0);
+        (NEW.gas_non_residential + NEW.gas_residential) / NULLIF(NEW.floor_area, 0);
     RETURN NEW;
 END;
 $$;
@@ -209,7 +209,7 @@ ALTER TABLE public.accounts_researchfield OWNER TO carbon_foot;
 
 CREATE TABLE public.accounts_university (
     name character varying(255) NOT NULL,
-    floor_area_gia numeric(10,2),
+    floor_area numeric(10,2),
     electricity_non_residential numeric(10,2),
     electricity_residential numeric(10,2),
     gas_non_residential numeric(10,2),
@@ -797,7 +797,7 @@ Carbon Footprint Analysis
 -- Data for Name: accounts_university; Type: TABLE DATA; Schema: public; Owner: carbon_foot
 --
 
-COPY public.accounts_university (name, floor_area_gia, electricity_non_residential, electricity_residential, gas_non_residential, gas_residential, total_electricity_benchmark, total_gas_benchmark, avg_electricity_consumption_all_buildings, electricity_benchmark_multiplier, avg_gas_consumption_all_buildings, gas_benchmark_multiplier, academic_laboratory_gas, academic_laboratory_electricity, academic_office_gas, academic_office_electricity, admin_office_gas, admin_office_electricity, avg_gas_consumption_academic_lab_workshop, avg_electricity_consumption_academic_lab_workshop, avg_gas_consumption_academic_office, avg_electricity_consumption_academic_office, avg_gas_consumption_admin_office, avg_electricity_consumption_admin_office) FROM stdin;
+COPY public.accounts_university (name, floor_area, electricity_non_residential, electricity_residential, gas_non_residential, gas_residential, total_electricity_benchmark, total_gas_benchmark, avg_electricity_consumption_all_buildings, electricity_benchmark_multiplier, avg_gas_consumption_all_buildings, gas_benchmark_multiplier, academic_laboratory_gas, academic_laboratory_electricity, academic_office_gas, academic_office_electricity, admin_office_gas, admin_office_electricity, avg_gas_consumption_academic_lab_workshop, avg_electricity_consumption_academic_lab_workshop, avg_gas_consumption_academic_office, avg_electricity_consumption_academic_office, avg_gas_consumption_admin_office, avg_electricity_consumption_admin_office) FROM stdin;
 Abertay University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 Anglia Ruskin University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 Aston University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
