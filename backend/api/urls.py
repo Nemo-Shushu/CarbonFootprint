@@ -28,14 +28,6 @@ urlpatterns = [
         name="get-all-carbon-impact",
     ),
     path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
-    path(
-        "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
-    ),
-    path(
-        "get-all-carbon-impact/",
-        views.get_all_carbon_impact,
-        name="get-all-carbon-impact",
-    ),
     path("submit-adminrequest/", views.submit_admin_request, name="submit_request"),
     path("admin-request-list/", views.admin_request_list, name="admin_request_list"),
     path("user-request-status/", views.user_request_status, name="user_request_status"),
@@ -54,8 +46,8 @@ urlpatterns = [
         views.retrieve_and_delete_temp_report,
         name="retrieve_and_delete_temp_report",
     ),
-    path('session-expiry/', SessionExpiryView.as_view(), name='session-expiry'),
-    path('extend-session/', ExtendSessionView.as_view(), name='extend-session'),
+    path("session-expiry/", SessionExpiryView.as_view(), name="session-expiry"),
+    path("extend-session/", ExtendSessionView.as_view(), name="extend-session"),
     path(
         "retrieve-accounts-university/",
         views.retrieve_accounts_university,
@@ -66,6 +58,4 @@ urlpatterns = [
         views.update_accounts_university,
         name="update_accounts_university",
     ),
-    path('admin-get-all-results/', views.admin_get_all_results, name='admin-get-all-results'),
-    path('show-same-effect-user-result-data/', views.show_same_effect_user_result_data, name='dashboard_show_same_effect_user_result_data'),
 ]

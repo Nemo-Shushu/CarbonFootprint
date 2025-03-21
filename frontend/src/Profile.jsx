@@ -116,12 +116,14 @@ const Profile = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [showEmail, setShowEmail] = useState(false);
-  const handleEmailClose = () => setShowEmail(false);
-  const [modalError, setModalError] = useState(false);
+  const [profileError, setProfileError] = useState("");
+  const [modalError, setModalError] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
   const [verifiedMessage, setVerifiedMessage] = useState("");
   const [verifyDisabled, setVerifyDisabled] = useState(true);
+  const [timer, setTimer] = useState(0);
+  const [sendDisabled, setSendDisabled] = useState(false);
   const navigate = useNavigate();
 
   const handleShow = () => {
@@ -135,6 +137,16 @@ const Profile = () => {
       password2: "",
     });
     setShow(true);
+  };
+
+  const handleEmailClose = () => {
+    setShowEmail(false);
+    setCode("");
+    setVerificationError(false);
+    setVerifiedMessage("");
+    setSendDisabled(false);
+    setVerifyDisabled(true);
+    setIsVerified(false);
   };
 
   const handleEmailShow = () => {
@@ -161,6 +173,8 @@ const Profile = () => {
     }
     sendCode(newEmail)
       .then(() => {
+        setTimer(180);
+        setSendDisabled(true);
         setVerifyDisabled(false);
       })
       .catch((error) => {
@@ -168,12 +182,35 @@ const Profile = () => {
       });
   };
 
+  useEffect(() => {
+    let intervalId;
+    if (timer > 0) {
+      intervalId = setInterval(() => {
+        setTimer((prevTime) => {
+          const newTime = prevTime - 1;
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      setSendDisabled(false);
+    }
+    return () => clearInterval(intervalId);
+  }, [timer]);
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  };
+
   const handleVerify = (event) => {
     event.preventDefault();
     verifyCode(newEmail, code)
       .then((data) => {
         console.log("Code verified:", data);
+
         setIsVerified(true);
+        setVerificationError(false);
         setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
       })
@@ -196,8 +233,17 @@ const Profile = () => {
         window.location.reload();
       })
       .catch((err) => {
-        console.error("Error updating email:", err);
-        setModalError(true);
+        console.error("Error updating Email:", err);
+        const errorKeys = Object.keys(err);
+        if (errorKeys.length > 0) {
+          const firstKey = errorKeys[0];
+          const firstMessage = Array.isArray(err[firstKey])
+            ? err[firstKey][0]
+            : err[firstKey];
+          setModalError(firstMessage);
+        } else {
+          setModalError("An unknown error occurred.");
+        }
       });
   };
 
@@ -267,7 +313,7 @@ const Profile = () => {
   }
 
   const getName = () => {
-    fetch("http://localhost:8000/api/whoami/", {
+    fetch(backendUrl.concat("api/whoami/"), {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -291,42 +337,78 @@ const Profile = () => {
     setUpdateForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (updateForm.password !== updateForm.password2) {
       alert("Passwords do not match!");
       return;
     }
     const csrfToken = getCookie("csrftoken");
-    fetch(`${backendUrl}api/accounts/update/`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-      body: JSON.stringify(updateForm),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          handleClose();
-          getName();
+    try {
+      const response = await fetch(`${backendUrl}api/accounts/update/`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify(updateForm),
+      });
+
+      if (response.status === 401) {
+        setProfileError(
+          "Authentication credentials were not provided. Please log in.",
+        );
+        navigate("/sign-in");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (response.status >= 200 && response.status < 300) {
+        console.log("Update success branch reached");
+        handleClose();
+        if (
+          updateForm.password.trim() != "" &&
+          updateForm.password2.trim() != ""
+        ) {
+          navigate("/sign-in");
         } else {
-          console.error("Update failed:", data.error);
+          window.location.reload();
         }
-      })
-      .catch((error) => console.error("Error updating profile:", error));
+        getName();
+      } else {
+        const errorKeys = Object.keys(data);
+        if (errorKeys.length > 0) {
+          const firstKey = errorKeys[0];
+          const firstMessage = Array.isArray(data[firstKey])
+            ? data[firstKey][0]
+            : data[firstKey];
+          setProfileError(firstMessage);
+        } else {
+          setProfileError("An unknown error occurred.");
+        }
+        console.error("Update failed:", data.error || "Unknown error");
+      }
+    } catch (err) {
+      console.error("Error updating Password:", err);
+      const errorKeys = Object.keys(err || {});
+      if (errorKeys.length > 0) {
+        const firstKey = errorKeys[0];
+        const firstMessage = Array.isArray(err[firstKey])
+          ? err[firstKey][0]
+          : err[firstKey];
+        setProfileError(firstMessage);
+      } else {
+        setProfileError("An unknown error occurred.");
+      }
+    }
   };
 
   return (
     <div className="profile-card ">
-      <div className="row align-items-center">
+      <div className="row align-items-center m-1">
         <div className="container ">
           <div className="row">
-            <p>
-              <strong>Role: </strong>{" "}
-              {isAdmin ? "admin" : isResearcher ? "researcher" : "user"}
-            </p>
             <p>
               <strong>Forename: </strong> {first_name || "Loading..."}
             </p>
@@ -342,6 +424,10 @@ const Profile = () => {
               <strong>ResearchField: </strong> {researchField || "Not provided"}
             </p>
             <p>
+              <strong>Role: </strong>{" "}
+              {isAdmin ? "admin" : isResearcher ? "researcher" : "user"}
+            </p>
+            <p>
               <strong>Email: </strong> {email || "Not provided"}
             </p>
           </div>
@@ -354,8 +440,6 @@ const Profile = () => {
             <i className="bi bi-envelope-fill"></i> Update Email
           </button>
         </div>
-
-        <div className="profile-image"></div>
 
         {/* Profile Update Modal */}
         <Modal show={show} onHide={handleClose} className="profile-modal">
@@ -476,23 +560,10 @@ const Profile = () => {
                 {showPassword ? "Hide" : "Show"}
               </Button>
             </InputGroup>
+            {profileError && <p className="warning">{profileError}</p>}
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="primary"
-              onClick={() => {
-                handleSave();
-                handleClose();
-                if (
-                  updateForm.password.trim() !== "" &&
-                  updateForm.password2.trim() !== ""
-                ) {
-                  navigate("/sign-in");
-                } else {
-                  window.location.reload();
-                }
-              }}
-            >
+            <Button variant="primary" onClick={handleSave}>
               Confirm
             </Button>
             <Button variant="secondary" onClick={handleClose}>
@@ -526,8 +597,11 @@ const Profile = () => {
                 className="verify-button"
                 type="button"
                 onClick={handleSend}
+                disabled={sendDisabled}
               >
-                Send code
+                {sendDisabled
+                  ? `Resend code in ${formatTime(timer)}`
+                  : "Send code"}
               </Button>
             </InputGroup>
             <div className="sign-in-form">
@@ -544,9 +618,7 @@ const Profile = () => {
                 {verificationError && (
                   <p className="warning">Your code is incorrect.</p>
                 )}
-                {modalError && (
-                  <p className="warning">An unknown error occurred.</p>
-                )}
+                {modalError && <p className="warning">{modalError}</p>}
                 {verifiedMessage && (
                   <p className="success">{verifiedMessage}</p>
                 )}

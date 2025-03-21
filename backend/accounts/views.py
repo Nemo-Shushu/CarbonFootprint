@@ -15,6 +15,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 class RegisterView(generics.GenericAPIView):
@@ -193,6 +195,15 @@ class UpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateUserEmailAPIView(APIView):
     permission_classes = [AllowAny]
@@ -207,21 +218,27 @@ class UpdateUserEmailAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if User.objects.filter(email=new_email).exists():
+            return Response(
+                {"error": "A user with the new email already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user = get_object_or_404(User, email=current_email)
         user.email = new_email
         user.save()
 
         return Response(
-            {"message": "Email updated successfully."},
-            status=status.HTTP_200_OK
-        ) 
-    
+            {"message": "Email updated successfully."}, status=status.HTTP_200_OK
+        )
+
+
 class UpdateUserPasswordAPIView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
 
     def patch(self, request, format=None):
         current_email = request.data.get("email")
-        password = request.data.get('password')
+        password = request.data.get("password")
 
         if not current_email:
             return Response(
@@ -234,20 +251,26 @@ class UpdateUserPasswordAPIView(APIView):
         except User.DoesNotExist:
             return Response(
                 {"error": "User with the provided email does not exist."},
-            status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
-
+        try:
+            validate_password(password, user)
+        except ValidationError as e:
+            return Response(
+                {"error": e.messages},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user.set_password(password)
         user.save()
 
         return Response(
-            {"message": "Password updated successfully."},
-            status=status.HTTP_200_OK
+            {"message": "Password updated successfully."}, status=status.HTTP_200_OK
         )
-    
-    
+
+
 class CheckEmailAPIView(APIView):
-    permission_classes = [AllowAny]  
+    permission_classes = [AllowAny]
+
     def post(self, request):
         current_email = request.data.get("email")
 
@@ -259,20 +282,13 @@ class CheckEmailAPIView(APIView):
 
         try:
             user = User.objects.get(email=current_email)
-            if(user):
+            if user:
                 return Response(
-            {"message": "User with the provided email does exist "},
-            status=status.HTTP_200_OK        
-            )
+                    {"message": "User with the provided email does exist "},
+                    status=status.HTTP_200_OK,
+                )
         except User.DoesNotExist:
             return Response(
                 {"error": "User with the provided email does not exist."},
-            status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
-        
-
-
-    
-       
-    
-            

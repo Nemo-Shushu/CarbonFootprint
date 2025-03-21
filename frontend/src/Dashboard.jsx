@@ -1,7 +1,7 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useLocation } from "react-router-dom";
 import Profile from "./Profile";
@@ -15,10 +15,11 @@ import PropTypes from "prop-types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 TableComponent.propTypes = {
-  isAdmin: PropTypes.boolean,
+  isAdmin: PropTypes.bool,
+  isResearcher: PropTypes.bool,
 };
 
-function TableComponent({ isAdmin }) {
+function TableComponent({ isAdmin, isResearcher }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
@@ -30,6 +31,7 @@ function TableComponent({ isAdmin }) {
   const [filter, setFilter] = useState({
     institute: "",
     research_field: "",
+    own_reports: false,
   });
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -80,6 +82,8 @@ function TableComponent({ isAdmin }) {
 
   async function getReports() {
     try {
+      const body = {};
+
       const response = await fetch(
         `${backendUrl}api/dashboard-show-user-result-data/`,
         {
@@ -89,6 +93,7 @@ function TableComponent({ isAdmin }) {
             "Content-Type": "application/json",
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
+          body: JSON.stringify(body),
         },
       );
 
@@ -146,6 +151,14 @@ function TableComponent({ isAdmin }) {
     }));
   };
 
+  const handleOwnReportsChange = (event) => {
+    const isChecked = event.target.checked;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      own_reports: isChecked,
+    }));
+  };
+
   function handleSearchChange(event) {
     setSearchString(event.target.value);
   }
@@ -159,7 +172,8 @@ function TableComponent({ isAdmin }) {
     return (
       findString(row.id) &&
       (filter.institute === "" || filter.institute === row.institution) &&
-      (filter.research_field === "" || filter.research_field === row.field)
+      (filter.research_field === "" || filter.research_field === row.field) &&
+      (!filter.own_reports || row.own_report)
     );
   });
 
@@ -208,16 +222,17 @@ function TableComponent({ isAdmin }) {
         show={visibleFilter}
         onHide={() => setVisibleFilter(false)}
         centered
-        size="lg"
+        size="md"
       >
         <Modal.Header closeButton>
           <Modal.Title>Filter Reports</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="input-group">
+          <div className="mb-3">
+            <label className="form-label">Institution</label>
             <select
               name="institute"
-              className="input-field"
+              className="form-select"
               value={filter.institute}
               onChange={handleInstitutionsChange}
             >
@@ -232,10 +247,11 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
-          <div className="input-group">
+          <div className="mb-3">
+            <label className="form-label">Research Field</label>
             <select
               name="research_field"
-              className="input-field"
+              className="form-select"
               value={filter.research_field}
               onChange={handleFieldsChange}
             >
@@ -250,9 +266,32 @@ function TableComponent({ isAdmin }) {
             </select>
           </div>
 
+          <div className="form-check mb-3">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="own-reports"
+              checked={filter.own_reports}
+              onChange={handleOwnReportsChange}
+            />
+            <label
+              className="form-check-label"
+              htmlFor="own-reports"
+              style={{ userSelect: "none" }}
+            >
+              Show Only My Own Reports
+            </label>
+          </div>
+
           <button
             className="btn btn-moss"
-            onClick={() => setFilter({ institute: "", research_field: "" })}
+            onClick={() =>
+              setFilter({
+                institute: "",
+                research_field: "",
+                own_reports: false,
+              })
+            }
           >
             Reset Filter
           </button>
@@ -329,7 +368,7 @@ function TableComponent({ isAdmin }) {
                       <i className="bi bi-sort-down"></i>
                     ))}
                 </th>
-                {isAdmin && (
+                {(isAdmin || isResearcher) && (
                   <th
                     scope="col"
                     onClick={() => sortTable("email")}
@@ -360,7 +399,7 @@ function TableComponent({ isAdmin }) {
                   <td>{row.institution}</td>
                   <td>{row.field}</td>
                   <td>{row.emissions}</td>
-                  {isAdmin && <td>{row.email}</td>}
+                  {(isAdmin || isResearcher) && <td>{row.email}</td>}
                 </tr>
               ))}
             </tbody>
@@ -391,12 +430,15 @@ function Dashboard() {
   const [showProfile, setShowProfile] = useState(
     queryParams.get("showProfile") === "true",
   );
-  const dropdownRef = useRef(null);
-  const profileRef = useRef(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isResearcher, setIsResearcher] = useState(false);
 
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
+  }
+
+  function handleResearcherStatusChange(ResearcherStatus) {
+    setIsResearcher(ResearcherStatus);
   }
 
   /**
@@ -406,38 +448,26 @@ function Dashboard() {
     setShowProfile((prev) => !prev);
   }
 
-  /**
-   * Toggles the visibility of the DropDown.
-   */
-  function toggleDropdown(event) {
-    event.stopPropagation();
-  }
-
-  /**
-   * Closes the Profile & Dropdown when clicking outside of it.
-   */
-  function handleClickOutside(event) {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      // setShowDropdown(false);
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
   return (
-    <div
-      style={{ display: "flex", height: "100vh" }}
-      onClick={handleClickOutside}
-    >
+    <div style={{ display: "flex", height: "100vh" }}>
+      <Modal
+        show={showProfile}
+        onHide={() => setShowProfile(false)}
+        centered
+        size="md"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Profile</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Profile />
+        </Modal.Body>
+      </Modal>
       {/* SideBar */}
       <Sidebar
         style={{ flex: "0 0 17%" }}
         onAdminStatusChange={handleAdminStatusChange}
+        onResearcherStatusChange={handleResearcherStatusChange}
       />
 
       {/* Main Content */}
@@ -446,7 +476,7 @@ function Dashboard() {
           <h1 className="h2">{isAdmin ? "Admin Dashboard" : "Dashboard"}</h1>
 
           {/* Setting */}
-          <div className="position-relative" ref={dropdownRef}>
+          <div className="position-relative">
             <i
               className="bi bi-person-circle"
               alt="Profile"
@@ -459,7 +489,9 @@ function Dashboard() {
                 padding: "5px",
                 borderRadius: "100%",
               }}
-              onClick={toggleDropdown}
+              onClick={() => {
+                toggleProfile();
+              }}
             />
 
             <button
@@ -474,14 +506,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Profile */}
-        {showProfile && (
-          <div ref={profileRef}>
-            <Profile />
-          </div>
-        )}
-
-        <TableComponent isAdmin={isAdmin} />
+        <TableComponent isAdmin={isAdmin} isResearcher={isResearcher} />
       </main>
     </div>
   );

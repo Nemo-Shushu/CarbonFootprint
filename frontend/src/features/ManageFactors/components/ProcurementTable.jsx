@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { handleBulkUpdateSubmissionAPI } from "../api/apiFactors.jsx";
+import { handleBulkUpdateProcurementSubmissionAPI } from "../api/apiFactors.jsx";
 import "../assets/ManageFactors.css";
 
 FactorTable.propTypes = {
@@ -18,16 +18,12 @@ function FactorTable({ tableName, conversionFactors }) {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (typeof conversionFactors === "function") {
-      conversionFactors(setEditedFactors);
-      conversionFactors(setOriginalFactors);
-    }
+    conversionFactors(setEditedFactors);
+    conversionFactors(setOriginalFactors);
   }, [setEditedFactors, setOriginalFactors]);
 
   const filteredFactors = editedFactors.filter((factor) =>
-    `${factor.category} ${factor.consumption_type}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase()),
+    `${factor.category}`.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const sortedFactors = [...filteredFactors].sort((a, b) => {
@@ -53,7 +49,7 @@ function FactorTable({ tableName, conversionFactors }) {
   }
 
   function handleInputChange(id, field, value) {
-    if (field === "intensity") {
+    if (field === "carbon_impact") {
       // Allow only numbers and one decimal point
       if (value !== "" && !/^-?\d*\.?\d*$/.test(value)) {
         return; // Reject non-numeric input
@@ -87,7 +83,10 @@ function FactorTable({ tableName, conversionFactors }) {
     if (!originalFactor) return true; // New factor
 
     // Convert to same type before comparison (both as numbers)
-    return Number(editedFactor.intensity) !== Number(originalFactor.intensity);
+    return (
+      Number(editedFactor.carbon_impact) !==
+      Number(originalFactor.carbon_impact)
+    );
   }
 
   async function handleBulkSave(event) {
@@ -101,7 +100,7 @@ function FactorTable({ tableName, conversionFactors }) {
       .filter(hasFactorChanged)
       .map((factor) => ({
         ...factor,
-        intensity: Number(factor.intensity),
+        carbon_impact: Number(factor.carbon_impact),
       }));
 
     if (changedFactors.length === 0) {
@@ -109,7 +108,7 @@ function FactorTable({ tableName, conversionFactors }) {
       return;
     }
 
-    await handleBulkUpdateSubmissionAPI(event, changedFactors);
+    await handleBulkUpdateProcurementSubmissionAPI(event, changedFactors);
     setEditing(false);
 
     // Refresh data after save
@@ -131,7 +130,7 @@ function FactorTable({ tableName, conversionFactors }) {
         <input
           type="text"
           className="form-control m-1 flex-grow-5"
-          placeholder="Search category or consumption type..."
+          placeholder="Search category"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -158,22 +157,20 @@ function FactorTable({ tableName, conversionFactors }) {
       <table className="table table-hover">
         <thead>
           <tr className="align-middle text-start">
-            {["category", "consumption_type", "intensity", "unit"].map(
-              (field) => (
-                <th
-                  key={field}
-                  scope="col"
-                  onClick={() => {
-                    setSortField(field);
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {field.replace("_", " ")}{" "}
-                  {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                </th>
-              ),
-            )}
+            {["category", "carbon_impact"].map((field) => (
+              <th
+                key={field}
+                scope="col"
+                onClick={() => {
+                  setSortField(field);
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                {field.replace("_", " ")}{" "}
+                {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="table-group-divider">
@@ -183,18 +180,17 @@ function FactorTable({ tableName, conversionFactors }) {
               key={factor.id}
             >
               <td>{factor.category}</td>
-              <td>{factor.consumption_type}</td>
               <td>
                 {editing ? (
                   <>
                     <input
                       type="text"
                       className={`form-control ${errors[factor.id] ? "is-invalid" : ""}`}
-                      value={factor.intensity}
+                      value={factor.carbon_impact}
                       onChange={(e) =>
                         handleInputChange(
                           factor.id,
-                          "intensity",
+                          "carbon_impact",
                           e.target.value,
                         )
                       }
@@ -206,7 +202,7 @@ function FactorTable({ tableName, conversionFactors }) {
                     )}
                   </>
                 ) : (
-                  factor.intensity
+                  factor.carbon_impact
                 )}
               </td>
               <td>{factor.unit}</td>

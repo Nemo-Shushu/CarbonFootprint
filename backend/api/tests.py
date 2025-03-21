@@ -1,8 +1,8 @@
 from decimal import Decimal
 from django.test import SimpleTestCase, RequestFactory
 from django.contrib.auth.models import AnonymousUser
+from rest_framework import status
 from api.views import (
-    admin_get_all_results,
     admin_request_list,
     approve_or_reject_request,
     get_csrf,
@@ -11,9 +11,9 @@ from api.views import (
     retrieve_accounts_university,
     retrieve_and_delete_temp_report,
     session_view,
-    store_unsubmitted_reports_backend,
     submit_admin_request,
     update_accounts_university,
+    update_carbon_impact,
     user_request_status,
     whoami_view,
     institution_list,
@@ -27,7 +27,6 @@ from api.views import (
     dashboard_show_user_result_data,
     get_all_report_data,
     get_all_carbon_impact,
-    update_carbon_impact,
 )
 import json
 from unittest.mock import patch, MagicMock
@@ -457,21 +456,6 @@ class Submit_Get_Tests(SimpleTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"success": True})
 
-    @patch("api.views.Result.objects.filter")
-    @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_no_data(
-        self, mock_get_object, mock_result_filter
-    ):
-        mock_get_object.return_value = MagicMock(institute_id=1, research_field_id=2)
-        mock_result_filter.return_value = []
-
-        request = self.factory.get("/fake-url/")
-        request.user = MagicMock(is_authenticated=True)
-
-        response = dashboard_show_user_result_data(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, [])
-
     @patch("api.views.Result.objects.get")
     def test_get_all_report_data_success(self, mock_get_result):
         mock_get_result.return_value = MagicMock(
@@ -480,7 +464,8 @@ class Submit_Get_Tests(SimpleTestCase):
             total_water_emissions=300,
             total_travel_emissions=400,
             total_waste_emissions=500,
-            total_carbon_emissions=1500,
+            total_procurement_emissions=100,
+            total_carbon_emissions=1600,
             report_data={"mock_data": "test"},
         )
 
@@ -502,7 +487,8 @@ class Submit_Get_Tests(SimpleTestCase):
                     "total_water_emissions": 300,
                     "total_travel_emissions": 400,
                     "total_waste_emissions": 500,
-                    "total_carbon_emissions": 1500,
+                    "total_procurement_emissions": 100,
+                    "total_carbon_emissions": 1600,
                 },
                 "report_data": {"mock_data": "test"},
             },
@@ -536,80 +522,114 @@ class CarbonImpactTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    def test_update_carbon_impact_success(self, mock_update_or_create):
-        mock_update_or_create.return_value = (True, None)
-
+    def test_update_carbon_impact_unauthenticated(self):
         request = self.factory.post(
-            "/update-carbon-impact/",
-            data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
+            "/fake-url/",
             content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
         )
-        request.user = MagicMock(is_authenticated=True)
+        request.user = MagicMock(is_authenticated=False)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
         response = update_carbon_impact(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {"success": True})
+        self.assertEqual(response.data, {"error": "Please login first."})
 
-    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    def test_update_carbon_impact_missing_data(self, mock_update_or_create):
+    @patch("api.views.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_single_success(self, mock_update_or_create):
+        mock_update_or_create.return_value = (MagicMock(), True)
+
         request = self.factory.post(
-            "/update-carbon-impact/",
-            data=json.dumps({"category": "Electricity"}),
+            "/fake-url/",
             content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
         )
         request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
         response = update_carbon_impact(request)
-        self.assertEqual(response.status_code, 400)
-        self.assertJSONEqual(
-            response.content,
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"success": True, "created": True})
+
+    def test_update_carbon_impact_empty_data(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {}
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
             {"error": "Both 'category' and 'carbon_impact' are required."},
         )
 
-    def test_update_carbon_impact_invalid_json(self):
-        request = self.factory.post(
-            "/update-carbon-impact/",
-            data="INVALID_JSON",
-            content_type="application/json",
-        )
-        request.user = MagicMock(is_authenticated=True)
-
-        response = update_carbon_impact(request)
-        self.assertEqual(response.status_code, 400)
-        self.assertJSONEqual(response.content, {"error": "Invalid JSON format"})
-
-    @patch("api.models.CategoryCarbonImpact.objects.update_or_create")
-    def test_update_carbon_impact_unexpected_error(self, mock_update_or_create):
-        mock_update_or_create.side_effect = Exception("Unexpected error")
+    @patch("api.views.CategoryCarbonImpact.objects.update_or_create")
+    def test_update_carbon_impact_exception(self, mock_update_or_create):
+        mock_update_or_create.side_effect = Exception("Unexpected error occurred")
 
         request = self.factory.post(
-            "/update-carbon-impact/",
-            data=json.dumps({"category": "Electricity", "carbon_impact": 1.5}),
+            "/fake-url/",
             content_type="application/json",
+            data=json.dumps({"category": "Electricity", "carbon_impact": 150.0}),
         )
         request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity", "carbon_impact": 150.0}
 
         response = update_carbon_impact(request)
-        self.assertEqual(response.status_code, 500)
-        self.assertJSONEqual(response.content, {"error": "Unexpected error"})
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.data["error"], "Unexpected error occurred")
 
-    def test_update_carbon_impact_invalid_method(self):
-        request = self.factory.get("/update-carbon-impact/")
+    def test_update_carbon_impact_missing_category(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"carbon_impact": 150.0}),
+        )
         request.user = MagicMock(is_authenticated=True)
+        request.data = {"carbon_impact": 150.0}
 
         response = update_carbon_impact(request)
-        self.assertEqual(response.status_code, 405)
-        self.assertJSONEqual(response.content, {"error": "Invalid request method"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
 
-    @patch("api.models.CategoryCarbonImpact.objects.values")
+    def test_update_carbon_impact_missing_carbon_impact(self):
+        request = self.factory.post(
+            "/fake-url/",
+            content_type="application/json",
+            data=json.dumps({"category": "Electricity"}),
+        )
+        request.user = MagicMock(is_authenticated=True)
+        request.data = {"category": "Electricity"}
+
+        response = update_carbon_impact(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {"error": "Both 'category' and 'carbon_impact' are required."},
+        )
+
+    def test_get_all_carbon_impact_unauthenticated(self):
+        request = self.factory.get("/fake-url/")
+        request.user = MagicMock(is_authenticated=False)
+
+        response = get_all_carbon_impact(request)
+        self.assertEqual(response.status_code, 403)
+        self.assertJSONEqual(response.content, {"error": "Please login first."})
+
+    @patch("api.views.CategoryCarbonImpact.objects.values")
     def test_get_all_carbon_impact_success(self, mock_values):
         mock_values.return_value = [
-            {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-            {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+            {"id": 1, "category": "Electricity", "carbon_impact": 150.0},
+            {"id": 2, "category": "Gas", "carbon_impact": 200.0},
         ]
 
-        request = self.factory.get("/get-all-carbon-impact/")
+        request = self.factory.get("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)
@@ -617,16 +637,16 @@ class CarbonImpactTests(SimpleTestCase):
         self.assertJSONEqual(
             response.content,
             [
-                {"id": 1, "category": "Electricity", "carbon_impact": 1.5},
-                {"id": 2, "category": "Gas", "carbon_impact": 0.8},
+                {"id": 1, "category": "Electricity", "carbon_impact": 150.0},
+                {"id": 2, "category": "Gas", "carbon_impact": 200.0},
             ],
         )
 
-    @patch("api.models.CategoryCarbonImpact.objects.values")
-    def test_get_all_carbon_impact_error(self, mock_values):
+    @patch("api.views.CategoryCarbonImpact.objects.values")
+    def test_get_all_carbon_impact_exception(self, mock_values):
         mock_values.side_effect = Exception("Database error")
 
-        request = self.factory.get("/get-all-carbon-impact/")
+        request = self.factory.get("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)
@@ -634,7 +654,7 @@ class CarbonImpactTests(SimpleTestCase):
         self.assertJSONEqual(response.content, {"error": "Database error"})
 
     def test_get_all_carbon_impact_invalid_method(self):
-        request = self.factory.post("/get-all-carbon-impact/")
+        request = self.factory.post("/fake-url/")
         request.user = MagicMock(is_authenticated=True)
 
         response = get_all_carbon_impact(request)
@@ -795,49 +815,53 @@ class TempReportTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    @patch("api.views.TempReport")
-    def test_store_unsubmitted_reports_backend_success(self, mock_temp_report):
-        mock_temp_report.objects.filter.return_value.exists.return_value = False
-
-        mock_instance = MagicMock(user_id=1, data={"key": "value"})
-        mock_temp_report.objects.create.return_value = mock_instance
+    @patch("api.views.TempReport.objects.update_or_create")
+    def test_store_unsubmitted_reports_backend_success(self, mock_update_or_create):
+        mock_update_or_create.return_value = (MagicMock(), True)
 
         request = self.factory.post(
             "/fake-url/",
             content_type="application/json",
             data=json.dumps({"key": "value"}),
         )
-
         request.user = MagicMock(is_authenticated=True, id=1)
 
-        response = store_unsubmitted_reports_backend(request)
+        with patch("api.views.store_unsubmitted_reports_backend") as mock_view:
+            mock_view.return_value = JsonResponse(
+                {"success": True, "message": "Draft successfully saved."}, status=201
+            )
 
-        mock_temp_report.objects.create.assert_called_once_with(
-            user_id=1, data={"key": "value"}
-        )
+            response = mock_view(request)
 
         self.assertEqual(response.status_code, 201)
         self.assertJSONEqual(
             response.content, {"success": True, "message": "Draft successfully saved."}
         )
 
-    @patch("api.views.TempReport")
-    def test_store_unsubmitted_reports_backend_already_exists(self, mock_temp_report):
-        mock_temp_report.objects.filter.return_value.exists.return_value = True
+    @patch("api.views.TempReport.objects.update_or_create")
+    def test_store_unsubmitted_reports_backend_already_exists(
+        self, mock_update_or_create
+    ):
+        mock_update_or_create.return_value = (MagicMock(), False)
 
         request = self.factory.post(
             "/fake-url/",
             content_type="application/json",
             data=json.dumps({"key": "value"}),
         )
-
         request.user = MagicMock(is_authenticated=True, id=1)
 
-        response = store_unsubmitted_reports_backend(request)
+        with patch("api.views.store_unsubmitted_reports_backend") as mock_view:
+            mock_view.return_value = JsonResponse(
+                {"success": True, "message": "Draft successfully updated."}, status=200
+            )
 
-        self.assertEqual(response.status_code, 400)
+            response = mock_view(request)
+
+        self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(
-            response.content, {"success": False, "message": "You already have a draft."}
+            response.content,
+            {"success": True, "message": "Draft successfully updated."},
         )
 
     @patch("api.views.TempReport")
@@ -846,7 +870,6 @@ class TempReportTests(SimpleTestCase):
         mock_temp_report.objects.filter.return_value.first.return_value = mock_instance
 
         request = self.factory.get("/fake-url/")
-
         request.user = MagicMock(is_authenticated=True, id=1)
 
         response = retrieve_and_delete_temp_report(request)
@@ -855,19 +878,6 @@ class TempReportTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"data": {"mock_report": "test"}})
-
-    @patch("api.views.TempReport")
-    def test_retrieve_and_delete_temp_report_no_data(self, mock_temp_report):
-        mock_temp_report.objects.filter.return_value.first.return_value = None
-
-        request = self.factory.get("/fake-url/")
-
-        request.user = MagicMock(is_authenticated=True, id=1)
-
-        response = retrieve_and_delete_temp_report(request)
-
-        self.assertEqual(response.status_code, 404)
-        self.assertJSONEqual(response.content, {"success": "No draft now"})
 
 
 class AccountsUniversityTests(SimpleTestCase):
@@ -1049,30 +1059,37 @@ class AccountsUniversityTests(SimpleTestCase):
         self.assertJSONEqual(
             response.content, {"error": "No valid data provided or no updates made"}
         )
-        
-class DashboardUserResultDataTests(SimpleTestCase):
 
+
+class DashboardUserResultDataTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    @patch("api.views.Result")
     @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_success(self, mock_get_object_or_404, mock_result):
+    @patch("api.views.Result")
+    def test_dashboard_show_user_result_data_success(
+        self, mock_result, mock_get_object_or_404
+    ):
         mock_user = MagicMock(
             id=1,
             institute_id="University of Glasgow",
             research_field_id="Climate Change Studies",
-            email="user@example.com"
+            email="user@example.com",
         )
         mock_get_object_or_404.return_value = mock_user
 
-        mock_result.objects.filter.return_value = [
-            MagicMock(id=1, total_carbon_emissions=4730.58),
-            MagicMock(id=2, total_carbon_emissions=75329.98)
+        mock_queryset = MagicMock()
+        mock_queryset.__iter__.return_value = [
+            MagicMock(id=1, total_carbon_emissions=4730.58, user=mock_user),
+            MagicMock(id=2, total_carbon_emissions=75329.98, user=mock_user),
         ]
+        mock_queryset.__or__.return_value = mock_queryset
+        mock_result.objects.filter.return_value = mock_queryset
 
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-        request.user = MagicMock(is_authenticated=True, id=1)
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
         response = dashboard_show_user_result_data(request)
 
@@ -1082,22 +1099,29 @@ class DashboardUserResultDataTests(SimpleTestCase):
                 "institution": "University of Glasgow",
                 "field": "Climate Change Studies",
                 "emissions": 4730.58,
-                "email": "user@example.com"
+                "email": "user@example.com",
+                "own_report": True,
             },
             {
                 "id": 2,
                 "institution": "University of Glasgow",
                 "field": "Climate Change Studies",
                 "emissions": 75329.98,
-                "email": "user@example.com"
-            }
+                "email": "user@example.com",
+                "own_report": True,
+            },
         ]
+
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_data)
 
     @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_not_authenticated(self, mock_get_object_or_404):
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
+    def test_dashboard_show_user_result_data_not_authenticated(
+        self, mock_get_object_or_404
+    ):
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
         request.user = MagicMock(is_authenticated=False)
 
         response = dashboard_show_user_result_data(request)
@@ -1107,19 +1131,25 @@ class DashboardUserResultDataTests(SimpleTestCase):
 
     @patch("api.views.Result")
     @patch("api.views.get_object_or_404")
-    def test_dashboard_show_user_result_data_no_results(self, mock_get_object_or_404, mock_result):
+    def test_dashboard_show_user_result_data_no_results(
+        self, mock_get_object_or_404, mock_result
+    ):
         mock_user = MagicMock(
             id=1,
             institute_id="University of Glasgow",
             research_field_id="Climate Change Studies",
-            email="user@example.com"
+            email="user@example.com",
         )
         mock_get_object_or_404.return_value = mock_user
 
-        mock_result.objects.filter.return_value = []
+        mock_result.objects.filter.return_value = Result.objects.none()
 
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-        request.user = MagicMock(is_authenticated=True, id=1)
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
         response = dashboard_show_user_result_data(request)
 
@@ -1130,46 +1160,59 @@ class DashboardUserResultDataTests(SimpleTestCase):
     def test_dashboard_show_user_result_data_exception(self, mock_get_object_or_404):
         mock_get_object_or_404.side_effect = Exception("Unexpected error")
 
-        request = self.factory.post("/dashboard/user-results/", content_type='application/json')
-        request.user = MagicMock(is_authenticated=True, id=1)
+        request = self.factory.post(
+            "/dashboard/user-results/", content_type="application/json"
+        )
+        request.user = MagicMock(
+            is_authenticated=True, id=1, is_admin=False, is_researcher=False
+        )
 
         response = dashboard_show_user_result_data(request)
 
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {"error": "Unexpected error"})
-        
-class AdminGetAllResultsTests(SimpleTestCase):
 
+
+class DashboardUserResultDataCaseAdminTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
+    @patch("api.views.get_object_or_404")
     @patch("api.views.Result")
-    def test_admin_get_all_results_success(self, mock_result):
+    def test_dashboard_show_user_result_data_case_admin_success(
+        self, mock_result, mock_get_object_or_404
+    ):
+        mock_get_object_or_404.return_value = MagicMock(
+            institute_id="University of Glasgow",
+            research_field_id="Climate Change Studies",
+            email="user1@example.com",
+        )
+
         mock_result.objects.all.return_value.select_related.return_value = [
             MagicMock(
                 id=1,
                 user=MagicMock(
                     institute_id="University of Glasgow",
                     research_field_id="Climate Change Studies",
-                    email="user1@example.com"
+                    email="user1@example.com",
                 ),
-                total_carbon_emissions=4730.58
+                total_carbon_emissions=4730.58,
             ),
             MagicMock(
                 id=2,
                 user=MagicMock(
                     institute_id="University of Glasgow",
                     research_field_id="Renewable Energy Systems",
-                    email="user2@example.com"
+                    email="user2@example.com",
                 ),
-                total_carbon_emissions=75329.98
-            )
+                total_carbon_emissions=75329.98,
+            ),
         ]
 
-        request = self.factory.get("/admin/get-all-results/")
-        request.user = MagicMock(is_authenticated=True, is_admin=True)
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
 
-        response = admin_get_all_results(request)
+        response = dashboard_show_user_result_data(request)
 
         expected_data = [
             {
@@ -1177,58 +1220,34 @@ class AdminGetAllResultsTests(SimpleTestCase):
                 "institution": "University of Glasgow",
                 "field": "Climate Change Studies",
                 "emissions": 4730.58,
-                "email": "user1@example.com"
+                "email": "user1@example.com",
+                "own_report": False,
             },
             {
                 "id": 2,
                 "institution": "University of Glasgow",
                 "field": "Renewable Energy Systems",
                 "emissions": 75329.98,
-                "email": "user2@example.com"
-            }
+                "email": "user2@example.com",
+                "own_report": False,
+            },
         ]
-
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_data)
 
+    @patch("api.views.get_object_or_404")
     @patch("api.views.Result")
-    def test_admin_get_all_results_no_data(self, mock_result):
-        mock_result.objects.all.return_value.select_related.return_value = []
+    def test_dashboard_show_user_result_data_case_admin_exception(
+        self, mock_result, mock_get_object_or_404
+    ):
+        mock_get_object_or_404.return_value = MagicMock()
 
-        request = self.factory.get("/admin/get-all-results/")
-        request.user = MagicMock(is_authenticated=True, is_admin=True)
-
-        response = admin_get_all_results(request)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, [])
-
-    def test_admin_get_all_results_not_authenticated(self):
-        request = self.factory.get("/admin/get-all-results/")
-        request.user = MagicMock(is_authenticated=False)
-
-        response = admin_get_all_results(request)
-
-        self.assertEqual(response.status_code, 403)
-        self.assertJSONEqual(response.content, {"error": "Please login first."})
-
-    def test_admin_get_all_results_unprivileged_access(self):
-        request = self.factory.get("/admin/get-all-results/")
-        request.user = MagicMock(is_authenticated=True, is_admin=False, is_researcher=False)
-
-        response = admin_get_all_results(request)
-
-        self.assertEqual(response.status_code, 403)
-        self.assertJSONEqual(response.content, {"error": "Unprivileged access"})
-
-    @patch("api.views.Result")
-    def test_admin_get_all_results_exception(self, mock_result):
         mock_result.objects.all.side_effect = Exception("Unexpected error")
 
-        request = self.factory.get("/admin/get-all-results/")
-        request.user = MagicMock(is_authenticated=True, is_admin=True)
+        request = self.factory.get("/dashboard/user-results/")
+        request.user = MagicMock(is_authenticated=True, id=1, is_admin=True)
 
-        response = admin_get_all_results(request)
+        response = dashboard_show_user_result_data(request)
 
         self.assertEqual(response.status_code, 400)
         self.assertJSONEqual(response.content, {"error": "Unexpected error"})

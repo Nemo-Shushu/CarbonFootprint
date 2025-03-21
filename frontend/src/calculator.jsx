@@ -5,6 +5,7 @@ import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
+import Modal from "react-bootstrap/Modal";
 import "./static/Calculator.css";
 import "./static/dashboard.css";
 import "./static/Instruction.css";
@@ -15,8 +16,83 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
   const [report, setReport] = useState({});
+  const [isReportUpdated, setIsReportUpdated] = useState(false);
+  const [draft, setDraft] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
   const navigate = useNavigate();
+
+  const isObjectEmpty = (obj) => {
+    if (!obj || Object.keys(obj).length === 0) return true;
+
+    return Object.values(obj).every(
+      (value) => typeof value === "object" && isObjectEmpty(value),
+    );
+  };
+
+  async function saveDraft(data) {
+    try {
+      const response = await fetch(
+        `${backendUrl}api/store-unsubmitted-reports-backend/`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": Cookies.get("csrftoken"),
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Draft saved:", responseData, data);
+    } catch (error) {
+      console.error("Error saving draft:", error);
+    }
+  }
+
+  async function retrieveDraft() {
+    try {
+      const response = await fetch(
+        `${backendUrl}api/retrieve-and-delete-temp-report/`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": Cookies.get("csrftoken"),
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Draft retrieved:", responseData);
+      setDraft(responseData.data);
+      if (!isObjectEmpty(responseData.data)) setModalVisible(true);
+    } catch (error) {
+      console.error("Error retrieving draft:", error);
+    }
+  }
+
+  useEffect(() => {
+    console.log("useEffect runs");
+    retrieveDraft();
+
+    const interval = setInterval(() => {
+      saveDraft(report);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   async function submitReport() {
     try {
@@ -158,7 +234,9 @@ function Calculator() {
           <button
             type="button"
             className="btn btn-moss"
-            onClick={() => navigate("/calculator/utilities")}
+            onClick={() => {
+              navigate("/calculator/utilities");
+            }}
           >
             Start
           </button>
@@ -177,20 +255,75 @@ function Calculator() {
     }, []);
 
     function handleRoute() {
-      setReport((prevReport) => ({
-        ...prevReport,
-        ["utilities"]: utilitiesReport,
-      }));
-      navigate("/calculator/travel");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["utilities"]: utilitiesReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/travel");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setUtilitiesReport((prevReport) => ({ ...prevReport, [name]: value }));
+      setUtilitiesReport((prevReport) => {
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
+      });
     }
 
     return (
       <main className="ms-sm-auto px-md-4 calculator-content-container">
+        <Modal
+          show={modalVisible}
+          onHide={() => setModalVisible(false)}
+          centered
+          size="md"
+          backdrop="static"
+        >
+          <Modal.Body>
+            <p className="mb-3">
+              You have a draft saved – do you wish to use it or start from the
+              beginning?
+            </p>
+            <p className="text-danger fw-bold">
+              Discarding the draft is irreversible!
+            </p>
+          </Modal.Body>
+          <Modal.Footer className="d-flex justify-content-between">
+            <button
+              className="btn btn-moss"
+              onClick={() => {
+                setReport(draft);
+                saveDraft(draft);
+                setModalVisible(false);
+              }}
+            >
+              Use Saved Draft
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={() => setModalVisible(false)}
+            >
+              Discard Draft
+            </button>
+          </Modal.Footer>
+        </Modal>
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
         <form className="needs-validation calculator-form" noValidate>
           <div className="row g-2">
@@ -396,7 +529,7 @@ function Calculator() {
             onClick={handleRoute}
             data-testid="utilities-next-button"
           >
-            Next
+            Save & Continue
           </button>
         </div>
       </main>
@@ -417,13 +550,36 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({ ...prevReport, ["travel"]: travelReport }));
-      navigate("/calculator/waste");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["travel"]: travelReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/waste");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setTravelReport((prevReport) => ({ ...prevReport, [name]: value }));
+      setTravelReport((prevReport) => {
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
+      });
     }
 
     return (
@@ -444,9 +600,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-short"
+                  name="air-eco-short-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-short"]}
+                  value={travelReport["air-eco-short-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -462,9 +618,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-short"
+                  name="air-business-short-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-short"]}
+                  value={travelReport["air-business-short-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -482,9 +638,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-long"
+                  name="air-eco-long-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-long"]}
+                  value={travelReport["air-eco-long-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -500,9 +656,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-long"
+                  name="air-business-long-uk"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-long"]}
+                  value={travelReport["air-business-long-uk"]}
                   onChange={handleChange}
                   required
                 />
@@ -520,9 +676,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-inter"
+                  name="air-eco-international"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-inter"]}
+                  value={travelReport["air-eco-international"]}
                   onChange={handleChange}
                   required
                 />
@@ -538,9 +694,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-inter"
+                  name="air-business-international"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-inter"]}
+                  value={travelReport["air-business-international"]}
                   onChange={handleChange}
                   required
                 />
@@ -606,9 +762,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-motor"
+                  name="land-motorbike"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-motor"]}
+                  value={travelReport["land-motorbike"]}
                   onChange={handleChange}
                   required
                 />
@@ -644,9 +800,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-bus"
+                  name="land-local-bus"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-bus"]}
+                  value={travelReport["land-local-bus"]}
                   onChange={handleChange}
                   required
                 />
@@ -700,9 +856,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-inter-rail"
+                  name="land-international-rail"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-inter-rail"]}
+                  value={travelReport["land-international-rail"]}
                   onChange={handleChange}
                   required
                 />
@@ -718,9 +874,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-light-rail"
+                  name="land-light-rail-tram"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-light-rail"]}
+                  value={travelReport["land-light-rail-tram"]}
                   onChange={handleChange}
                   required
                 />
@@ -742,7 +898,7 @@ function Calculator() {
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Next
+            Save & Continue
           </button>
         </div>
       </main>
@@ -763,13 +919,36 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({ ...prevReport, ["waste"]: wasteReport }));
-      navigate("/calculator/procurement");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["waste"]: wasteReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/procurement");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setWasteReport((prevReport) => ({ ...prevReport, [name]: value }));
+      setWasteReport((prevReport) => {
+        const updatedReport = { ...prevReport };
+        if (value === "") {
+          delete updatedReport[name];
+        } else {
+          updatedReport[name] = value;
+        }
+        return updatedReport;
+      });
     }
 
     return (
@@ -910,7 +1089,7 @@ function Calculator() {
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Next
+            Save & Continue
           </button>
         </div>
       </main>
@@ -993,12 +1172,24 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => ({
-        ...prevReport,
-        ["procurement"]: procurementReport,
-      }));
-      navigate("/calculator/results");
+      setReport((prevReport) => {
+        const updatedReport = {
+          ...prevReport,
+          ["procurement"]: procurementReport,
+        };
+
+        setIsReportUpdated(true);
+        return updatedReport;
+      });
     }
+
+    useEffect(() => {
+      if (isReportUpdated) {
+        saveDraft(report);
+        navigate("/calculator/results");
+        setIsReportUpdated(false);
+      }
+    }, [isReportUpdated]);
 
     function handleProcurementDelete(num) {
       //first the data is cleared from the report, then category is removed from the list of selected categories, finally the row is deleted
@@ -1144,7 +1335,7 @@ function Calculator() {
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Next
+            Save & Continue
           </button>
         </div>
       </main>
@@ -1190,6 +1381,12 @@ function Calculator() {
       navigate("/calculator/procurement");
     }
 
+    function handleSubmit() {
+      retrieveDraft();
+      setModalVisible(false);
+      submitReport();
+    }
+
     return (
       <main className="ms-sm-auto px-md-4">
         <h2>Results</h2>
@@ -1198,7 +1395,7 @@ function Calculator() {
           <button className="btn btn-outline-secondary" onClick={handleBack}>
             Back
           </button>
-          <button className="btn btn-moss" onClick={submitReport}>
+          <button className="btn btn-moss" onClick={handleSubmit}>
             Submit
           </button>
         </div>

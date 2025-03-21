@@ -49,7 +49,7 @@ def login_view(request):
 
     if user is None:
         return JsonResponse({"detail": "Invalid credentials."}, status=400)
-    request.session['login_time'] = timezone.now().isoformat()
+    request.session["login_time"] = timezone.now().isoformat()
     login(request, user)
     return JsonResponse({"detail": "Successfully logged in."})
 
@@ -636,9 +636,12 @@ class ReportcalculateView:
 
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
-        utilities = request.get("utilities", {})
-        travel = request.get("travel", {})
-        waste = request.get("waste", {})
+            # === 新增：用于移除空值（""）的函数 ===
+        def remove_empty_values(data):
+            return {k: v for k, v in data.items() if v != ""}
+        utilities = remove_empty_values(request.get("utilities", {}))
+        travel = remove_empty_values(request.get("travel", {}))
+        waste = remove_empty_values(request.get("waste", {}))
         fte_staff = int(utilities.get("FTE-staff", 0))
         fte_members = int(utilities.get("FTE-members", 0))
         if fte_members == 0:
@@ -717,11 +720,11 @@ class ReportcalculateView:
             f"Final check: Water emissions {total_water_emissions}, Electricity {total_electricity_emissions}, Gas {total_gas_emissions}"
         )
         return {
-            "total_electricity_emissions": round(total_electricity_emissions, 2),
-            "total_gas_emissions": round(total_gas_emissions, 2),
-            "total_water_emissions": round(total_water_emissions, 2),
-            "total_travel_emissions": round(total_travel_emissions, 2),
-            "total_waste_emissions": round(total_waste_emissions, 2),
+            "total_electricity_emissions": round(total_electricity_emissions / 1000, 2),
+            "total_gas_emissions": round(total_gas_emissions / 1000, 2),
+            "total_water_emissions": round(total_water_emissions / 1000, 2),
+            "total_travel_emissions": round(total_travel_emissions / 1000, 2),
+            "total_waste_emissions": round(total_waste_emissions / 1000, 2),
         }
 
 
@@ -846,14 +849,24 @@ def dashboard_show_user_result_data(request):
     try:
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
-        calculation_result = Result.objects.filter(user_id=user_id)
+        if request.user.is_admin or request.user.is_researcher:
+            calculation_result = Result.objects.all().select_related("user")
+        else:
+            calculation_result = (
+                Result.objects.filter(user_id=user_id)
+                | Result.objects.filter(user__institute_id=user_profile.institute_id)
+                | Result.objects.filter(
+                    user__research_field_id=user_profile.research_field_id
+                )
+            )
         data = [
             {
                 "id": Result.id,
-                "institution": user_profile.institute_id,
-                "field": user_profile.research_field_id,
+                "institution": Result.user.institute_id,
+                "field": Result.user.research_field_id,
                 "emissions": float(Result.total_carbon_emissions),
-                "email":user_profile.email
+                "email": Result.user.email,
+                "own_report": user_id == Result.user.id,
             }
             for Result in calculation_result
         ]
@@ -863,58 +876,6 @@ def dashboard_show_user_result_data(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
-def show_same_effect_user_result_data(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Please login first."}, status=403)
-
-    try:
-        user_id = request.user.id
-        user_profile = get_object_or_404(User, id=user_id)
-        calculation_result = Result.objects.filter(
-            user__institute_id=user_profile.institute_id
-        ) | Result.objects.filter(
-            user__research_field_id=user_profile.research_field_id
-        )
-
-        data = [
-            {
-                "id": result.id,
-                "institution": result.user.institute_id,
-                "field": result.user.research_field_id,
-                "emissions": float(result.total_carbon_emissions),
-                "email": result.user.email
-            }
-            for result in calculation_result
-        ]
-
-        return JsonResponse(data, safe=False)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
-
-def admin_get_all_results(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Please login first."}, status=403)
-    if not request.user.is_admin and not request.user.is_researcher:
-        return JsonResponse({"error": "Unprivileged access"}, status=403)
-
-    try:
-        all_results = Result.objects.all().select_related('user')
-        data = [
-            {
-                "id": result.id,
-                "institution": result.user.institute_id,
-                "field": result.user.research_field_id,
-                "emissions": float(result.total_carbon_emissions),
-                "email": result.user.email
-            }
-            for result in all_results
-        ]
-
-        return JsonResponse(data, safe=False)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
 
 def get_all_report_data(request):
     if request.method == "POST":
@@ -935,6 +896,9 @@ def get_all_report_data(request):
                     "total_water_emissions": float(report.total_water_emissions),
                     "total_travel_emissions": float(report.total_travel_emissions),
                     "total_waste_emissions": float(report.total_waste_emissions),
+                    "total_procurement_emissions": float(
+                        report.total_procurement_emissions
+                    ),
                     "total_carbon_emissions": float(report.total_carbon_emissions),
                 },
                 "report_data": report.report_data,
@@ -1013,32 +977,62 @@ def update_intensity_view(request):
 
 
 def update_carbon_impact(request):
-    if request.method == "POST":
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "Please login first."}, status=403)
-        try:
-            data = json.loads(request.body)
-            category = data.get("category")
-            carbon_impact = data.get("carbon_impact")
+    if not request.user.is_authenticated:
+        return Response(
+            {"error": "Please login first."}, status=status.HTTP_403_FORBIDDEN
+        )
 
-            if not category or carbon_impact is None:
-                return JsonResponse(
-                    {"error": "Both 'category' and 'carbon_impact' are required."},
-                    status=400,
+    try:
+        data = request.data
+
+        # Check if data is a list for bulk operations
+        if isinstance(data, list):
+            results = []
+            for item in data:
+                category = item.get("category")
+                carbon_impact = item.get("carbon_impact")
+
+                if not category or carbon_impact is None:
+                    return Response(
+                        {
+                            "error": "Both 'category' and 'carbon_impact' are required for each item."
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                updated, created = CategoryCarbonImpact.objects.update_or_create(
+                    category=category, defaults={"carbon_impact": carbon_impact}
+                )
+                results.append(
+                    {
+                        "category": category,
+                        "updated": updated is not None,
+                        "created": created,
+                    }
                 )
 
-            updated, _ = CategoryCarbonImpact.objects.update_or_create(
-                category=category, defaults={"carbon_impact": carbon_impact}
+            return Response(
+                {"success": True, "results": results}, status=status.HTTP_200_OK
             )
 
-            return JsonResponse({"success": True if updated else False}, status=200)
+        # Handle single item update
+        else:
+            category = data.get("category")
+            carbon_impact = data.get("carbon_impact")
+            if not category or carbon_impact is None:
+                return Response(
+                    {"error": "Both 'category' and 'carbon_impact' are required."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            updated, created = CategoryCarbonImpact.objects.update_or_create(
+                category=category, defaults={"carbon_impact": carbon_impact}
+            )
+            return Response(
+                {"success": True, "created": created}, status=status.HTTP_200_OK
+            )
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def get_all_carbon_impact(request):
@@ -1252,16 +1246,18 @@ def store_unsubmitted_reports_backend(request):
         try:
             data = json.loads(request.body)
 
-            if TempReport.objects.filter(user_id=user_id).exists():
-                return JsonResponse(
-                    {"success": False, "message": "You already have a draft."},
-                    status=400,
-                )
-
-            TempReport.objects.create(user_id=user_id, data=data)
+            temp_report, created = TempReport.objects.update_or_create(
+                user_id=user_id, defaults={"data": data}
+            )
 
             return JsonResponse(
-                {"success": True, "message": "Draft successfully saved."}, status=201
+                {
+                    "success": True,
+                    "message": "Draft successfully saved."
+                    if created
+                    else "Draft successfully updated.",
+                },
+                status=201 if created else 200,
             )
 
         except json.JSONDecodeError:
@@ -1289,7 +1285,7 @@ def retrieve_and_delete_temp_report(request):
 
                 return JsonResponse({"data": report_data}, status=200)
 
-            return JsonResponse({"success": "No draft now"}, status=404)
+            return JsonResponse({"data": []}, status=200)
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -1391,10 +1387,9 @@ def update_accounts_university(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-        
 class SessionExpiryView(APIView):
-     def get(self, request, format=None):
-        login_time = request.session.get('login_time')
+    def get(self, request, format=None):
+        login_time = request.session.get("login_time")
         if login_time:
             login_time_dt = datetime.fromisoformat(login_time)
             now = timezone.now()
@@ -1412,10 +1407,10 @@ class ExtendSessionView(APIView):
     def post(self, request, format=None):
         new_expiry = settings.SESSION_COOKIE_AGE
         request.session.set_expiry(new_expiry)
-        request.session['login_time'] = timezone.now().isoformat()
+        request.session["login_time"] = timezone.now().isoformat()
         request.session.save()
         remaining_time = request.session.get_expiry_age()
         return Response(
             {"message": "Session extended", "remaining_time": remaining_time},
-            status=200
+            status=200,
         )

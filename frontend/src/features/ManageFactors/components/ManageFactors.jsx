@@ -5,7 +5,8 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import "../assets/ManageFactors.css";
 import FactorTable from "./FactorTable";
-import { getConversionFactors } from "../api/apiFactors";
+import ProcurementTable from "./ProcurementTable";
+import { getIntensityFactors, getProcurementFactors } from "../api/apiFactors";
 
 function ManageFactors() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function ManageFactors() {
           >
             <FactorTable
               tableName={"Intensity"}
-              conversionFactors={getConversionFactors}
+              conversionFactors={getIntensityFactors}
             />
           </Tab>
           <Tab
@@ -42,9 +43,9 @@ function ManageFactors() {
             title="Procurement Factors"
             className="container-fluid"
           >
-            <FactorTable
+            <ProcurementTable
               tableName={"Procurement"}
-              conversionFactors={getConversionFactors}
+              conversionFactors={getProcurementFactors}
             />
           </Tab>
         </Tabs>
