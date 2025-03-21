@@ -22,6 +22,115 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: calculate_energy_values(); Type: FUNCTION; Schema: public; Owner: carbon_foot
+--
+
+CREATE FUNCTION public.calculate_energy_values() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    -- Academic Laboratory
+    NEW.academic_laboratory_gas = NEW.gas_benchmark_multiplier * NEW.avg_gas_consumption_academic_lab_workshop;
+    NEW.academic_laboratory_electricity = NEW.electricity_benchmark_multiplier * NEW.avg_electricity_consumption_academic_lab_workshop;
+
+    -- Academic Office
+    NEW.academic_office_gas = NEW.gas_benchmark_multiplier * NEW.avg_gas_consumption_academic_office;
+    NEW.academic_office_electricity = NEW.electricity_benchmark_multiplier * NEW.avg_electricity_consumption_academic_office;
+
+    -- Admin Office
+    NEW.admin_office_gas = NEW.gas_benchmark_multiplier * NEW.avg_gas_consumption_admin_office;
+    NEW.admin_office_electricity = NEW.electricity_benchmark_multiplier * NEW.avg_electricity_consumption_admin_office;
+
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calculate_energy_values() OWNER TO carbon_foot;
+
+--
+-- Name: calculate_total_electricity_benchmark(); Type: FUNCTION; Schema: public; Owner: carbon_foot
+--
+
+CREATE FUNCTION public.calculate_total_electricity_benchmark() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.total_electricity_benchmark = 
+        (NEW.electricity_non_residential + NEW.electricity_residential) / NEW.floor_area_gia;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calculate_total_electricity_benchmark() OWNER TO carbon_foot;
+
+--
+-- Name: calculate_total_gas_benchmark(); Type: FUNCTION; Schema: public; Owner: carbon_foot
+--
+
+CREATE FUNCTION public.calculate_total_gas_benchmark() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW.total_gas_benchmark := 
+        (NEW.gas_non_residential + NEW.gas_residential) / NULLIF(NEW.floor_area_gia, 0);
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.calculate_total_gas_benchmark() OWNER TO carbon_foot;
+
+--
+-- Name: update_electricity_benchmark_multiplier(); Type: FUNCTION; Schema: public; Owner: carbon_foot
+--
+
+CREATE FUNCTION public.update_electricity_benchmark_multiplier() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF NEW.avg_electricity_consumption_all_buildings IS NOT NULL AND
+       NEW.total_electricity_benchmark IS NOT NULL THEN
+        NEW.electricity_benchmark_multiplier =
+            NEW.total_electricity_benchmark / NEW.avg_electricity_consumption_all_buildings;
+    ELSE
+        NEW.electricity_benchmark_multiplier = NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_electricity_benchmark_multiplier() OWNER TO carbon_foot;
+
+--
+-- Name: update_gas_benchmark_multiplier(); Type: FUNCTION; Schema: public; Owner: carbon_foot
+--
+
+CREATE FUNCTION public.update_gas_benchmark_multiplier() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    IF NEW.avg_gas_consumption_all_buildings IS NOT NULL AND
+    NEW.total_gas_benchmark IS NOT NULL THEN
+        NEW.gas_benchmark_multiplier =
+            NEW.total_gas_benchmark / NEW.avg_gas_consumption_all_buildings;
+    ELSE
+        NEW.gas_benchmark_multiplier = NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_gas_benchmark_multiplier() OWNER TO carbon_foot;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
 -- Name: accounts_benchmarkdata; Type: TABLE; Schema: public; Owner: carbon_foot
 --
 
@@ -99,7 +208,30 @@ ALTER TABLE public.accounts_researchfield OWNER TO carbon_foot;
 --
 
 CREATE TABLE public.accounts_university (
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    floor_area_gia numeric(10,2),
+    electricity_non_residential numeric(10,2),
+    electricity_residential numeric(10,2),
+    gas_non_residential numeric(10,2),
+    gas_residential numeric(10,2),
+    total_electricity_benchmark numeric(10,4),
+    total_gas_benchmark numeric(10,4),
+    avg_electricity_consumption_all_buildings numeric(10,2),
+    electricity_benchmark_multiplier numeric(10,6),
+    avg_gas_consumption_all_buildings numeric(10,2),
+    gas_benchmark_multiplier numeric(10,6),
+    academic_laboratory_gas numeric(10,6),
+    academic_laboratory_electricity numeric(10,6),
+    academic_office_gas numeric(10,6),
+    academic_office_electricity numeric(10,6),
+    admin_office_gas numeric(10,6),
+    admin_office_electricity numeric(10,6),
+    avg_gas_consumption_academic_lab_workshop numeric(10,6),
+    avg_electricity_consumption_academic_lab_workshop numeric(10,6),
+    avg_gas_consumption_academic_office numeric(10,6),
+    avg_electricity_consumption_academic_office numeric(10,6),
+    avg_gas_consumption_admin_office numeric(10,6),
+    avg_electricity_consumption_admin_office numeric(10,6)
 );
 
 
@@ -514,7 +646,23 @@ CREATE TABLE public.accounts_adminrequest (
 );
 
 ALTER TABLE public.accounts_adminrequest
-ADD CONSTRAINT accounts_adminrequest_pkey PRIMARY KEY (id)
+ADD CONSTRAINT accounts_adminrequest_pkey PRIMARY KEY (id);
+
+
+
+--
+-- Name: calculate_temp_reports; Type: TABLE; Schema: public; Owner: carbon_foot
+--
+
+CREATE TABLE public.calculate_temp_reports (
+    id serial NOT NULL,
+    user_id integer NOT NULL,
+    data jsonb NOT NULL,
+    created_at timestamp without time zone NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE public.calculate_temp_reports
+ADD CONSTRAINT calculate_temp_reports_pkey PRIMARY KEY (id);
 
 --
 -- Name: procurement_data_id_seq; Type: SEQUENCE; Schema: public; Owner: carbon_foot
@@ -579,10 +727,10 @@ COPY public.accounts_benchmarkdata (id, consumption_type, category, amount, unit
 57	travel	land-national-rail	1.00	km	2025	DEFRA 2025 Report	0.035000	\N
 58	travel	land-international-rail	1.00	km	2025	DEFRA 2025 Report	0.004000	\N
 59	travel	land-light-rail-tram	1.00	km	2025	DEFRA 2025 Report	0.029000	\N
-60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0.2720
-63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.421000	0.2720
+60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
+61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.421000	0
+62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
+63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.421000	0
 64	electricity	Academic Laboratory	207.99	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 65	electricity	Academic Office	108.47	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 66	electricity	Admin Office	115.17	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
@@ -649,84 +797,84 @@ Carbon Footprint Analysis
 -- Data for Name: accounts_university; Type: TABLE DATA; Schema: public; Owner: carbon_foot
 --
 
-COPY public.accounts_university (name) FROM stdin;
-Abertay University
-Aberystwyth University
-Anglia Ruskin University
-Aston University
-Bangor University
-Bath Spa University
-Birkbeck, University of London
-Birmingham City University
-Bishop Grosseteste University
-Bournemouth University
-Brunel University London
-Buckinghamshire New University
-Canterbury Christ Church University
-Cardiff Metropolitan University
-Cardiff University
-University of Aberdeen
-University of Bath
-University of Birmingham
-University of Bolton
-University of Bradford
-University of Brighton
-University of Bristol
-University of Buckingham
-University of Cambridge
-University of Central Lancashire
-University of Chester
-University of Chichester
-University of Cumbria
-University of Derby
-University of Dundee
-University of Durham
-University of East Anglia
-University of East London
-University of Edinburgh
-University of Essex
-University of Exeter
-University of Glasgow
-University of Gloucestershire
-University of Greenwich
-University of Hertfordshire
-University of Huddersfield
-University of Hull
-University of Keele
-University of Kent
-University of Lancaster
-University of Leeds
-University of Leicester
-University of Lincoln
-University of Liverpool
-University of London
-University of Manchester
-University of Newcastle upon Tyne
-University of Northampton
-University of Nottingham
-University of Oxford
-University of Plymouth
-University of Portsmouth
-University of Reading
-University of Salford
-University of Sheffield
-University of Southampton
-University of St Andrews
-University of Stirling
-University of Strathclyde
-University of Sunderland
-University of Surrey
-University of Sussex
-University of the Arts London
-University of the West of England
-University of the West of Scotland
-University of Wales
-University of Warwick
-University of Westminster
-University of Winchester
-University of Wolverhampton
-University of Worcester
-University of York
+COPY public.accounts_university (name, floor_area_gia, electricity_non_residential, electricity_residential, gas_non_residential, gas_residential, total_electricity_benchmark, total_gas_benchmark, avg_electricity_consumption_all_buildings, electricity_benchmark_multiplier, avg_gas_consumption_all_buildings, gas_benchmark_multiplier, academic_laboratory_gas, academic_laboratory_electricity, academic_office_gas, academic_office_electricity, admin_office_gas, admin_office_electricity, avg_gas_consumption_academic_lab_workshop, avg_electricity_consumption_academic_lab_workshop, avg_gas_consumption_academic_office, avg_electricity_consumption_academic_office, avg_gas_consumption_admin_office, avg_electricity_consumption_admin_office) FROM stdin;
+Abertay University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Anglia Ruskin University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Aston University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Bangor University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Bath Spa University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Birkbeck, University of London	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Birmingham City University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Bishop Grosseteste University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Bournemouth University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Brunel University London	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Buckinghamshire New University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Canterbury Christ Church University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Cardiff Metropolitan University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Cardiff University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Aberdeen	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Bath	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Birmingham	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Bolton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Bradford	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Brighton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Bristol	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Buckingham	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Cambridge	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Central Lancashire	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Chester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Chichester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Cumbria	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Derby	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Dundee	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Durham	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of East Anglia	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of East London	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Edinburgh	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Essex	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Exeter	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Gloucestershire	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Greenwich	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Hertfordshire	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Huddersfield	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Hull	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Keele	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Kent	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Lancaster	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Leeds	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Leicester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Lincoln	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Liverpool	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of London	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Manchester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Newcastle upon Tyne	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Northampton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Nottingham	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Oxford	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Plymouth	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Portsmouth	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Reading	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Salford	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Sheffield	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Southampton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of St Andrews	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Stirling	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Strathclyde	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Sunderland	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Surrey	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Sussex	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of the Arts London	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of the West of England	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of the West of Scotland	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Wales	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Warwick	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Westminster	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Winchester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Wolverhampton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Worcester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of York	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Glasgow	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
+Aberystwyth University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -2110,7 +2258,6 @@ CREATE INDEX accounts_researchfield_name_201c4ba9_like ON public.accounts_resear
 
 CREATE INDEX accounts_university_name_51db4e65_like ON public.accounts_university USING btree (name varchar_pattern_ops);
 
-
 --
 -- Name: accounts_user_email_b2644a56_like; Type: INDEX; Schema: public; Owner: carbon_foot
 --
@@ -2294,6 +2441,39 @@ ALTER TABLE ONLY public.django_admin_log
 ALTER TABLE ONLY public.django_admin_log
     ADD CONSTRAINT django_admin_log_user_id_c564eba6_fk_accounts_user_id FOREIGN KEY (user_id) REFERENCES public.accounts_user(id) DEFERRABLE INITIALLY DEFERRED;
 
+--
+-- Name: accounts_university trigger_electricity_benchmark_multiplier; Type: TRIGGER; Schema: public; Owner: carbon_foot
+--
+
+CREATE TRIGGER trigger_electricity_benchmark_multiplier BEFORE INSERT OR UPDATE OF avg_electricity_consumption_all_buildings, total_electricity_benchmark ON public.accounts_university FOR EACH ROW EXECUTE FUNCTION public.update_electricity_benchmark_multiplier();
+
+
+--
+-- Name: accounts_university trigger_gas_benchmark_multiplier; Type: TRIGGER; Schema: public; Owner: carbon_foot
+--
+
+CREATE TRIGGER trigger_gas_benchmark_multiplier BEFORE INSERT OR UPDATE OF avg_gas_consumption_all_buildings, total_gas_benchmark ON public.accounts_university FOR EACH ROW EXECUTE FUNCTION public.update_gas_benchmark_multiplier();
+
+
+--
+-- Name: accounts_university trigger_update_energy_values; Type: TRIGGER; Schema: public; Owner: carbon_foot
+--
+
+CREATE TRIGGER trigger_update_energy_values BEFORE INSERT OR UPDATE ON public.accounts_university FOR EACH ROW EXECUTE FUNCTION public.calculate_energy_values();
+
+
+--
+-- Name: accounts_university trigger_update_total_electricity; Type: TRIGGER; Schema: public; Owner: carbon_foot
+--
+
+CREATE TRIGGER trigger_update_total_electricity BEFORE INSERT OR UPDATE ON public.accounts_university FOR EACH ROW EXECUTE FUNCTION public.calculate_total_electricity_benchmark();
+
+
+--
+-- Name: accounts_university update_total_gas_benchmark; Type: TRIGGER; Schema: public; Owner: carbon_foot
+--
+
+CREATE TRIGGER update_total_gas_benchmark BEFORE INSERT OR UPDATE ON public.accounts_university FOR EACH ROW EXECUTE FUNCTION public.calculate_total_gas_benchmark();
 
 --
 -- PostgreSQL database dump complete

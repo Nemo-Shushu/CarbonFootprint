@@ -1,5 +1,5 @@
 from django.urls import path
-
+from .views import SessionExpiryView, ExtendSessionView
 from . import views
 
 urlpatterns = [
@@ -19,8 +19,14 @@ urlpatterns = [
         name="dashboard-show-user-result-data",
     ),
     path("get-all-report-data/", views.get_all_report_data, name="get-all-report-data"),
-    path("update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"),
-    path("get-all-carbon-impact/",views.get_all_carbon_impact, name='get-all-carbon-impact'),
+    path(
+        "update-carbon-impact/", views.update_carbon_impact, name="update-carbon-impact"
+    ),
+    path(
+        "get-all-carbon-impact/",
+        views.get_all_carbon_impact,
+        name="get-all-carbon-impact",
+    ),
     path("intensity-factors/", views.update_intensity_view, name="intensity-factor"),
     path("submit-adminrequest/", views.submit_admin_request, name="submit_request"),
     path("admin-request-list/", views.admin_request_list, name="admin_request_list"),
@@ -29,5 +35,27 @@ urlpatterns = [
         "approve-or-reject-request/",
         views.approve_or_reject_request,
         name="approve_or_reject_request",
+    ),
+    path(
+        "store-unsubmitted-reports-backend/",
+        views.store_unsubmitted_reports_backend,
+        name="store_unsubmitted_reports_backend",
+    ),
+    path(
+        "retrieve-and-delete-temp-report/",
+        views.retrieve_and_delete_temp_report,
+        name="retrieve_and_delete_temp_report",
+    ),
+    path('session-expiry/', SessionExpiryView.as_view(), name='session-expiry'),
+    path('extend-session/', ExtendSessionView.as_view(), name='extend-session'),
+    path(
+        "retrieve-accounts-university/",
+        views.retrieve_accounts_university,
+        name="accounts_university",
+    ),
+    path(
+        "update-accounts-university/",
+        views.update_accounts_university,
+        name="update_accounts_university",
     ),
 ]

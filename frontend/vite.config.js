@@ -27,11 +27,15 @@ export default defineConfig({
     coverage: {
       reporter: ["text", "lcov"],
       all: true,
-      include: ["src/**/*.js", "src/**/*.jsx"],
+      include: [
+        "src/**/*.js",
+        "src/**/*.jsx",
+        "src/features/ManageFactors/components/**/*.jsx",
+      ],
       exclude: [
         "node_modules",
         "vite.config.js",
-        "src/features/**",
+        "src/features/ManageFactors/api",
         "src/setupTests.jsx",
         "src/main.jsx",
       ],

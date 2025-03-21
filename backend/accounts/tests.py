@@ -172,7 +172,6 @@ class MockFactory:
         return mock_user
 
 
-
 class GetOrderedErrorsTests(SimpleTestCase):
     def setUp(self):
         self.mock_serializer = MagicMock()

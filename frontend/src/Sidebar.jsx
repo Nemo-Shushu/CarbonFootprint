@@ -1,8 +1,8 @@
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import "./scss/custom.scss";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./useAuth";
+import PropTypes from "prop-types";
+import "./scss/custom.scss";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -15,7 +15,7 @@ function Sidebar({ onAdminStatusChange }) {
   const { isAuthenticated, loading } = useAuth();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
-  const [isAdmin, setIsAdmin] = useState(true); //isAdmin Status
+  const [isAdmin, setIsAdmin] = useState(true); // isAdmin Status
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,10 +36,8 @@ function Sidebar({ onAdminStatusChange }) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated) {
-        handleProtect();
-      }
+    if (!loading && !isAuthenticated) {
+      handleProtect();
     }
   }, [isAuthenticated, loading]);
 
@@ -127,7 +125,7 @@ function Sidebar({ onAdminStatusChange }) {
             alt="Logout Icon"
             onClick={handleLogout}
             style={{
-              width: 25 + "px",
+              width: "25px",
               objectFit: "contain",
               cursor: "pointer",
             }}
@@ -161,7 +159,6 @@ function Sidebar({ onAdminStatusChange }) {
         </button>
 
         <nav className="w-100">
-          {/* Dashboard Button */}
           <div
             className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "Dashboard" ? "active" : ""}`}
             onClick={handleDashboard}
@@ -176,19 +173,17 @@ function Sidebar({ onAdminStatusChange }) {
               src="/images/Dashboard.png"
               alt="Dashboard Icon"
               style={{
-                width: 20 + "px",
+                width: "20px",
                 objectFit: "contain",
                 marginRight: 10 + "px",
                 marginLeft: "5" + "px",
                 paddingleft: "10px",
               }}
-            />{" "}
+            />
             Dashboard
           </div>
-
           {isAdmin ? (
             <>
-              {/* Admin Tool Button */}
               <div
                 className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 ${
                   activeItem === "AdminTool" ? "active" : ""
@@ -214,8 +209,6 @@ function Sidebar({ onAdminStatusChange }) {
                 />
                 Admin Tool
               </div>
-
-              {/* Manage Factors Button */}
               <div
                 className={`btn btn-moss d-flex text-center text-white fs-6 p-2 ${
                   activeItem === "Manage Factors" ? "active" : ""
@@ -248,11 +241,8 @@ function Sidebar({ onAdminStatusChange }) {
             </>
           ) : (
             <>
-              {/* Request Admin Button */}
               <div
-                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${
-                  activeItem === "Request Admin" ? "active" : ""
-                }`}
+                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Request Admin" ? "active" : ""}`}
                 onClick={handleRequestAdmin}
                 style={{ cursor: "pointer", width: "90%" }}
               >
