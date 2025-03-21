@@ -15,10 +15,11 @@ import PropTypes from "prop-types";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 TableComponent.propTypes = {
-  isAdmin: PropTypes.boolean,
+  isAdmin: PropTypes.bool,
+  isResearcher: PropTypes.bool,
 };
 
-function TableComponent({ isAdmin }) {
+function TableComponent({ isAdmin, isResearcher }) {
   const [data, setData] = useState([]);
   const [repId, setRepId] = useState();
   const [report, setReport] = useState([]);
@@ -81,6 +82,8 @@ function TableComponent({ isAdmin }) {
 
   async function getReports() {
     try {
+      const body = {};
+
       const response = await fetch(
         `${backendUrl}api/dashboard-show-user-result-data/`,
         {
@@ -90,6 +93,7 @@ function TableComponent({ isAdmin }) {
             "Content-Type": "application/json",
             "X-CSRFToken": Cookies.get("csrftoken"),
           },
+          body: JSON.stringify(body),
         },
       );
 
@@ -364,7 +368,7 @@ function TableComponent({ isAdmin }) {
                       <i className="bi bi-sort-down"></i>
                     ))}
                 </th>
-                {isAdmin && (
+                {(isAdmin || isResearcher) && (
                   <th
                     scope="col"
                     onClick={() => sortTable("email")}
@@ -395,7 +399,7 @@ function TableComponent({ isAdmin }) {
                   <td>{row.institution}</td>
                   <td>{row.field}</td>
                   <td>{row.emissions}</td>
-                  {isAdmin && <td>{row.email}</td>}
+                  {(isAdmin || isResearcher) && <td>{row.email}</td>}
                 </tr>
               ))}
             </tbody>
@@ -427,9 +431,14 @@ function Dashboard() {
     queryParams.get("showProfile") === "true",
   );
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isResearcher, setIsResearcher] = useState(false);
 
   function handleAdminStatusChange(adminStatus) {
     setIsAdmin(adminStatus);
+  }
+
+  function handleResearcherStatusChange(ResearcherStatus) {
+    setIsResearcher(ResearcherStatus);
   }
 
   /**
@@ -458,6 +467,7 @@ function Dashboard() {
       <Sidebar
         style={{ flex: "0 0 17%" }}
         onAdminStatusChange={handleAdminStatusChange}
+        onResearcherStatusChange={handleResearcherStatusChange}
       />
 
       {/* Main Content */}
@@ -496,7 +506,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <TableComponent isAdmin={isAdmin} />
+        <TableComponent isAdmin={isAdmin} isResearcher={isResearcher} />
       </main>
     </div>
   );

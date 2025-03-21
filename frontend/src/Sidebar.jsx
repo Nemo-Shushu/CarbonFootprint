@@ -8,14 +8,16 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 Sidebar.propTypes = {
   onAdminStatusChange: PropTypes.func,
+  onResearcherStatusChange: PropTypes.func,
 };
 
-function Sidebar({ onAdminStatusChange }) {
+function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const { isAuthenticated, loading } = useAuth();
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
   const [isAdmin, setIsAdmin] = useState(true); // isAdmin Status
+  const [isResearcher, setIsResearcher] = useState(false); // eslint-disable-line no-unused-vars
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,6 +76,8 @@ function Sidebar({ onAdminStatusChange }) {
         setEmail(data.email);
         setIsAdmin(data.isAdmin);
         onAdminStatusChange(data.isAdmin);
+        setIsResearcher(data.isResearcher);
+        onResearcherStatusChange(data.isResearcher);
       })
       .catch((err) => {
         console.log(err);
