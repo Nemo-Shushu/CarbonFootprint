@@ -794,8 +794,9 @@ def submit_view(request):
                 isinstance(d, dict) for d in [utilities, travel, waste, procurement]
             ):
                 return JsonResponse({"error": "Invalid input format"}, status=400)
-            # Calculate carbon emissions
-            report_calculator = ReportcalculateView()
+            user = request.user
+            user_institute_id = user.institute_id
+            report_calculator = ReportcalculateView(user_institute_id)
             report_data = report_calculator.calculate_report_emissions(data)
             if "error" in report_data:
                 return JsonResponse({"error": report_data["error"]}, status=400)
@@ -845,69 +846,24 @@ def dashboard_show_user_result_data(request):
     try:
         user_id = request.user.id
         user_profile = get_object_or_404(User, id=user_id)
-        calculation_result = Result.objects.filter(user_id=user_id)
+        if request.user.is_admin or request.user.is_researcher:
+            calculation_result = Result.objects.all().select_related('user')
+        else:
+            calculation_result = Result.objects.filter(user_id=user_id) | Result.objects.filter(
+                user__institute_id=user_profile.institute_id
+            ) | Result.objects.filter(
+                user__research_field_id=user_profile.research_field_id
+            )
         data = [
             {
                 "id": Result.id,
-                "institution": user_profile.institute_id,
-                "field": user_profile.research_field_id,
+                "institution": Result.user.institute_id,
+                "field": Result.user.research_field_id,
                 "emissions": float(Result.total_carbon_emissions),
-                "email":user_profile.email
+                "email": Result.user.email,
+                "own_report": user_id == Result.user.id,
             }
             for Result in calculation_result
-        ]
-
-        return JsonResponse(data, safe=False)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
-
-def show_same_effect_user_result_data(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Please login first."}, status=403)
-
-    try:
-        user_id = request.user.id
-        user_profile = get_object_or_404(User, id=user_id)
-        calculation_result = Result.objects.filter(
-            user__institute_id=user_profile.institute_id
-        ) | Result.objects.filter(
-            user__research_field_id=user_profile.research_field_id
-        )
-
-        data = [
-            {
-                "id": result.id,
-                "institution": result.user.institute_id,
-                "field": result.user.research_field_id,
-                "emissions": float(result.total_carbon_emissions),
-                "email": result.user.email
-            }
-            for result in calculation_result
-        ]
-
-        return JsonResponse(data, safe=False)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=400)
-
-def admin_get_all_results(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Please login first."}, status=403)
-    if not request.user.is_admin and not request.user.is_researcher:
-        return JsonResponse({"error": "Unprivileged access"}, status=403)
-
-    try:
-        all_results = Result.objects.all().select_related('user')
-        data = [
-            {
-                "id": result.id,
-                "institution": result.user.institute_id,
-                "field": result.user.research_field_id,
-                "emissions": float(result.total_carbon_emissions),
-                "email": result.user.email
-            }
-            for result in all_results
         ]
 
         return JsonResponse(data, safe=False)
@@ -934,6 +890,7 @@ def get_all_report_data(request):
                     "total_water_emissions": float(report.total_water_emissions),
                     "total_travel_emissions": float(report.total_travel_emissions),
                     "total_waste_emissions": float(report.total_waste_emissions),
+                    "total_procurement_emissions": float(report.total_procurement_emissions),
                     "total_carbon_emissions": float(report.total_carbon_emissions),
                 },
                 "report_data": report.report_data,
