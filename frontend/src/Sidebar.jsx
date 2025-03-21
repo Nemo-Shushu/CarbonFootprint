@@ -110,7 +110,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
 
   return (
     <div
-      className="bg-moss text-white d-flex flex-column pt-3 align-items-center"
+      className="bg-moss text-white flex-column pt-3"
       style={{
         width: 15 + "rem",
         maxWidth: 20 + "rem",
@@ -121,7 +121,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
     >
       <div>
         <div className="d-flex align-items-center gap-5 fw-bold fs-3 text-white mb-2">
-          <span style={{ cursor: "pointer", paddingLeft: "40px" }}>
+          <span style={{ cursor: "pointer", paddingLeft: "15px" }}>
             {firstName}{" "}
           </span>
           <img
@@ -130,7 +130,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
             onClick={handleLogout}
             style={{
               width: "25px",
-              objectFit: "contain",
+              marginLeft: "-25px",
               cursor: "pointer",
             }}
           />
@@ -148,7 +148,12 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
         </p>
         <button
           className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "New Report" ? "active" : ""}`}
-          style={{ width: "100%", margin: "0", borderRadius: "0" }}
+          style={{
+            width: "100%",
+            margin: "0",
+            borderRadius: "20",
+            height: "35px",
+          }}
           onClick={handleCalculator}
         >
           <div
@@ -169,7 +174,8 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
             style={{
               cursor: "pointer",
               width: 100 + "%",
-              borderRadius: "0",
+              height: "35px",
+              borderRadius: "20",
               margin: "10px 0 0 0",
             }}
           >
@@ -181,7 +187,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
                 objectFit: "contain",
                 marginRight: 10 + "px",
                 marginLeft: "5" + "px",
-                paddingleft: "10px",
+                marginBottom: "3px",
               }}
             />
             Dashboard
@@ -196,7 +202,8 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
                 style={{
                   cursor: "pointer",
                   width: "100%",
-                  borderRadius: "0",
+                  borderRadius: "20",
+                  height: "35px",
                   margin: "10px 0 0 0",
                 }}
               >
@@ -221,7 +228,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
                 style={{
                   cursor: "pointer",
                   width: "100%",
-                  borderRadius: "0",
+                  borderRadius: "20",
                   margin: "10px 0 0 0",
                 }}
               >
@@ -246,9 +253,15 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
           ) : (
             <>
               <div
-                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-2 m-2 ${activeItem === "Request Admin" ? "active" : ""}`}
+                className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 ${activeItem === "Request Admin" ? "active" : ""}`}
                 onClick={handleRequestAdmin}
-                style={{ cursor: "pointer", width: "90%" }}
+                style={{
+                  cursor: "pointer",
+                  width: "100%",
+                  borderRadius: "20",
+                  height: "35px",
+                  margin: "10px 0 0 0",
+                }}
               >
                 <img
                   src="/images/RequestAdmin.png"
@@ -272,7 +285,7 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
         style={{
           position: "absolute",
           bottom: "20px",
-          left: "50%",
+          left: "47%",
           transform: "translateX(-50%)",
           textAlign: "center",
         }}
