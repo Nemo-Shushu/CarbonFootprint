@@ -43,9 +43,7 @@ test-frontend:
   script:
     - cd frontend
     - npm install
-    - npm run test -- --coverage
-    - jq '.total.lines.pct' coverage/coverage-final.json > coverage.txt
-  coverage: '/^\s*([\d\.]+)\s*$/'
+    - npm run test
 
 build-job:
   stage: build

@@ -13,7 +13,6 @@ This tool is designed to raise awareness of individual and corporate carbon foot
 ## Badges
 
 [![GitLab Pipeline Status](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/pipeline.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
-[![Coverage](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/coverage.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
 ![Tests Passed](https://img.shields.io/badge/tests-passed-brightgreen)
 
 ## Visuals
