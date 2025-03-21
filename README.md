@@ -29,13 +29,13 @@ Ensure you have the following installed before setting up:
 - PostgreSQL: If running outside of Docker.
 
 1️⃣ Clone the Repository
-```
+```cmd
 cd existing_repo
 git clone https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main.git
 ```
 
 2️⃣ Install Frontend Dependencies
-```
+```cmd
 cd frontend
 npm install
 npm run dev
@@ -43,7 +43,7 @@ npm run dev
 The frontend will start at: http://localhost:3000/
 
 3️⃣ Set Up Backend
-```
+```cmd
 cd backend
 pip install
 python manage.py migrate
@@ -52,7 +52,7 @@ python manage.py runserver
 The backend API will be available at: http://localhost:8000/
 
 4️⃣ Run with Docker
-```
+```cmd
 docker-compose up --build
 ```
 
