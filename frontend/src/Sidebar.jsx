@@ -144,7 +144,12 @@ function Sidebar({ onAdminStatusChange }) {
         </p>
         <button
           className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 my-3 ${activeItem === "New Report" ? "active" : ""}`}
-          style={{ width: "100%", margin: "0", borderRadius: "20", height:"35px" }}
+          style={{
+            width: "100%",
+            margin: "0",
+            borderRadius: "20",
+            height: "35px",
+          }}
           onClick={handleCalculator}
         >
           <div
@@ -178,7 +183,7 @@ function Sidebar({ onAdminStatusChange }) {
                 objectFit: "contain",
                 marginRight: 10 + "px",
                 marginLeft: "5" + "px",
-                marginBottom: "3px"
+                marginBottom: "3px",
               }}
             />
             Dashboard
@@ -193,8 +198,8 @@ function Sidebar({ onAdminStatusChange }) {
                 style={{
                   cursor: "pointer",
                   width: "100%",
-                  borderRadius: "20", 
-                  height:"35px",
+                  borderRadius: "20",
+                  height: "35px",
                   margin: "10px 0 0 0",
                 }}
               >
@@ -246,12 +251,12 @@ function Sidebar({ onAdminStatusChange }) {
               <div
                 className={`btn btn-moss d-flex text-align-center text-white fs-6 p-1 ${activeItem === "Request Admin" ? "active" : ""}`}
                 onClick={handleRequestAdmin}
-                style={{                   
+                style={{
                   cursor: "pointer",
                   width: "100%",
-                  borderRadius: "20", 
-                  height:"35px",
-                  margin: "10px 0 0 0", 
+                  borderRadius: "20",
+                  height: "35px",
+                  margin: "10px 0 0 0",
                 }}
               >
                 <img
