@@ -490,9 +490,11 @@ function RegisterForm({ forceVisible = false }) {
               <button
                 type="button"
                 onClick={toggleShowPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showPassword ? "Hide" : "Show"}
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
               </button>
             </div>
 
@@ -507,9 +509,11 @@ function RegisterForm({ forceVisible = false }) {
               <button
                 type="button"
                 onClick={toggleShowPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showPassword ? "Hide" : "Show"}s
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
               </button>
             </div>
 
