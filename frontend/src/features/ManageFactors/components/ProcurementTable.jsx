@@ -135,7 +135,7 @@ function FactorTable({ tableName, conversionFactors }) {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button
-          className="btn btn-primary m-1 flex-grow-1 text-nowrap"
+          className="btn btn-moss m-1 flex-grow-1 text-nowrap"
           onClick={toggleEditMode}
         >
           {editing ? "Cancel" : "Bulk Edit Mode"}
