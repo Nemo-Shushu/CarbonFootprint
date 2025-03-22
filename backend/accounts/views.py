@@ -4,12 +4,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from .models import User, EmailVerification
 from .serializers import (
     RegisterSerializer,
     CreateUserSerializer,
     UpdateSerializer,
+    UserSerializer,
 )
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMessage
@@ -292,3 +293,26 @@ class CheckEmailAPIView(APIView):
                 {"error": "User with the provided email does not exist."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        
+
+# Retrieve a user by ID or username
+class UserRetrieveView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+    def retrieve(self, request, *args, **kwargs):
+        user_id = kwargs.get("pk")
+        username = kwargs.get("username")
+
+        user = None
+        if user_id:
+            user = User.objects.filter(id=user_id).first()
+        elif username:
+            user = User.objects.filter(username=username).first()
+
+        if not user:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
