@@ -402,77 +402,38 @@ class CreateViewTests(SimpleTestCase):
 
 
 class UpdateUserEmailAPIViewTests(SimpleTestCase):
+
     def setUp(self):
-        self.factory = APIRequestFactory()
+        self.factory = RequestFactory()
 
-    # @patch("accounts.views.get_object_or_404")
-    # def test_update_user_email_success(self, mock_get_object):
-    #     mock_user = MagicMock()
-    #     mock_user.email = "oldemail@university.ac.uk"
-    #     mock_get_object.return_value = mock_user
+    @patch("accounts.views.get_object_or_404")
+    @patch("accounts.views.User.objects.filter")
+    def test_update_user_email_success(self, mock_user_filter, mock_get_object):
+        mock_user_filter.return_value.exists.return_value = False
+        mock_user = MagicMock()
+        mock_get_object.return_value = mock_user
 
-    #     request = self.factory.patch(
-    #         "/fake-url/",
-    #         {
-    #             "currentEmail": "oldemail@university.ac.uk",
-    #             "newEmail": "newemail@university.ac.uk",
-    #         },
-    #         format="json",
-    #     )
-
-    #     response = UpdateUserEmailAPIView.as_view()(request)
-
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data, {"message": "Email updated successfully."})
-    #     mock_user.save.assert_called_once()
-
-    # @patch("accounts.views.get_object_or_404")
-    # def test_update_user_email_not_found(self, mock_get_object):
-    #     mock_get_object.side_effect = Http404
-
-    #     request = self.factory.patch(
-    #         "/fake-url/",
-    #         {
-    #             "currentEmail": "nonexistent@university.ac.uk",
-    #             "newEmail": "newemail@university.ac.uk",
-    #         },
-    #         format="json",
-    #     )
-
-    #     response = UpdateUserEmailAPIView.as_view()(request)
-
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    #     self.assertEqual(response.data, {"detail": "Not found."})
-
-    def test_update_user_email_missing_current_email(self):
         request = self.factory.patch(
-            "/fake-url/", {"newEmail": "newemail@university.ac.uk"}, format="json"
+            "/update-user-email/",
+            {"currentEmail": "existing@example.com", "newEmail": "newuser@example.com"},
+            content_type="application/json"
         )
 
         response = UpdateUserEmailAPIView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"message": "Email updated successfully."})
+        mock_user.save.assert_called_once()
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.data, {"error": "Both current_email and new_email are required."}
+    @patch("accounts.views.User.objects.filter")
+    def test_update_user_email_already_exists(self, mock_user_filter):
+        mock_user_filter.return_value.exists.return_value = True
+
+        request = self.factory.patch(
+            "/update-user-email/",
+            {"currentEmail": "existing@example.com", "newEmail": "newuser@example.com"},
+            content_type="application/json"
         )
 
-    # @patch("accounts.views.get_object_or_404")
-    # def test_update_user_email_save_failure(self, mock_get_object):
-    #     mock_user = MagicMock()
-    #     mock_user.email = "oldemail@university.ac.uk"
-    #     mock_user.save.side_effect = Exception("Database error")
-    #     mock_get_object.return_value = mock_user
-
-    #     request = self.factory.patch(
-    #         "/fake-url/",
-    #         {
-    #             "currentEmail": "oldemail@university.ac.uk",
-    #             "newEmail": "newemail@university.ac.uk",
-    #         },
-    #         format="json",
-    #     )
-
-    #     try:
-    #         UpdateUserEmailAPIView.as_view()(request)
-    #     except Exception as e:
-    #         self.assertEqual(str(e), "Database error")
+        response = UpdateUserEmailAPIView.as_view()(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"error": "A user with the new email already exists."})
