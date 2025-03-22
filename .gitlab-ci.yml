@@ -1,5 +1,16 @@
+variables:
+  DEBUG: "False"
+  DJANGO_ALLOWED_HOSTS: "https://sh14main-django2-1.onrender.com/ localhost 134.209.19.90"
+  SQL_ENGINE: "django.db.backends.postgresql"
+  SQL_DATABASE: "carbon_foot_data"
+  SQL_USER: "carbon_foot"
+  SQL_HOST: "db"
+  SQL_PORT: "5432"
+  VITE_BACKEND_URL: "http://134.209.19.90:8000/"
+
 stages:
   - lint
+  - test
   - build
 
 lint-backend:
@@ -15,18 +26,33 @@ lint-frontend:
   script:
     - cd frontend
     - npm install
-    - npm install -g eslint
-    - eslint .
+    - npm install eslint --save-dev # Install ESLint locally instead of globally
+    - npx eslint . # Use npx to run the local ESLint
+
+test-backend:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - pip install ruff --break-system-packages
+    - ruff check backend/
+
+test-frontend:
+  stage: test
+  image: node:23
+  script:
+    - cd frontend
+    - npm install
+    - npm run test
 
 build-job:
   stage: build
   image: node:23
   variables:
-    VITE_BACKEND_URL: "http://134.209.19.90:3000/"
+    VITE_BACKEND_URL: "http://134.209.19.90:8000/"
   script:
     - cd frontend
     - npm install
     - npm run build
   artifacts:
     paths:
-    - build/
+      - build/
