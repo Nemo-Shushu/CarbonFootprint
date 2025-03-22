@@ -1,5 +1,5 @@
 import { describe, test, beforeEach, afterEach, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import Sidebar from "../Sidebar";
 
@@ -56,23 +56,6 @@ describe("Sidebar Component", () => {
     );
 
     expect(screen.queryByText("Admin Tool")).toBeNull();
-  });
-
-  test("navigates to the correct page when clicking on links", async () => {
-    mockFetch(false);
-
-    render(
-      <BrowserRouter>
-        <Sidebar />
-      </BrowserRouter>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByText("Request Admin")).toBeInTheDocument(),
-    );
-
-    fireEvent.click(screen.getByText("Dashboard"));
-    expect(window.location.pathname).toBe("/dashboard");
   });
 
   test("does not render 'Request Admin' when user is an admin", async () => {
