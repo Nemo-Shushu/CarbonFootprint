@@ -1,5 +1,5 @@
 import { describe, test, beforeEach, afterEach, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import Sidebar from "../Sidebar";
 
