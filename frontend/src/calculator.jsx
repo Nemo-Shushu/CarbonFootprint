@@ -1,107 +1,34 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import Select from "react-select";
 import CalculationBar from "./CalculationBar";
 import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
-import Modal from "react-bootstrap/Modal";
-import "./static/Calculator.css";
 import "./static/dashboard.css";
-import "./static/Instruction.css";
 import procurementCategories from "./static/procurementCategories.json";
 import "./static/Sidebar.css";
+import { useAuth } from "./useAuth";
 
+const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function Calculator() {
   const [report, setReport] = useState({});
-  const [isReportUpdated, setIsReportUpdated] = useState(false);
-  const [draft, setDraft] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
 
   const navigate = useNavigate();
 
-  const isObjectEmpty = (obj) => {
-    if (!obj || Object.keys(obj).length === 0) return true;
-
-    return Object.values(obj).every(
-      (value) => typeof value === "object" && isObjectEmpty(value),
-    );
-  };
-
-  async function saveDraft(data) {
-    try {
-      const response = await fetch(
-        `${backendUrl}api/store-unsubmitted-reports-backend/`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": Cookies.get("csrftoken"),
-          },
-          body: JSON.stringify(data),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Draft saved:", responseData, data);
-    } catch (error) {
-      console.error("Error saving draft:", error);
-    }
+  function handleProtect() {
+    navigate("/sign-in");
   }
-
-  async function retrieveDraft() {
-    try {
-      const response = await fetch(
-        `${backendUrl}api/retrieve-and-delete-temp-report/`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": Cookies.get("csrftoken"),
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Draft retrieved:", responseData);
-      setDraft(responseData.data);
-      if (!isObjectEmpty(responseData.data)) setModalVisible(true);
-    } catch (error) {
-      console.error("Error retrieving draft:", error);
-    }
-  }
-
-  useEffect(() => {
-    console.log("useEffect runs");
-    retrieveDraft();
-
-    const interval = setInterval(() => {
-      saveDraft(report);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   async function submitReport() {
     try {
-      const response = await fetch(`${backendUrl}api/submit/`, {
+      const response = await fetch(`${backendUrl}api2/submit/`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": Cookies.get("csrftoken"),
+          "X-CSRFToken": csrftoken,
         },
         body: JSON.stringify(report),
       });
@@ -120,11 +47,15 @@ function Calculator() {
 
   function Instructions() {
     const navigate = useNavigate();
+    const primaryGreen = "var(--bs-moss)"; // same as sidebar green
+    const mutedOliveGreen = "#7B9E91"; // lighter green for title background
+    const cardShadow = "0 14px 32px rgba(0, 0, 0, 0.25)";
+
     const steps = [
       {
         title: "Step 1 - General Data Entry",
         content: (
-          <ul className="text-sm text-[#4F7A6A] list-none pl-5 space-y-2 pb-4">
+          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2">
             <li>
               <strong>Utilities:</strong> Enter FTE staff numbers and GIA data.
             </li>
@@ -143,7 +74,7 @@ function Calculator() {
       {
         title: "Step 2 - Procurement",
         content: (
-          <p className="text-sm text-[#4F7A6A] pb-4">
+          <p className="text-sm text-[#4F7A6A]">
             Please enter project-related procurement expenses. Add a new line
             for each category. For reference, this section is taken directly
             from the Higher Education Supply Chain Emission Tool (HESCET)
@@ -162,7 +93,7 @@ function Calculator() {
       {
         title: "Step 3 - Results",
         content: (
-          <p className="text-sm text-[#4F7A6A] pb-4">
+          <p className="text-sm text-[#4F7A6A]">
             View a comprehensive summary and visual representations of your
             project&rsquo;s annual carbon footprint. This section includes
             detailed charts and graphs, allowing you to easily interpret your
@@ -174,7 +105,7 @@ function Calculator() {
       {
         title: "Help & Tips",
         content: (
-          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2 pb-4">
+          <ul className="text-sm text-[#4F7A6A] list-disc pl-5 space-y-2">
             <li>
               <strong>&lsquo;Next&rsquo; Button:</strong> Click to save progress
               on each page.
@@ -198,18 +129,30 @@ function Calculator() {
     ];
 
     return (
-      <main className="instructions-container">
-        <div className="instructions-header">
+      <main
+        className="px-4 md:px-8 py-4 max-w-7xl mx-auto min-h-screen pb-24"
+        style={{ background: "linear-gradient(to bottom, #F5F5F5, #E2E8F0)" }}
+      >
+        {/* Header Section with Centered Logo and Title */}
+        <div className="flex flex-col items-center mb-6 space-y-2">
+          {/* University of Glasgow Logo */}
           <img
             src="/images/UniLogo.png"
             alt="University of Glasgow Logo"
-            className="instructions-logo"
+            className="w-24 h-auto"
           />
-          <h2 className="instructions-title">Carbon Footprint Calculator</h2>
+
+          {/* Main Heading */}
+          <h2
+            className="text-2xl md:text-3xl font-bold text-center"
+            style={{ color: primaryGreen }}
+          >
+            Carbon Footprint Calculator
+          </h2>
         </div>
 
         {/* Introduction Text */}
-        <p className="instructions-intro">
+        <p className="text-center text-[#4F7A6A] mb-8 max-w-3xl mx-auto text-sm">
           Welcome to the Academic Carbon Footprint Calculator. This tool is
           designed to help you estimate and better understand the annual carbon
           footprint of your research activities. By following the steps below,
@@ -218,25 +161,48 @@ function Calculator() {
           sustainability decisions.
         </p>
 
-        {/* Cards Grid */}
+        {/* Cards Grid with Fully Rounded Edges and Left-Aligned Titles */}
         <div className="flex flex-col gap-10 mb-12 px-4">
           {steps.map(({ title, content }, index) => (
-            <div key={index} className="instructions-card">
-              <div className="instructions-card-header">
-                <h3 className="instructions-card-title">{title}</h3>
+            <div
+              key={index}
+              className="bg-white p-6 rounded-3xl shadow-lg transition-transform hover:scale-[1.02] flex flex-col justify-start"
+              style={{
+                boxShadow: cardShadow,
+                borderRadius: "30px",
+                height: "100%",
+              }}
+            >
+              <div
+                className="w-full px-4 py-2 mb-4"
+                style={{
+                  backgroundColor: mutedOliveGreen,
+                  borderTopLeftRadius: "30px",
+                  borderTopRightRadius: "30px",
+                }}
+              >
+                <h3
+                  className="text-xs font-medium text-left"
+                  style={{ color: primaryGreen }}
+                >
+                  {title}
+                </h3>
               </div>
-              <div className="instructions-card-content">{content}</div>
+              <div className="text-sm text-[#4F7A6A] flex-grow flex items-start px-4">
+                {content}
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="instructions-footer">
+        <div
+          className="d-flex justify-content-end fixed bottom-0 end-0 p-3"
+          style={{ zIndex: 10 }}
+        >
           <button
             type="button"
             className="btn btn-moss"
-            onClick={() => {
-              navigate("/calculator/utilities");
-            }}
+            onClick={() => navigate("/calculator/utilities")}
           >
             Start
           </button>
@@ -255,87 +221,32 @@ function Calculator() {
     }, []);
 
     function handleRoute() {
-      setReport((prevReport) => {
-        const updatedReport = {
-          ...prevReport,
-          ["utilities"]: utilitiesReport,
-        };
-
-        setIsReportUpdated(true);
-        return updatedReport;
-      });
+      setReport((prevReport) => ({
+        ...prevReport,
+        ["utilities"]: utilitiesReport,
+      }));
+      navigate("/calculator/travel");
     }
-
-    useEffect(() => {
-      if (isReportUpdated) {
-        saveDraft(report);
-        navigate("/calculator/travel");
-        setIsReportUpdated(false);
-      }
-    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setUtilitiesReport((prevReport) => {
-        const updatedReport = { ...prevReport };
-        if (value === "") {
-          delete updatedReport[name];
-        } else {
-          updatedReport[name] = value;
-        }
-        return updatedReport;
-      });
+      setUtilitiesReport((prevReport) => ({ ...prevReport, [name]: value }));
     }
 
     return (
-      <main className="ms-sm-auto px-md-4 calculator-content-container">
-        <Modal
-          show={modalVisible}
-          onHide={() => setModalVisible(false)}
-          centered
-          size="md"
-          backdrop="static"
-        >
-          <Modal.Body>
-            <p className="mb-3">
-              You have a draft saved – do you wish to use it or start from the
-              beginning?
-            </p>
-            <p className="text-danger fw-bold">
-              Discarding the draft is irreversible!
-            </p>
-          </Modal.Body>
-          <Modal.Footer className="d-flex justify-content-between">
-            <button
-              className="btn btn-moss"
-              onClick={() => {
-                setReport(draft);
-                saveDraft(draft);
-                setModalVisible(false);
-              }}
-            >
-              Use Saved Draft
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={() => setModalVisible(false)}
-            >
-              Discard Draft
-            </button>
-          </Modal.Footer>
-        </Modal>
+      <main className="ms-sm-auto px-md-4">
         {/* {JSON.stringify(utilitiesReport, null, 2)} */}
-        <form className="needs-validation calculator-form" noValidate>
+        <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4">
-              <strong className="calculator-section-title">PERSONNEL</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Personnel:</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Number of FTE staff on project</strong>
+                  <strong>Number of FTE staff working on project</strong>
                 </label>
                 <input
                   type="number"
@@ -370,20 +281,18 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <strong className="calculator-section-title">
-                TYPE OF SPACE
+            <div className="mt-4 fst-italic">
+              <strong>
+                Type of space (for calculation of electricity and gas
+                consumption):
               </strong>
-              <p className="calculator-section-subtitle text-start ms-1">
-                For calculating electricity and gas consumption
-              </p>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Academic Laboratory</strong>
+                  <strong>Academic laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -401,7 +310,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Admin Office</strong>
+                  <strong>Admin office</strong>
                 </label>
                 <input
                   type="number"
@@ -419,7 +328,7 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Academic Office</strong>
+                  <strong>Academic office</strong>
                 </label>
                 <input
                   type="number"
@@ -436,20 +345,17 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <strong className="calculator-section-title">
-                TYPE OF SPACE
+            <div className="mt-4 fst-italic">
+              <strong>
+                Type of space (for calculation of water consumption):
               </strong>
-              <p className="calculator-section-subtitle text-start ms-1">
-                For calculating water consumption
-              </p>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Physical Sciences Laboratory</strong>
+                  <strong>Physical sciences laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -467,7 +373,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Engineering Laboratory</strong>
+                  <strong>Engineering laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -485,7 +391,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Medical/Life Sciences Laboratory</strong>
+                  <strong>Medical/Life sciences laboratory</strong>
                 </label>
                 <input
                   type="number"
@@ -503,7 +409,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Office/Admin Space</strong>
+                  <strong>Office/Admin space</strong>
                 </label>
                 <input
                   type="number"
@@ -523,13 +429,8 @@ function Calculator() {
         </form>
 
         <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
-          <button
-            type="button"
-            className="btn btn-moss"
-            onClick={handleRoute}
-            data-testid="utilities-next-button"
-          >
-            Save & Continue
+          <button type="button" className="btn btn-moss" onClick={handleRoute}>
+            Next
           </button>
         </div>
       </main>
@@ -550,59 +451,36 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => {
-        const updatedReport = {
-          ...prevReport,
-          ["travel"]: travelReport,
-        };
-
-        setIsReportUpdated(true);
-        return updatedReport;
-      });
+      setReport((prevReport) => ({ ...prevReport, ["travel"]: travelReport }));
+      navigate("/calculator/waste");
     }
-
-    useEffect(() => {
-      if (isReportUpdated) {
-        saveDraft(report);
-        navigate("/calculator/waste");
-        setIsReportUpdated(false);
-      }
-    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setTravelReport((prevReport) => {
-        const updatedReport = { ...prevReport };
-        if (value === "") {
-          delete updatedReport[name];
-        } else {
-          updatedReport[name] = value;
-        }
-        return updatedReport;
-      });
+      setTravelReport((prevReport) => ({ ...prevReport, [name]: value }));
     }
 
     return (
-      <main className="ms-sm-auto px-md-4 calculator-content-container">
+      <main className="ms-sm-auto px-md-4">
         {/* {JSON.stringify(travelReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4">
-              <strong className="calculator-section-title">AIR TRAVEL</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Air travel</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy Short-Haul, To/From UK</strong>
+                  <strong>Economy short-haul, to/from UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-short-uk"
+                  name="air-eco-short"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-short-uk"]}
+                  value={travelReport["air-eco-short"]}
                   onChange={handleChange}
                   required
                 />
@@ -613,14 +491,14 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business Short-Haul, To/From UK</strong>
+                  <strong>Business short-haul, to/from UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-short-uk"
+                  name="air-business-short"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-short-uk"]}
+                  value={travelReport["air-business-short"]}
                   onChange={handleChange}
                   required
                 />
@@ -633,14 +511,14 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy Long-Haul, To/From UK</strong>
+                  <strong>Economy long-haul, to/from UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-long-uk"
+                  name="air-eco-long"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-long-uk"]}
+                  value={travelReport["air-eco-long"]}
                   onChange={handleChange}
                   required
                 />
@@ -651,14 +529,14 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business Long-Haul, To/From UK</strong>
+                  <strong>Business long-haul, to/from UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-long-uk"
+                  name="air-business-long"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-long-uk"]}
+                  value={travelReport["air-business-long"]}
                   onChange={handleChange}
                   required
                 />
@@ -671,14 +549,14 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Economy International, To/From Non-UK</strong>
+                  <strong>Economy international, to/from non-UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-eco-international"
+                  name="air-eco-inter"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-eco-international"]}
+                  value={travelReport["air-eco-inter"]}
                   onChange={handleChange}
                   required
                 />
@@ -689,14 +567,14 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Business International, To/From Non-UK</strong>
+                  <strong>Business international, to/from non-UK</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="air-business-international"
+                  name="air-business-inter"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["air-business-international"]}
+                  value={travelReport["air-business-inter"]}
                   onChange={handleChange}
                   required
                 />
@@ -706,8 +584,8 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <strong className="calculator-section-title">SEA TRAVEL</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Sea travel</strong>
             </div>
             <hr />
 
@@ -731,8 +609,8 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <strong className="calculator-section-title">LAND TRAVEL</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Land travel</strong>
             </div>
             <hr />
 
@@ -762,9 +640,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-motorbike"
+                  name="land-motor"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-motorbike"]}
+                  value={travelReport["land-motor"]}
                   onChange={handleChange}
                   required
                 />
@@ -800,9 +678,9 @@ function Calculator() {
                 <input
                   type="number"
                   className="form-control"
-                  name="land-local-bus"
+                  name="land-bus"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-local-bus"]}
+                  value={travelReport["land-bus"]}
                   onChange={handleChange}
                   required
                 />
@@ -833,7 +711,7 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>National Rail</strong>
+                  <strong>National rail</strong>
                 </label>
                 <input
                   type="number"
@@ -851,14 +729,14 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>International Rail</strong>
+                  <strong>International rail</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="land-international-rail"
+                  name="land-inter-rail"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-international-rail"]}
+                  value={travelReport["land-inter-rail"]}
                   onChange={handleChange}
                   required
                 />
@@ -869,14 +747,14 @@ function Calculator() {
 
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Light Rail and Tram</strong>
+                  <strong>Light rail and tram</strong>
                 </label>
                 <input
                   type="number"
                   className="form-control"
-                  name="land-light-rail-tram"
+                  name="land-light-rail"
                   placeholder="Enter number of distance(km)"
-                  value={travelReport["land-light-rail-tram"]}
+                  value={travelReport["land-light-rail"]}
                   onChange={handleChange}
                   required
                 />
@@ -888,17 +766,16 @@ function Calculator() {
           </div>
         </form>
 
-        <div className="calculator-button-container">
+        <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
           <button
             type="button"
-            className="btn btn-outline-secondary me-3
-            "
+            className="btn btn-outline-secondary me-2"
             onClick={handleBack}
           >
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Save & Continue
+            Next
           </button>
         </div>
       </main>
@@ -919,52 +796,29 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => {
-        const updatedReport = {
-          ...prevReport,
-          ["waste"]: wasteReport,
-        };
-
-        setIsReportUpdated(true);
-        return updatedReport;
-      });
+      setReport((prevReport) => ({ ...prevReport, ["waste"]: wasteReport }));
+      navigate("/calculator/procurement");
     }
-
-    useEffect(() => {
-      if (isReportUpdated) {
-        saveDraft(report);
-        navigate("/calculator/procurement");
-        setIsReportUpdated(false);
-      }
-    }, [isReportUpdated]);
 
     function handleChange(event) {
       const { name, value } = event.target;
-      setWasteReport((prevReport) => {
-        const updatedReport = { ...prevReport };
-        if (value === "") {
-          delete updatedReport[name];
-        } else {
-          updatedReport[name] = value;
-        }
-        return updatedReport;
-      });
+      setWasteReport((prevReport) => ({ ...prevReport, [name]: value }));
     }
 
     return (
-      <main className="ms-sm-auto px-md-4 calculator-content-container">
+      <main className="ms-sm-auto px-md-4">
         {/* {JSON.stringify(wasteReport, null, 2)} */}
         <form className="needs-validation" noValidate>
           <div className="row g-2">
-            <div className="mt-4">
-              <strong className="calculator-section-title">RECYCLING</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Recycling</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Mixed Recycling</strong>
+                  <strong>Mixed recycling</strong>
                 </label>
                 <input
                   type="number"
@@ -982,7 +836,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>WEEE Mixed Recycling</strong>
+                  <strong>WEEE mixed recycling</strong>
                 </label>
                 <input
                   type="number"
@@ -999,15 +853,15 @@ function Calculator() {
               </div>
             </div>
 
-            <div className="mt-4">
-              <strong className="calculator-section-title">WASTE</strong>
+            <div className="mt-4 fst-italic">
+              <strong>Waste</strong>
             </div>
             <hr />
 
             <div className="row mb-2">
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>General Waste</strong>
+                  <strong>General waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1025,7 +879,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Clinical Waste</strong>
+                  <strong>Clinical waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1043,7 +897,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Chemical Waste</strong>
+                  <strong>Chemical waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1061,7 +915,7 @@ function Calculator() {
 
               <div className="col-sm-3">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Biological Waste</strong>
+                  <strong>Biological waste</strong>
                 </label>
                 <input
                   type="number"
@@ -1089,7 +943,7 @@ function Calculator() {
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Save & Continue
+            Next
           </button>
         </div>
       </main>
@@ -1138,33 +992,20 @@ function Calculator() {
       }));
     }
 
-    function handleCategoryChange(selectedOption, { name }) {
-      if (!selectedOption) return;
-
-      const rowNum = name;
-
-      //remove previously seleted category
-      const prevCategory = rowCategory[rowNum];
-      if (prevCategory) {
-        setCategorySelected((prev) => ({ ...prev, [prevCategory]: false }));
-      }
+    function handleCategoryChange(event) {
+      //when a new category is selected, it's added to categorySelected and the row is updated with that category
+      const selectedValue = event.target.value;
+      const rowNum = event.target.closest("tr").id;
 
       setRowCategory((prevRowCategory) => ({
         ...prevRowCategory,
-        [rowNum]: selectedOption.value,
+        [rowNum]: selectedValue,
       }));
 
       setCategorySelected((prevCategorySelected) => ({
         ...prevCategorySelected,
-        [selectedOption.value]: true,
+        [selectedValue]: true,
       }));
-
-      setTimeout(() => {
-        const amountInput = document.getElementById(`amount-${rowNum}`);
-        if (amountInput) {
-          amountInput.focus();
-        }
-      }, 100);
     }
 
     function handleBack() {
@@ -1172,24 +1013,12 @@ function Calculator() {
     }
 
     function handleRoute() {
-      setReport((prevReport) => {
-        const updatedReport = {
-          ...prevReport,
-          ["procurement"]: procurementReport,
-        };
-
-        setIsReportUpdated(true);
-        return updatedReport;
-      });
+      setReport((prevReport) => ({
+        ...prevReport,
+        ["procurement"]: procurementReport,
+      }));
+      navigate("/calculator/results");
     }
-
-    useEffect(() => {
-      if (isReportUpdated) {
-        saveDraft(report);
-        navigate("/calculator/results");
-        setIsReportUpdated(false);
-      }
-    }, [isReportUpdated]);
 
     function handleProcurementDelete(num) {
       //first the data is cleared from the report, then category is removed from the list of selected categories, finally the row is deleted
@@ -1218,13 +1047,12 @@ function Calculator() {
 
     return (
       <main className="d-flex flex-column min-vh-100 ms-sm-auto px-md-4">
-        <div className="d-flex align-items-center mt-3">
-          <span className="procurement-instruction">
-            Press + to add new lines
-          </span>
-
+        {/* Header and New Row Button */}
+        <div className="d-flex justify-content-between align-items-center">
+          <h2>Procurement</h2>
           <button
-            className="btn btn-moss btn-lg ms-3 procurement-add-btn"
+            className="btn btn-outline-moss px-5 py-1"
+            style={{ fontSize: "2rem" }}
             onClick={handleAddRow}
           >
             +
@@ -1247,51 +1075,33 @@ function Calculator() {
               {Object.keys(rowCategory).map((num) => (
                 <tr key={num} id={num} className="align-middle text-center">
                   <td>
-                    <Select
-                      options={
-                        procurementCategories.map((category) => ({
-                          value: category.code,
-                          label: `${category.code} - ${category.name}`,
-                          isDisabled: categorySelected[category.code], // Disable already selected categories
-                        })) || []
+                    <select
+                      defaultValue={
+                        rowCategory[num] === null ? "default" : rowCategory[num]
                       }
-                      value={
-                        rowCategory[num]
-                          ? {
-                              value: rowCategory[num],
-                              label:
-                                procurementCategories.find(
-                                  (c) => c.code === rowCategory[num],
-                                )?.name || rowCategory[num],
-                            }
-                          : null
-                      }
+                      className="form-select form-select-sm"
+                      aria-label=".form-select-lg example"
                       onChange={handleCategoryChange}
-                      name={num} // Pass row number to track category selection
-                      placeholder="Select or search a category..."
-                      isSearchable // enables typing inside the dropdown to search
-                      menuPortalTarget={document.body}
-                      styles={{
-                        control: (base, state) => ({
-                          ...base,
-                          borderColor: state.isFocused ? "#4F7A6A" : "#ccc",
-                          boxShadow: state.isFocused
-                            ? "0 0 5px #4F7A6A"
-                            : "none",
-                          "&:hover": {
-                            borderColor: "#4F7A6A",
-                          },
-                        }),
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                        menu: (base) => ({
-                          ...base,
-                          maxHeight: "600px",
-                          overflowY: "auto",
-                        }),
-                      }}
-                    />
+                      disabled={rowCategory[num] !== null}
+                    >
+                      <option value="default" disabled="true">
+                        Select a procurement category
+                      </option>
+                      {procurementCategories.map((category) => (
+                        <option
+                          key={category.code}
+                          value={category.code}
+                          disabled={categorySelected[category.code]}
+                        >
+                          {category.code} - {category.name}
+                          {categorySelected[category.code] &&
+                          category.code != rowCategory[num]
+                            ? " - SELECTED"
+                            : ""}
+                        </option>
+                      ))}
+                    </select>
                   </td>
-
                   <td className="text-center">
                     <div className="d-inline-flex align-items-center">
                       <span style={{ fontSize: "1rem", fontWeight: "600" }}>
@@ -1301,7 +1111,6 @@ function Calculator() {
                         type="number"
                         className="form-control form-control-sm ms-2"
                         disabled={rowCategory[num] === null}
-                        id={"amount-${num}"}
                         name={rowCategory[num]}
                         placeholder="Expenses, GBP"
                         value={procurementReport[rowCategory[num]] ?? ""}
@@ -1335,7 +1144,7 @@ function Calculator() {
             Back
           </button>
           <button type="button" className="btn btn-moss" onClick={handleRoute}>
-            Save & Continue
+            Next
           </button>
         </div>
       </main>
@@ -1354,12 +1163,12 @@ function Calculator() {
 
     async function peekCalculations(report) {
       try {
-        const response = await fetch(`${backendUrl}api/report/`, {
+        const response = await fetch(`${backendUrl}api2/report/`, {
           method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": Cookies.get("csrftoken"),
+            "X-CSRFToken": csrftoken,
           },
           body: JSON.stringify(report),
         });
@@ -1381,21 +1190,19 @@ function Calculator() {
       navigate("/calculator/procurement");
     }
 
-    function handleSubmit() {
-      retrieveDraft();
-      setModalVisible(false);
-      submitReport();
-    }
-
     return (
       <main className="ms-sm-auto px-md-4">
         <h2>Results</h2>
         <ResultsDisplay calculations={data} rawData={report} />
-        <div className="calculator-nav-buttons">
-          <button className="btn btn-outline-secondary" onClick={handleBack}>
+        <div className="d-flex justify-content-end position-fixed bottom-0 end-0 p-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary me-2"
+            onClick={handleBack}
+          >
             Back
           </button>
-          <button className="btn btn-moss" onClick={handleSubmit}>
+          <button type="button" className="btn btn-moss" onClick={submitReport}>
             Submit
           </button>
         </div>
@@ -1403,8 +1210,8 @@ function Calculator() {
     );
   }
 
-  return (
-    <div className="calculator-container">
+  return useAuth() ? (
+    <div style={{ display: "flex", height: "100vh" }}>
       <Sidebar style={{ flex: "0 0 17%" }} />
       <main style={{ flex: "1", padding: "1rem", overflowY: "auto" }}>
         <CalculationBar />
@@ -1419,6 +1226,8 @@ function Calculator() {
         </Routes>
       </main>
     </div>
+  ) : (
+    handleProtect()
   );
 }
 

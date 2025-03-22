@@ -12,7 +12,7 @@ services:
       - my-network
 
   db:
-    image: postgres:17
+    image: postgres:15
     build: .
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -37,7 +37,7 @@ services:
       - /app/node_modules
       - ./frontend:/app
     ports:
-      - "3000:3000"
+    - "3000:3000"
     networks:
       - my-network
 

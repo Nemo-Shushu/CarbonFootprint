@@ -1,8 +1,7 @@
-import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
-import "bootstrap/dist/css/bootstrap.min.css";
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import "./static/frontpage.css";
+import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
+import PropTypes from "prop-types";
 
 ResultsDisplay.propTypes = {
   calculations: PropTypes.object,

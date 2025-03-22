@@ -4,13 +4,8 @@ from accounts.views import (
     CsrfTokenView,
     LogoutView,
     LoginView,
-    ConfirmEmailAPIView,
-    SendEmailConfirmationTokenAPIView,
-    CreateView,
-    UpdateView,
-    UpdateUserEmailAPIView,
-    UpdateUserPasswordAPIView,
-    CheckEmailAPIView,
+    ConversionFactorsView,
+    ConversionFactorsAPIView,
 )
 
 app_name = "accounts"
@@ -21,16 +16,7 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path(
-        "send-email-confirmation-token/",
-        SendEmailConfirmationTokenAPIView.as_view(),
-        name="send_email_confirmation_token",
+        "conversion-factors/", ConversionFactorsView.as_view(), name="conversion-factor"
     ),
-    path("confirm-email/", ConfirmEmailAPIView.as_view(), name="confirm_email"),
-    path("create-user/", CreateView.as_view(), name="confirm_user"),
-    path("update/", UpdateView.as_view(), name="update"),
-    path("update-email/", UpdateUserEmailAPIView.as_view(), name="update_email"),
-    path(
-        "update-password/", UpdateUserPasswordAPIView.as_view(), name="update_password"
-    ),
-    path("check-email/", CheckEmailAPIView.as_view(), name="check_email"),
+    path("conversion-factors/<int:factor_id>", ConversionFactorsAPIView.as_view()),
 ]

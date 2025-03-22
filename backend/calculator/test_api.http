@@ -1,0 +1,118 @@
+### test CombinedUtilitiesView
+POST http://localhost:8000/api/calculator/createreport/
+Content-Type: application/json
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "academic-laboratory-area": "100",
+    "academic-office-area": "200",
+    "admin-office-area": "300",
+    "admin-space-area": "150",
+    "medical-laboratory-area": "250",
+    "engineering-laboratory-area": "350",
+    "physical-laboratory-area": "400"
+  },
+  "travel": {
+    "air-eco-short": "1000",
+    "air-business-short": "500",
+    "air-eco-long": "800",
+    "air-business-long": "300",
+    "land-car": "1200",
+    "land-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  }
+}
+
+
+### test report
+POST http://localhost:8000/api/calculator/Report/
+Content-Type: application/json
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "academic-laboratory-area": "100",
+    "academic-office-area": "200",
+    "admin-office-area": "300",
+    "admin-space-area": "150",
+    "medical-laboratory-area": "250",
+    "engineering-laboratory-area": "350",
+    "physical-laboratory-area": "400"
+  },
+  "travel": {
+    "air-eco-short": "1000",
+    "air-business-short": "500",
+    "air-eco-long": "800",
+    "air-business-long": "300",
+    "land-car": "1200",
+    "land-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  },
+  "procurement": {
+    "CA": 100,
+    "WB": 200,
+    "PA": 50,
+    "AF": 150,
+    "TA": 120,
+    "AB": 1,
+    "C": 100
+  }
+}
+
+### test submit
+POST http://localhost:8000/api/calculator/Submit/
+Content-Type: application/json
+Cookie: "csrftoken=gWMDBRyoeE65gmJWyoypEGGNGfpwlzHS; csrftoken=3oxE6MDYYUpoIFPfT1zE1kKwln3fTl0j; sessionid=22sca1q6gvq0raoggw9vwn67ttvd4knw"
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "academic-laboratory-area": "100",
+    "academic-office-area": "200",
+    "admin-office-area": "300",
+    "admin-space-area": "150",
+    "medical-laboratory-area": "250",
+    "engineering-laboratory-area": "350",
+    "physical-laboratory-area": "400"
+  },
+  "travel": {
+    "air-eco-short": "1000",
+    "air-business-short": "500",
+    "air-eco-long": "800",
+    "air-business-long": "300",
+    "land-car": "1200",
+    "land-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  },
+  "procurement": {
+    "CA": 100,
+    "WB": 200,
+    "PA": 50,
+    "AF": 150,
+    "TA": 120,
+    "AB": 1,
+    "C": 100
+  }
+}
