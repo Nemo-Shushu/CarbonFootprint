@@ -1114,10 +1114,10 @@ def admin_request_list(request):
                 return JsonResponse({"error": "Unprivileged access"}, status=403)
 
             requests = AdminRequest.objects.select_related("user").values(
-                "user_id", "user__email", "requested_role", "reason", "status"
+                "user_id", "user__email", "user__username", "user__institute", "requested_role", "reason", "status"
             )
 
-            request_list = list(requests)
+            request_list = list(requests)            
 
             return JsonResponse(request_list, safe=False, status=200)
 
@@ -1184,6 +1184,7 @@ def approve_or_reject_request(request):
             user_id = data.get("user_id")
             state = data.get("state")
 
+            print(request)
             if state not in ["Approved", "Rejected"]:
                 return JsonResponse(
                     {"error": "state Just could be 'Approved' or 'Rejected'。"},
