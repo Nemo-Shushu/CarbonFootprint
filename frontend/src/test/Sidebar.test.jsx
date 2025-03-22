@@ -72,7 +72,10 @@ describe("Sidebar Component", () => {
     );
 
     fireEvent.click(screen.getByText("Dashboard"));
-    // expect(window.location.pathname).toBe("/dashboard");
+    expect(window.location.pathname).toBe("/dashboard");
+
+    fireEvent.click(screen.getByText("Request Admin"));
+    expect(window.location.pathname).toBe("/request-admin");
   });
 
   test("does not render 'Request Admin' when user is an admin", async () => {

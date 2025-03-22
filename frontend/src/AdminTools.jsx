@@ -1,5 +1,5 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "./Sidebar";
 import "./scss/custom.scss";
 import "./static/AdminTools.css";
@@ -90,26 +90,20 @@ function AdminTool() {
                     </td>
                     <td>
                       <button
-                        className="btn btn-outline-success me-2"
+                        className="btn btn-success me-2"
                         type="button"
-                        style={{
-                          padding: "8px 12px",
-                          fontWeight: "bold",
-                          color: "var(--bs-moss)",
-                          borderColor: "var(--bs-moss)",
-                        }}
                         onClick={() => handleActionClick(row, "Confirm")}
                       >
-                        <i className="bi bi-check-circle-fill"></i> Accept
+                        {" "}
+                        Confirm{" "}
                       </button>
-
                       <button
-                        className="btn btn-outline-danger"
+                        className="btn btn-danger"
                         type="button"
-                        style={{ padding: "8px 12px", fontWeight: "bold" }}
                         onClick={() => handleActionClick(row, "Deny")}
                       >
-                        <i className="bi bi-x-circle-fill"></i> Reject
+                        {" "}
+                        Deny{" "}
                       </button>
                     </td>
                   </tr>
@@ -202,11 +196,7 @@ function AdminTool() {
                     </button>
                     <button
                       type="button"
-                      className="btn"
-                      style={{
-                        backgroundColor: "var(--bs-moss)",
-                        color: "white",
-                      }}
+                      className="btn btn-primary"
                       onClick={confirmAction}
                     >
                       confirm

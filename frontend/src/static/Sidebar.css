@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 18rem;
+  width: 15rem;
   max-width: 20rem;
   height: 100vh;
   border-radius: 8px;
@@ -14,7 +14,6 @@
   padding-top: 1rem;
   overflow-y: auto;
   z-index: 1000;
-
 }
 
 .user-info {

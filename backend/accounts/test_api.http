@@ -1,0 +1,153 @@
+
+
+
+
+GET /api2/whoami/ HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
+Connection: keep-alive
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+Host: localhost:8000
+Origin: http://localhost:3000
+Referer: http://localhost:3000/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+sec-ch-ua: "Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+
+### test get id
+
+GET http://localhost:8000/api2/test/ HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8
+Connection: keep-alive
+Cookie: csrftoken=bGmHThfLC9SUHvPdxqRwUbAB6PtyA0zN; sessionid=vjgwk3xhkph48xd80e30ryhbs77500jr
+Host: localhost:8000
+Origin: http://localhost:3000
+Referer: http://localhost:3000/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+sec-ch-ua: "Google Chrome";v="129", "Not=A?Brand";v="8", "Chromium";v="129"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+
+
+
+
+
+
+### test  get-csrf
+GET http://localhost:8000/api2/get-csrf/
+
+
+
+### test report
+POST http://localhost:8000/api2/report/
+Content-Type: application/json
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "Academic Laboratory": "100",
+    "Academic Office": "200",
+    "Admin Office": "300",
+    "Office/Admin Space": "150",
+    "Medical/Life Sciences Laboratory": "250",
+    "Engineering Laboratory": "350",
+    "Physical Sciences Laboratory": "400"
+  },
+  "travel": {
+    "air-eco-short-UK": "1000",
+    "air-business-short-UK": "500",
+    "air-eco-long-UK": "800",
+    "air-business-long-UK": "300",
+    "land-car": "1200",
+    "land-local-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  },
+  "procurement": {
+    "CA": 100,
+    "WB": 200,
+    "PA": 50,
+    "AF": 150,
+    "TA": 120,
+    "AB": 1,
+    "C": 100
+  }
+}
+
+### test submit
+POST http://localhost:8000/api2/submit/
+Content-Type: application/json
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+
+{
+  "utilities": {
+    "FTE-staff": "10",
+    "FTE-members": "20",
+    "Academic Laboratory": "100",
+    "Academic Office": "200",
+    "Admin Office": "300",
+    "Office/Admin Space": "150",
+    "Medical/Life Sciences Laboratory": "250",
+    "Engineering Laboratory": "350",
+    "Physical Sciences Laboratory": "400"
+  },
+  "travel": {
+    "air-eco-short-UK": "1000",
+    "air-business-short-UK": "500",
+    "air-eco-long-UK": "800",
+    "air-business-long-UK": "300",
+    "land-car": "1200",
+    "land-local-bus": "400"
+  },
+  "waste": {
+    "mixed-recycle": "2",
+    "general-waste": "3",
+    "clinical-waste": "1.5",
+    "chemical-waste": "0.5",
+    "bio-waste": "0.8"
+  },
+  "procurement": {
+    "CA": 100,
+    "WB": 200,
+    "PA": 50,
+    "AF": 150,
+    "TA": 120,
+    "AB": 1,
+    "C": 100
+  }
+}
+
+### test getresult
+POST http://localhost:8000/api2/Dashboard_show_user_result_data/
+Content-Type: application/json
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+
+### 发送 POST 请求测试 get_all_report_data API
+POST http://localhost:8000/api2/get_all_report_data/
+Content-Type: application/json
+Cookie: csrftoken=2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb; sessionid=8peamueagm60x8qah4mahm16l9yrl1xz
+X-CSRFToken: 2WPocPwNyUPvCiaQXALbdHHvyFRL4Btb
+
+{
+  "report_id": 15
+}

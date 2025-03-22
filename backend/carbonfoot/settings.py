@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "api.apps.ApiConfig",
+    "calculator",
 ]
 
 REST_FRAMEWORK = {
@@ -153,35 +154,26 @@ LOGIN_REDIRECT_URL = "/"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://134.209.19.90:3000",
+    "https://sh14-main-react-app.onrender.com",
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://134.209.19.90:3000",
+    "https://sh14-main-react-app.onrender.com",
 ]
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 60 * 60
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "mrang0722@gmail.com"
-EMAIL_HOST_PASSWORD = "yfwx ybnq ofsf vxam"
-SERVER_EMAIL = EMAIL_HOST_USER
-DEFAULT_FROM_MAIL = EMAIL_HOST_USER
+SESSION_COOKIE_AGE = 20 * 60
