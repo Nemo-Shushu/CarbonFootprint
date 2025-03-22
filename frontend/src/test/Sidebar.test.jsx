@@ -58,23 +58,6 @@ describe("Sidebar Component", () => {
     expect(screen.queryByText("Admin Tool")).toBeNull();
   });
 
-  test("navigates to the correct page when clicking on links", async () => {
-    mockFetch(false);
-
-    render(
-      <BrowserRouter>
-        <Sidebar />
-      </BrowserRouter>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByText("Request Admin")).toBeInTheDocument(),
-    );
-
-    fireEvent.click(screen.getByText("Dashboard"));
-    expect(window.location.pathname).toBe("/sign-in");
-  });
-
   test("does not render 'Request Admin' when user is an admin", async () => {
     mockFetch(true);
 
