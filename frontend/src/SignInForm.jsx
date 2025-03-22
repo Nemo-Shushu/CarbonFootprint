@@ -360,17 +360,17 @@ function SignInForm() {
               <button
                 type="button"
                 onClick={toggleShowPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showPassword ? "Hide" : "Show"}
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
               </button>
             </div>
 
             {error && <p className="warning">{error}</p>}
 
             <div className="remember-me">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember"> Remember me</label>
               <span
                 className="forgot-password"
                 onClick={handleShowEmail}

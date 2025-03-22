@@ -2,7 +2,7 @@
 
 ## Name
 
-Carbon Footprint Calculator
+**Carbon Footprint Calculator**
 
 ## Description
 
@@ -13,9 +13,9 @@ This tool is designed to raise awareness of individual and corporate carbon foot
 ## Badges
 
 [![GitLab Pipeline Status](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/pipeline.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
-[![Build Status](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/build.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
-[![Coverage](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/badges/main/coverage.svg)](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/pipelines)
 ![Tests Passed](https://img.shields.io/badge/tests-passed-brightgreen)
+
+![Coverage](frontend/public/images/testCoverage.png)
 
 ## Visuals
 
@@ -31,13 +31,13 @@ Ensure you have the following installed before setting up:
 - PostgreSQL: If running outside of Docker.
 
 1️⃣ Clone the Repository
-```
+```cmd
 cd existing_repo
 git clone https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main.git
 ```
 
 2️⃣ Install Frontend Dependencies
-```
+```cmd
 cd frontend
 npm install
 npm run dev
@@ -45,7 +45,7 @@ npm run dev
 The frontend will start at: http://localhost:3000/
 
 3️⃣ Set Up Backend
-```
+```cmd
 cd backend
 pip install
 python manage.py migrate
@@ -54,7 +54,7 @@ python manage.py runserver
 The backend API will be available at: http://localhost:8000/
 
 4️⃣ Run with Docker
-```
+```cmd
 docker-compose up --build
 ```
 
@@ -138,27 +138,17 @@ For detailed usage instructions, API references, and frequently asked questions,
 
 [📄 Full Documentation](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/wikis/home/Documentation?redirected_from=Documentation)
 
-## Roadmap
-
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
 ## Authors and acknowledgment
 
 A huge thanks to everyone who contributed to this project!
+
 🔗 [GitLab Contributors](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-main/-/graphs/main)
 
-## License
+## Contract
 
-For open source projects, say how it is licensed.
+Here is our team contract 
 
-## Project status
+[📄 Team Contract](https://stgit.dcs.gla.ac.uk/team-project-h/2024/sh14/sh14-dissertation/-/wikis/Team-Contract)
 
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+

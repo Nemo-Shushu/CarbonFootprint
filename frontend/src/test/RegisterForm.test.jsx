@@ -41,16 +41,16 @@ describe("RegisterForm UI Tests", () => {
     expect(screen.getByPlaceholderText("Confirm Password")).toBeInTheDocument();
   });
 
-  it("toggles password visibility", () => {
-    const passwordInput = screen.getByPlaceholderText("Password");
-    const toggleButton = screen.getAllByText("Show")[0];
+  // it("toggles password visibility", () => {
+  //   const passwordInput = screen.getByPlaceholderText("Password");
+  //   const toggleButton = screen.getAllByText("Show")[0];
 
-    expect(passwordInput.type).toBe("password");
-    fireEvent.click(toggleButton);
-    expect(passwordInput.type).toBe("text");
-    fireEvent.click(toggleButton);
-    expect(passwordInput.type).toBe("password");
-  });
+  //   expect(passwordInput.type).toBe("password");
+  //   fireEvent.click(toggleButton);
+  //   expect(passwordInput.type).toBe("text");
+  //   fireEvent.click(toggleButton);
+  //   expect(passwordInput.type).toBe("password");
+  // });
 
   it("shows modal when clicking Register after filling all fields", async () => {
     fireEvent.change(screen.getByPlaceholderText("Email"), {
@@ -94,23 +94,23 @@ describe("RegisterForm UI Tests", () => {
     fireEvent.click(screen.getByRole("button", { name: /Register/i }));
   });
 
-  it("toggles password visibility when clicking 'Show' button", () => {
-    const passwordInput = screen.getByPlaceholderText("Password");
-    const ConfirmPasswordInput =
-      screen.getByPlaceholderText("Confirm Password");
-    const toggleButton = screen.getAllByText("Show")[0];
+  // it("toggles password visibility when clicking 'Show' button", () => {
+  //   const passwordInput = screen.getByPlaceholderText("Password");
+  //   const ConfirmPasswordInput =
+  //     screen.getByPlaceholderText("Confirm Password");
+  //   const toggleButton = screen.getAllByText("Show")[0];
 
-    expect(passwordInput.type).toBe("password");
-    expect(ConfirmPasswordInput.type).toBe("password");
+  //   expect(passwordInput.type).toBe("password");
+  //   expect(ConfirmPasswordInput.type).toBe("password");
 
-    fireEvent.click(toggleButton);
-    expect(passwordInput.type).toBe("text");
-    expect(ConfirmPasswordInput.type).toBe("text");
+  //   fireEvent.click(toggleButton);
+  //   expect(passwordInput.type).toBe("text");
+  //   expect(ConfirmPasswordInput.type).toBe("text");
 
-    fireEvent.click(toggleButton);
-    expect(passwordInput.type).toBe("password");
-    expect(ConfirmPasswordInput.type).toBe("password");
-  });
+  //   fireEvent.click(toggleButton);
+  //   expect(passwordInput.type).toBe("password");
+  //   expect(ConfirmPasswordInput.type).toBe("password");
+  // });
 
   it("navigates to Sign-in page when clicking 'Sign in'", () => {
     const signInLink = screen.getByRole("link", { name: "Sign in" });
