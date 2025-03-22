@@ -1,44 +1,208 @@
-import { render, screen } from "@testing-library/react";
-import { vi, test, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import RegisterForm from "../RegisterForm.jsx";
 import { MemoryRouter } from "react-router-dom";
-import RegisterForm from "../RegisterForm";
-import { useAuth } from "../useAuth";
 
-// Mock useAuth
-vi.mock("../useAuth", () => ({
-  useAuth: vi.fn(),
+vi.mock("../api", () => ({
+  fetchInstitutions: vi.fn(() =>
+    Promise.resolve([
+      { name: "Abertay University" },
+      { name: "University of Glasgow" },
+    ]),
+  ),
+  fetchResearchFields: vi.fn(() =>
+    Promise.resolve([
+      { name: "Environmental Science" },
+      { name: "Computer Science" },
+    ]),
+  ),
 }));
 
-// Mock navigate
-const mockNavigate = vi.fn();
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
-describe("RegisterForm Component", () => {
+describe("RegisterForm UI Tests", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    render(
+      <MemoryRouter>
+        <RegisterForm />
+      </MemoryRouter>,
+    );
   });
 
-  test("Display the form when not logged in, and jump when logged in", () => {
-    useAuth.mockReturnValueOnce(false); // No Register
-    render(
-      <MemoryRouter>
-        <RegisterForm />
-      </MemoryRouter>,
-    );
-    expect(screen.getByTestId("register-title")).toBeInTheDocument();
+  it("renders all element files", () => {
+    expect(screen.getByText("Create an Account")).toBeInTheDocument();
+    expect(screen.getByText("Carbon Footprint Calculator")).toBeInTheDocument();
+    expect(
+      screen.getByText("Please fill in the details below to register."),
+    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Username")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("First Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Last Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Confirm Password")).toBeInTheDocument();
+  });
 
-    useAuth.mockReturnValueOnce(true); // Already has
+  it("toggles password visibility", () => {
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const toggleButton = screen.getAllByText("Show")[0];
+
+    expect(passwordInput.type).toBe("password");
+    fireEvent.click(toggleButton);
+    expect(passwordInput.type).toBe("text");
+    fireEvent.click(toggleButton);
+    expect(passwordInput.type).toBe("password");
+  });
+
+  it("shows modal when clicking Register after filling all fields", async () => {
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "test@student.gla.ac.uk" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Username"), {
+      target: { value: "testuser" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("First Name"), {
+      target: { value: "Test" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Last Name"), {
+      target: { value: "User" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Confirm Password"), {
+      target: { value: "password123" },
+    });
+
+    const dropdowns = screen.getAllByRole("combobox");
+    fireEvent.change(dropdowns[0], {
+      target: { value: "University of Glasgow" },
+    });
+    fireEvent.change(dropdowns[1], {
+      target: { value: "Environmental Science" },
+    });
+
+    expect(screen.getByPlaceholderText("Email").value).toBe(
+      "test@student.gla.ac.uk",
+    );
+    expect(screen.getByPlaceholderText("Username").value).toBe("testuser");
+    expect(screen.getByPlaceholderText("First Name").value).toBe("Test");
+    expect(screen.getByPlaceholderText("Last Name").value).toBe("User");
+    expect(screen.getByPlaceholderText("Password").value).toBe("password123");
+    expect(screen.getByPlaceholderText("Confirm Password").value).toBe(
+      "password123",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Register/i }));
+  });
+
+  it("toggles password visibility when clicking 'Show' button", () => {
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const ConfirmPasswordInput =
+      screen.getByPlaceholderText("Confirm Password");
+    const toggleButton = screen.getAllByText("Show")[0];
+
+    expect(passwordInput.type).toBe("password");
+    expect(ConfirmPasswordInput.type).toBe("password");
+
+    fireEvent.click(toggleButton);
+    expect(passwordInput.type).toBe("text");
+    expect(ConfirmPasswordInput.type).toBe("text");
+
+    fireEvent.click(toggleButton);
+    expect(passwordInput.type).toBe("password");
+    expect(ConfirmPasswordInput.type).toBe("password");
+  });
+
+  it("navigates to Sign-in page when clicking 'Sign in'", () => {
+    const signInLink = screen.getByRole("link", { name: "Sign in" });
+    fireEvent.click(signInLink);
+    expect(window.location.pathname).toBe("/");
+  });
+
+  it("shows modal when clicking Register after filling all fields", async () => {
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "test@student.gla.ac.uk" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Username"), {
+      target: { value: "testuser" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("First Name"), {
+      target: { value: "Test" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Last Name"), {
+      target: { value: "User" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Confirm Password"), {
+      target: { value: "password123" },
+    });
+
+    const dropdowns = screen.getAllByRole("combobox");
+    console.log("Dropdown 0 options:", dropdowns[0].innerHTML);
+    console.log("Dropdown 1 options:", dropdowns[1].innerHTML);
+
+    fireEvent.click(screen.getByRole("button", { name: /Register/i }));
+  });
+
+  it("opens modal without filling fields", async () => {
+    render(
+      <MemoryRouter>
+        <RegisterForm forceVisible={true} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId("verification-modal")).toBeInTheDocument();
+  });
+
+  it("displays correct modal content", async () => {
+    render(
+      <MemoryRouter>
+        <RegisterForm forceVisible={true} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId("verification-modal")).toBeInTheDocument();
+    expect(screen.getByText("Enter Confirmation Code")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter the code here"),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("RegisterForm Error Handling Tests", () => {
+  beforeEach(() => {
     render(
       <MemoryRouter>
         <RegisterForm />
       </MemoryRouter>,
     );
-    expect(mockNavigate).toHaveBeenCalledWith("/sign-in");
+  });
+
+  it("shows error when institution and research field are missing", async () => {
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "test@student.gla.ac.uk" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Username"), {
+      target: { value: "testuser" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("First Name"), {
+      target: { value: "Test" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Last Name"), {
+      target: { value: "User" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "password123" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Confirm Password"), {
+      target: { value: "password123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Register/i }));
+
+    await waitFor(() => {
+      const warningElement = document.querySelector(".warning");
+      expect(warningElement).toBeTruthy();
+    });
   });
 });

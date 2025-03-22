@@ -3,7 +3,14 @@ FROM python:3.11-slim
  
 # Create the app directory
 RUN mkdir /app
- 
+
+# Download CA
+RUN apt-get update && apt-get install -y ca-certificates
+RUN update-ca-certificates
+
+#Environment variable of a Certification for Email verification
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+
 # Set the working directory inside the container
 WORKDIR /app
  
@@ -36,3 +43,4 @@ EXPOSE 8000
  
 # Run Django’s development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
