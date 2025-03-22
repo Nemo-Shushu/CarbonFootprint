@@ -1,213 +1,297 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal, Button, Table } from "react-bootstrap";
 import Sidebar from "./Sidebar";
 import "./scss/custom.scss";
 import "./static/AdminTools.css";
+import Cookies from "js-cookie";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function AdminTool() {
-  const [selectedText, setSelectedText] = useState("");
-  const [showPopUp, setShowPopUp] = useState(false);
-  const [confirmationPopUp, setConfirmationPopUp] = useState(false);
-  const [actionType, setActionType] = useState("");
+  const [requests, setRequests] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [csrftoken, setCsrftoken] = useState();
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectingUserId, setRejectingUserId] = useState(null);
 
-  const data = [
-    {
-      id: 1,
-      email: "user1@student.gla.ac.uk",
-      text: "Please give me admin permissions, you can trust me Please give me admin permissions, you can trust me Please give me admin permissions, you can trust me Please give me admin permissions, you can trust me",
-    },
-    {
-      id: 2,
-      email: "user2@student.gla.ac.uk",
-      text: "I need admin access to manage users",
-    },
-    {
-      id: 3,
-      email: "user3@student.gla.ac.uk",
-      text: "Can you make me an admin?",
-    },
-  ];
+  useEffect(() => {
+    getRequests();
+    setCsrftoken(Cookies.get("csrftoken"));
+  }, []);
 
-  function handleTextClick(text) {
-    setSelectedText(text);
-    setShowPopUp(true);
+  async function getRequests() {
+    fetch(`${backendUrl}api/admin-request-list/`, {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Filter requests where status is 'pending'
+        const pendingRequests = data.filter(
+          (request) => request.status === "Pending",
+        );
+
+        setRequests(pendingRequests);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
-  function closePopUp() {
-    setShowPopUp(false);
-    setSelectedText("");
+  async function fetchUserDetails(userId, request) {
+    try {
+      const response = await fetch(
+        `${backendUrl}api/accounts/user/id/${userId}/`,
+        {
+          credentials: "include",
+        },
+      );
+      const data = await response.json();
+      setSelectedUser(data);
+      setSelectedRequest(request);
+      setShowUserModal(true);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
   }
 
-  function handleActionClick(request, action) {
-    setSelectedRequest(request);
-    setActionType(action);
-    setConfirmationPopUp(true);
+  async function handleAcceptRejectPost(user_id, outcome) {
+    await fetch(`${backendUrl}api/approve-or-reject-request/`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+      body: JSON.stringify({ user_id: user_id, state: outcome }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to handle request decision");
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Refresh the requests list after approval/rejection
+        getRequests();
+        // Close any open modals
+        handleCloseUserModal();
+        handleCloseRejectModal();
+      })
+      .catch((err) => {
+        console.error("Failed to handle request decision", err);
+      });
   }
 
-  function closeConfirmationPopUp() {
-    setConfirmationPopUp(false);
-    setSelectedRequest(null);
-    setActionType("");
+  function handleCloseUserModal() {
+    setShowUserModal(false);
   }
 
-  function confirmAction() {
-    console.log("${actionType} action confirmed for request:", selectedRequest);
-    closeConfirmationPopUp();
+  function handleCloseRejectModal() {
+    setShowRejectModal(false);
+  }
+
+  function handleApprove(userId) {
+    handleAcceptRejectPost(userId, "Approved");
+  }
+
+  function handleReject(userId) {
+    setRejectingUserId(userId);
+    setShowRejectModal(true);
+  }
+
+  function confirmReject() {
+    handleAcceptRejectPost(rejectingUserId, "Rejected");
+    handleCloseRejectModal();
+  }
+
+  // Handle both direct approve/reject from table and from user detail modal
+  function handleAction(request, action) {
+    if (action === "Approved") {
+      handleApprove(request.user_id);
+    } else if (action === "Rejected") {
+      handleReject(request.user_id);
+    }
   }
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      {/* SideBar */}
+      {/* Sidebar */}
       <Sidebar style={{ flex: "0 0 17%" }} />
 
-      {/* Maincontent */}
-      <main className="Main-context">
-        <h2 className="mt-4">Admin Requests</h2>
-        <div className="table-responsive small mt-3">
-          <table className="table table-striped table-sm">
-            <thead className="thead-dark">
-              <tr>
-                <th style={{ width: "5%" }}>Id</th>
-                <th style={{ width: "25%" }}>Email</th>
-                <th style={{ width: "50%" }}>Request Admin</th>
-                <th style={{ width: "20%" }}>Confirmation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.length > 0 ? (
-                data.map((row) => (
-                  <tr key={row.id} className="align-middle">
-                    <td>{row.id}</td>
-                    <td>{row.email}</td>
-                    <td
-                      className="text-truncate ellipsis-text"
-                      onClick={() => handleTextClick(row.text)}
-                      onMouseEnter={(e) => (e.target.style.color = "blue")}
-                      onMouseLeave={(e) => (e.target.style.color = "black")}
-                    >
-                      {row.text}
+      {/* Main Content */}
+      {requests.length === 0 ? (
+        <div
+          className="d-flex justify-content-center align-items-center fs-2"
+          style={{
+            height: "300px",
+            width: "100%",
+            color: "gray",
+            textAlign: "center",
+          }}
+        >
+          <tr>
+            <td colSpan="3" className="text-center">
+              No requests available
+            </td>
+          </tr>
+        </div>
+      ) : (
+        <main className="Main-context">
+          <h2 className="mt-4">Admin Requests</h2>
+          <div className="table-responsive small mt-3">
+            <Table striped hover size="sm">
+              <thead className="thead-dark">
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Institute</th>
+                  <th>Requested Role</th>
+                  <th style={{ width: "50%" }}>Reason</th>
+                  <th style={{ width: "20%" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map((request) => (
+                  <tr
+                    key={request.user_id}
+                    className="align-middle"
+                    onClick={() => fetchUserDetails(request.user_id, request)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <td>{request.user__username}</td>
+                    <td>{request.user__email}</td>
+                    <td>{request.user__institute}</td>
+                    <td>{request.requested_role}</td>
+                    <td className="text-truncate ellipsis-text">
+                      {request.reason}
                     </td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <button
-                        className="btn btn-success me-2"
+                        className="btn btn-outline-success me-2"
                         type="button"
-                        onClick={() => handleActionClick(row, "Confirm")}
+                        style={{
+                          padding: "8px 12px",
+                          fontWeight: "bold",
+                          color: "var(--bs-moss)",
+                          borderColor: "var(--bs-moss)",
+                        }}
+                        onClick={() => handleAction(request, "Approved")}
                       >
-                        {" "}
-                        Confirm{" "}
+                        <i className="bi bi-check-circle-fill"></i> Accept
                       </button>
+
                       <button
-                        className="btn btn-danger"
+                        className="btn btn-outline-danger"
                         type="button"
-                        onClick={() => handleActionClick(row, "Deny")}
+                        style={{ padding: "8px 12px", fontWeight: "bold" }}
+                        onClick={() => handleAction(request, "Rejected")}
                       >
-                        {" "}
-                        Deny{" "}
+                        <i className="bi bi-x-circle-fill"></i> Reject
                       </button>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No requests available
-                  </td>
-                </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </main>
+      )}
+
+      {/* User Details Modal using react-bootstrap */}
+      <Modal
+        show={showUserModal}
+        onHide={handleCloseUserModal}
+        size="lg"
+        centered
+        animation={true}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Request Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedUser && (
+            <>
+              <p>
+                <strong>Username:</strong> {selectedUser.username}
+              </p>
+              <p>
+                <strong>Forename:</strong> {selectedUser.first_name}
+              </p>
+              <p>
+                <strong>Surname:</strong> {selectedUser.last_name}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedUser.email}
+              </p>
+              <p>
+                <strong>Institute:</strong> {selectedUser.institute}
+              </p>
+              {selectedRequest && (
+                <>
+                  <p>
+                    <strong>Requested Role:</strong>{" "}
+                    {selectedRequest.requested_role}
+                  </p>
+                  <p>
+                    <strong>Reason:</strong> {selectedRequest.reason}
+                  </p>
+                </>
               )}
-            </tbody>
-          </table>
-        </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          {selectedRequest && (
+            <>
+              <Button
+                variant="success"
+                className="me-2"
+                onClick={() => handleAction(selectedRequest, "Approved")}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => handleAction(selectedRequest, "Rejected")}
+              >
+                Reject
+              </Button>
+            </>
+          )}
+          <Button variant="secondary" onClick={handleCloseUserModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-        {/* PoP-up */}
-        {showPopUp && (
-          <>
-            <div className="modal-backdrop fade show"></div>
-            <div
-              className=" modal fade show"
-              style={{ display: "block" }}
-              tabIndex="-1"
-              role="dialog"
-            >
-              <div className="modal-dialog modal-lg centered-flex">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Full Request Text</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      aria-label="Close"
-                      onClick={closePopUp}
-                    ></button>
-                  </div>
-                  <div
-                    className="modal-body overflow-auto text-wrap"
-                    style={{ maxHeight: "60vh" }}
-                  >
-                    <p>{selectedText}</p>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={closePopUp}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {confirmationPopUp && (
-          <>
-            <div className="modal-backdrop fade show"></div>
-            <div
-              className=" modal fade show"
-              style={{ display: "block" }}
-              tabIndex="-1"
-              role="dialog"
-            >
-              <div className="modal-dialog modal-lg centered-flex">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Confirm Action</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={closeConfirmationPopUp}
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <p>
-                      Are you sure you want to <strong>{actionType}</strong> the
-                      request from <strong>{selectedRequest?.email}</strong>?
-                    </p>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={closeConfirmationPopUp}
-                    >
-                      cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={confirmAction}
-                    >
-                      confirm
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </main>
+      {/* Rejection Confirmation Modal using react-bootstrap */}
+      <Modal
+        show={showRejectModal}
+        onHide={handleCloseRejectModal}
+        centered
+        animation={true}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Rejection</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to reject this request? This action cannot be
+            undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={confirmReject}>
+            Confirm Reject
+          </Button>
+          <Button variant="secondary" onClick={handleCloseRejectModal}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
