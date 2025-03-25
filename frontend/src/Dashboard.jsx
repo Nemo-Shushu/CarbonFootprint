@@ -1,6 +1,7 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "js-cookie";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useLocation } from "react-router-dom";
@@ -9,7 +10,6 @@ import ResultsDisplay from "./ResultsDisplay";
 import Sidebar from "./Sidebar";
 import "./static/dashboard.css";
 import "./static/Sidebar.css";
-import PropTypes from "prop-types";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -397,7 +397,7 @@ function TableComponent({ isAdmin, isResearcher }) {
                   <th scope="row">{row.id}</th>
                   <td>{row.institution}</td>
                   <td>{row.field}</td>
-                  <td>{row.emissions}</td>
+                  <td>{row.emissions} tCO²e</td>
                   {(isAdmin || isResearcher) && <td>{row.email}</td>}
                 </tr>
               ))}

@@ -79,7 +79,7 @@ export default function ResultsDisplay({ calculations, rawData }) {
     <div>
       {totalCarbonEmissions !== null && (
         <div className="carbon-emissions">
-          <h4>Total Carbon Emissions: {totalCarbonEmissions}</h4>
+          <h4>Total Carbon Emissions: {totalCarbonEmissions} tCO²e</h4>
         </div>
       )}
       <div className="d-flex flex-row" style={{ width: "100%" }}>
@@ -125,7 +125,10 @@ export default function ResultsDisplay({ calculations, rawData }) {
                       txt
                     </span>
                     <span>
-                      {item.label}: <strong>{item.value} tCO²e</strong>
+                      {item.label}:{" "}
+                      <strong>
+                        {item.value} tCO²e ({item.percent}%)
+                      </strong>
                     </span>
                   </div>
                 ),

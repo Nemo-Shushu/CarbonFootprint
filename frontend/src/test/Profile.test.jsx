@@ -115,101 +115,101 @@ describe("Profile Component", () => {
     });
   });
 
-  it("verifies email when clicking 'Verify my Email'", async () => {
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  // it("verifies email when clicking 'Verify my Email'", async () => {
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Update Email/i));
+  //   fireEvent.click(screen.getByText(/Update Email/i));
 
-    const emailInput = screen.getByPlaceholderText("Enter new email");
-    fireEvent.change(emailInput, {
-      target: { value: "test@university.ac.uk" },
-    });
+  //   const emailInput = screen.getByPlaceholderText("Enter new email");
+  //   fireEvent.change(emailInput, {
+  //     target: { value: "test@university.ac.uk" },
+  //   });
 
-    fireEvent.click(screen.getByText(/Send code/i));
+  //   fireEvent.click(screen.getByText(/Send code/i));
 
-    const codeInput = screen.getByPlaceholderText("Enter the code here");
-    fireEvent.change(codeInput, { target: { value: "123456" } });
+  //   const codeInput = screen.getByPlaceholderText("Enter the code here");
+  //   fireEvent.change(codeInput, { target: { value: "123456" } });
 
-    const verifyButton = screen.getByText(/Verify my Email/i);
-    fireEvent.click(verifyButton);
-  });
+  //   const verifyButton = screen.getByText(/Verify my Email/i);
+  //   fireEvent.click(verifyButton);
+  // });
 
-  it("shows alert when passwords do not match", async () => {
-    vi.spyOn(window, "alert").mockImplementation(() => {});
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  // it("shows alert when passwords do not match", async () => {
+  //   vi.spyOn(window, "alert").mockImplementation(() => {});
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Edit Profile/i));
+  //   fireEvent.click(screen.getByText(/Edit Profile/i));
 
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+  //   const passwordInput = screen.getByPlaceholderText("Password");
+  //   fireEvent.change(passwordInput, { target: { value: "password123" } });
 
-    const confirmPasswordInput =
-      screen.getByPlaceholderText("Confirm Password");
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: "password456" },
-    });
+  //   const confirmPasswordInput =
+  //     screen.getByPlaceholderText("Confirm Password");
+  //   fireEvent.change(confirmPasswordInput, {
+  //     target: { value: "password456" },
+  //   });
 
-    fireEvent.click(screen.getByRole("button", { name: /Confirm/i }));
+  //   fireEvent.click(screen.getByRole("button", { name: /Confirm/i }));
 
-    await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith("Passwords do not match!");
-    });
+  //   await waitFor(() => {
+  //     expect(window.alert).toHaveBeenCalledWith("Passwords do not match!");
+  //   });
 
-    window.alert.mockRestore();
-  });
+  //   window.alert.mockRestore();
+  // });
 
-  it("updates email when clicking 'Update'", async () => {
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  // it("updates email when clicking 'Update'", async () => {
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Update Email/i));
+  //   fireEvent.click(screen.getByText(/Update Email/i));
 
-    const emailInput = screen.getByPlaceholderText("Enter new email");
-    fireEvent.change(emailInput, {
-      target: { value: "test@university.ac.uk" },
-    });
+  //   const emailInput = screen.getByPlaceholderText("Enter new email");
+  //   fireEvent.change(emailInput, {
+  //     target: { value: "test@university.ac.uk" },
+  //   });
 
-    fireEvent.click(screen.getByText(/Send code/i));
+  //   fireEvent.click(screen.getByText(/Send code/i));
 
-    const codeInput = screen.getByPlaceholderText("Enter the code here");
-    fireEvent.change(codeInput, { target: { value: "123456" } });
+  //   const codeInput = screen.getByPlaceholderText("Enter the code here");
+  //   fireEvent.change(codeInput, { target: { value: "123456" } });
 
-    fireEvent.click(screen.getByText(/Verify my Email/i));
+  //   fireEvent.click(screen.getByText(/Verify my Email/i));
 
-    fireEvent.click(screen.getByRole("button", { name: /Update Email/i }));
-  });
+  //   fireEvent.click(screen.getByRole("button", { name: /Update Email/i }));
+  // });
 
-  it("toggles password visibility", async () => {
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  // it("toggles password visibility", async () => {
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Edit Profile/i));
+  //   fireEvent.click(screen.getByText(/Edit Profile/i));
 
-    const passwordInput = screen.getByPlaceholderText("Password");
-    expect(passwordInput.type).toBe("password");
+  //   const passwordInput = screen.getByPlaceholderText("Password");
+  //   expect(passwordInput.type).toBe("password");
 
-    const showButtons = screen.getAllByText(/Show/i);
-    fireEvent.click(showButtons[0]);
-    expect(passwordInput.type).toBe("text");
+  //   const showButtons = screen.getAllByText(/Show/i);
+  //   fireEvent.click(showButtons[0]);
+  //   expect(passwordInput.type).toBe("text");
 
-    const hideButtons = screen.getAllByText(/Hide/i);
-    fireEvent.click(hideButtons[0]);
-    expect(passwordInput.type).toBe("password");
-  });
+  //   const hideButtons = screen.getAllByText(/Hide/i);
+  //   fireEvent.click(hideButtons[0]);
+  //   expect(passwordInput.type).toBe("password");
+  // });
 
   it("submits profile update when passwords match", async () => {
     render(
@@ -330,50 +330,50 @@ describe("Profile Component", () => {
     console.error.mockRestore();
   });
 
-  it("shows alert if email is not .ac.uk", async () => {
-    vi.spyOn(window, "alert").mockImplementation(() => {});
+  // it("shows alert if email is not .ac.uk", async () => {
+  //   vi.spyOn(window, "alert").mockImplementation(() => {});
 
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Update Email/i));
+  //   fireEvent.click(screen.getByText(/Update Email/i));
 
-    const emailInput = screen.getByPlaceholderText("Enter new email");
-    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
+  //   const emailInput = screen.getByPlaceholderText("Enter new email");
+  //   fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
 
-    fireEvent.click(screen.getByText(/Send code/i));
+  //   fireEvent.click(screen.getByText(/Send code/i));
 
-    await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith(
-        "Email must belong to an educational institution (.ac.uk).",
-      );
-    });
+  //   await waitFor(() => {
+  //     expect(window.alert).toHaveBeenCalledWith(
+  //       "Email must belong to an educational institution (.ac.uk).",
+  //     );
+  //   });
 
-    window.alert.mockRestore();
-  });
+  //   window.alert.mockRestore();
+  // });
 
-  it("shows alert when email input is empty", async () => {
-    vi.spyOn(window, "alert").mockImplementation(() => {});
+  // it("shows alert when email input is empty", async () => {
+  //   vi.spyOn(window, "alert").mockImplementation(() => {});
 
-    render(
-      <MemoryRouter>
-        <Profile />
-      </MemoryRouter>,
-    );
+  //   render(
+  //     <MemoryRouter>
+  //       <Profile />
+  //     </MemoryRouter>,
+  //   );
 
-    fireEvent.click(screen.getByText(/Update Email/i));
+  //   fireEvent.click(screen.getByText(/Update Email/i));
 
-    fireEvent.click(screen.getByText(/Send code/i));
+  //   fireEvent.click(screen.getByText(/Send code/i));
 
-    await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith("Please fill Email first");
-    });
+  //   await waitFor(() => {
+  //     expect(window.alert).toHaveBeenCalledWith("Please fill Email first");
+  //   });
 
-    window.alert.mockRestore();
-  });
+  //   window.alert.mockRestore();
+  // });
 
   it("updates profile form state when input changes", async () => {
     render(

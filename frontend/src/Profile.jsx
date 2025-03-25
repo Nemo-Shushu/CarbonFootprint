@@ -9,84 +9,6 @@ import "./static/profile.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-async function updateEmail(currentEmail, newEmail) {
-  return fetch(`${backendUrl}api/accounts/update-email/`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ newEmail: newEmail, currentEmail: currentEmail }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      throw error;
-    });
-}
-
-async function sendCode(email) {
-  return fetch(`${backendUrl}api/accounts/send-email-confirmation-token/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error sending code:", error);
-      throw error;
-    });
-}
-
-async function verifyCode(email, code) {
-  return fetch(`${backendUrl}api/accounts/confirm-email/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email: email, verification_code: code }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error verifying code:", error);
-      throw error;
-    });
-}
-
 const Profile = () => {
   const [first_name, setFirst_name] = useState();
   const [last_name, setLast_name] = useState();
@@ -118,13 +40,94 @@ const Profile = () => {
   const [showEmail, setShowEmail] = useState(false);
   const [profileError, setProfileError] = useState("");
   const [modalError, setModalError] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
-  const [verifiedMessage, setVerifiedMessage] = useState("");
   const [verifyDisabled, setVerifyDisabled] = useState(true);
-  const [timer, setTimer] = useState(0);
-  const [sendDisabled, setSendDisabled] = useState(false);
+  const [timer, setTimer] = useState(
+    localStorage.getItem("timer") > 0 ? localStorage.getItem("timer") : "",
+  );
+  const [sendDisabled, setSendDisabled] = useState(true);
+
   const navigate = useNavigate();
+
+  async function updateEmail(currentEmail, newEmail) {
+    return fetch(`${backendUrl}api/accounts/update-email/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newEmail: newEmail, currentEmail: currentEmail }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        throw error;
+      });
+  }
+
+  async function sendCode(email) {
+    return fetch(`${backendUrl}api/accounts/send-email-confirmation-token/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            setModalError(errorData.error);
+            console.log("ho");
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error sending code:", error);
+        throw error;
+      });
+  }
+
+  async function verifyCode(email, code) {
+    return fetch(`${backendUrl}api/accounts/confirm-email/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email, verification_code: code }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error verifying code:", error);
+        throw error;
+      });
+  }
 
   const handleShow = () => {
     setUpdateForm({
@@ -143,10 +146,7 @@ const Profile = () => {
     setShowEmail(false);
     setCode("");
     setVerificationError(false);
-    setVerifiedMessage("");
-    setSendDisabled(false);
     setVerifyDisabled(true);
-    setIsVerified(false);
   };
 
   const handleEmailShow = () => {
@@ -163,22 +163,36 @@ const Profile = () => {
   };
 
   const handleSend = () => {
+    if (timer > 0) {
+      setSendDisabled(false);
+    } else {
+      setSendDisabled(true);
+      setTimer(60 * 3);
+    }
+    setModalError("");
     if (newEmail.trim() === "") {
-      alert("Please fill Email first");
+      setTimer(0);
+      setSendDisabled(false);
+      setModalError("Please fill Email first");
       return;
     }
     if (!newEmail.toLowerCase().endsWith(".ac.uk")) {
-      alert("Email must belong to an educational institution (.ac.uk).");
+      setModalError(
+        "Email must belong to an educational institution (.ac.uk).",
+      );
+      setTimer(0);
+      setSendDisabled(false);
       return;
     }
     sendCode(newEmail)
       .then(() => {
-        setTimer(180);
         setSendDisabled(true);
         setVerifyDisabled(false);
       })
       .catch((error) => {
         console.error("Error sending code:", error);
+        setTimer(0);
+        setSendDisabled(false);
       });
   };
 
@@ -188,6 +202,7 @@ const Profile = () => {
       intervalId = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime - 1;
+          localStorage.setItem("timer", newTime);
           return newTime;
         });
       }, 1000);
@@ -208,42 +223,34 @@ const Profile = () => {
     verifyCode(newEmail, code)
       .then((data) => {
         console.log("Code verified:", data);
-
-        setIsVerified(true);
         setVerificationError(false);
-        setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
+        updateEmail(email, newEmail)
+          .then((data) => {
+            console.log("Email updated:", data);
+            setTimer(0);
+            localStorage.setItem("timer", timer);
+            setModalError("");
+            window.location.reload();
+          })
+          .catch((err) => {
+            console.error("Error updating Email:", err);
+            const errorKeys = Object.keys(err);
+            if (errorKeys.length > 0) {
+              const firstKey = errorKeys[0];
+              const firstMessage = Array.isArray(err[firstKey])
+                ? err[firstKey][0]
+                : err[firstKey];
+              setModalError(firstMessage);
+            } else {
+              setModalError("An unknown error occurred.");
+            }
+          });
+        setModalError("");
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
         setVerificationError(true);
-      });
-  };
-
-  const handleUpdate = (event) => {
-    event.preventDefault();
-    if (!isVerified) {
-      setModalError("Please verify your email before proceeding.");
-      return;
-    }
-    updateEmail(email, newEmail)
-      .then((data) => {
-        console.log("Email updated:", data);
-        setModalError("");
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.error("Error updating Email:", err);
-        const errorKeys = Object.keys(err);
-        if (errorKeys.length > 0) {
-          const firstKey = errorKeys[0];
-          const firstMessage = Array.isArray(err[firstKey])
-            ? err[firstKey][0]
-            : err[firstKey];
-          setModalError(firstMessage);
-        } else {
-          setModalError("An unknown error occurred.");
-        }
       });
   };
 
@@ -339,7 +346,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     if (updateForm.password !== updateForm.password2) {
-      alert("Passwords do not match!");
+      setProfileError("Passwords do not match!");
       return;
     }
     const csrfToken = getCookie("csrftoken");
@@ -442,7 +449,12 @@ const Profile = () => {
         </div>
 
         {/* Profile Update Modal */}
-        <Modal show={show} onHide={handleClose} className="profile-modal">
+        <Modal
+          show={show}
+          onHide={handleClose}
+          className="profile-modal"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>Profile Update</Modal.Title>
           </Modal.Header>
@@ -529,13 +541,15 @@ const Profile = () => {
                 aria-label="password"
                 aria-describedby="basic-addon-password"
               />
-              <Button
+              <button
                 type="button"
                 onClick={toggleShowPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showPassword ? "Hide" : "Show"}
-              </Button>
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
             </InputGroup>
 
             {/* Confirm Password Input */}
@@ -552,22 +566,21 @@ const Profile = () => {
                 aria-label="password2"
                 aria-describedby="basic-addon-password2"
               />
-              <Button
+              <button
                 type="button"
                 onClick={toggleShowPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showPassword ? "Hide" : "Show"}
-              </Button>
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
             </InputGroup>
             {profileError && <p className="warning">{profileError}</p>}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" onClick={handleSave}>
               Confirm
-            </Button>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
             </Button>
           </Modal.Footer>
         </Modal>
@@ -577,33 +590,35 @@ const Profile = () => {
           show={showEmail}
           onHide={handleEmailClose}
           className="email-modal"
+          centered
         >
           <Modal.Header closeButton>
             <Modal.Title>Change Email</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon-email"></InputGroup.Text>
-              <Form.Control
-                name="newEmail"
-                value={newEmail}
-                onChange={handleEmailChange}
-                placeholder="Enter new email"
-                aria-label="newEmail"
-                aria-describedby="basic-addon-newEmail"
-              />
+            <div style={{ width: "87%" }}>
+              <InputGroup style={{ marginLeft: "8.5%" }}>
+                <Form.Control
+                  name="newEmail"
+                  value={newEmail}
+                  onChange={handleEmailChange}
+                  placeholder="Enter new email"
+                  aria-label="newEmail"
+                  aria-describedby="basic-addon-newEmail"
+                />
 
-              <Button
-                className="verify-button"
-                type="button"
-                onClick={handleSend}
-                disabled={sendDisabled}
-              >
-                {sendDisabled
-                  ? `Resend code in ${formatTime(timer)}`
-                  : "Send code"}
-              </Button>
-            </InputGroup>
+                <Button
+                  className="verify-button"
+                  type="button"
+                  onClick={handleSend}
+                  disabled={sendDisabled}
+                >
+                  {sendDisabled
+                    ? `Resend code in ${formatTime(timer)}`
+                    : "Send code"}
+                </Button>
+              </InputGroup>
+            </div>
             <div className="sign-in-form">
               <form onSubmit={handleVerify}>
                 <p>Please enter the code emailed to you below:</p>
@@ -619,23 +634,13 @@ const Profile = () => {
                   <p className="warning">Your code is incorrect.</p>
                 )}
                 {modalError && <p className="warning">{modalError}</p>}
-                {verifiedMessage && (
-                  <p className="success">{verifiedMessage}</p>
-                )}
                 <button
                   className="verify-button"
                   type="button"
                   onClick={handleVerify}
                   disabled={verifyDisabled}
                 >
-                  Verify my Email
-                </button>
-                <button
-                  className="register-button"
-                  type="button"
-                  onClick={handleUpdate}
-                >
-                  Update
+                  Update an Email
                 </button>
               </form>
             </div>

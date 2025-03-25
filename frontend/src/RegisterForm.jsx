@@ -1,11 +1,12 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Modal from "react-bootstrap/Modal";
 import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 import { useAuth } from "./useAuth";
-import Modal from "react-bootstrap/Modal";
-import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -131,7 +132,6 @@ function RegisterForm({ forceVisible = false }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState();
   const [modalError, setModalError] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
   const [verifiedMessage, setVerifiedMessage] = useState("");
   const [institutions, setInstitutions] = useState([]);
@@ -141,7 +141,9 @@ function RegisterForm({ forceVisible = false }) {
   const [visible, setVisible] = useState(forceVisible);
   const { isAuthenticated, loading } = useAuth();
   const [verifyDisabled, setVerifyDisabled] = useState(false);
-  const [timer, setTimer] = useState(0);
+  const [timer, setTimer] = useState(
+    localStorage.getItem("registertimer") || "",
+  );
   const [sendDisabled, setSendDisabled] = useState(false);
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -197,32 +199,23 @@ function RegisterForm({ forceVisible = false }) {
       .then((data) => {
         console.log("Code verified:", data);
         setError("");
-        setIsVerified(true);
         setVerificationError(false);
         setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
+        createUser(user)
+          .then((data) => {
+            console.log("User created:", data);
+            setModalError("");
+            navigate("/sign-in");
+          })
+          .catch((err) => {
+            console.error("Error creating user:", err);
+            setModalError(true);
+          });
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
         setVerificationError(true);
-      });
-  };
-
-  const handleRegister = (event) => {
-    event.preventDefault();
-    if (!isVerified) {
-      setModalError("Please verify your email before proceeding.");
-      return;
-    }
-    createUser(user)
-      .then((data) => {
-        console.log("User created:", data);
-        setModalError("");
-        navigate("/sign-in");
-      })
-      .catch((err) => {
-        console.error("Error creating user:", err);
-        setModalError(true);
       });
   };
 
@@ -280,6 +273,7 @@ function RegisterForm({ forceVisible = false }) {
       intervalId = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime - 1;
+          localStorage.setItem("registertimer", newTime);
           return newTime;
         });
       }, 1000);
@@ -326,7 +320,6 @@ function RegisterForm({ forceVisible = false }) {
     setVerifiedMessage("");
     setSendDisabled(false);
     setVerifyDisabled(false);
-    setIsVerified(false);
   };
 
   return (
@@ -346,29 +339,27 @@ function RegisterForm({ forceVisible = false }) {
           <div className="sign-in-form">
             <form onSubmit={handleVerify}>
               <p>Please enter the code emailed to you below:</p>
-              <input
-                type="text"
-                name="email-verify"
-                className="input-field"
-                placeholder="Enter the code here"
-                onChange={handleCodeChange}
-              />
-
+              <InputGroup className="mb-3">
+                <Form.Control
+                  type="text"
+                  name="email-verify"
+                  placeholder="Enter the code here"
+                  onChange={handleCodeChange}
+                />
+              </InputGroup>
+              <button
+                className="verify-button"
+                onClick={() => handleSend(user)}
+                disabled={sendDisabled}
+              >
+                {sendDisabled
+                  ? `Resend code in ${formatTime(timer)}`
+                  : "Send code"}
+              </button>
               <hr />
               {/* verificationError is displayed if the code by user could not be verified, modalError is displayed if the user could not be created for any reason */}
               {verificationError && (
-                <p className="warning">
-                  Your code is incorrect.{" "}
-                  <Button
-                    variant="primary"
-                    onClick={() => handleSend(user)}
-                    disabled={sendDisabled}
-                  >
-                    {sendDisabled
-                      ? `Resend code in ${formatTime(timer)}`
-                      : "Send code"}
-                  </Button>
-                </p>
+                <p className="warning">Your code is incorrect. </p>
               )}
               {modalError && (
                 <p className="warning">An unknown error occurred.</p>
@@ -380,13 +371,6 @@ function RegisterForm({ forceVisible = false }) {
                 type="button"
                 onClick={handleVerify}
                 disabled={verifyDisabled}
-              >
-                Verify my Email
-              </button>
-              <button
-                className="register-button"
-                type="button"
-                onClick={handleRegister}
               >
                 Register
               </button>

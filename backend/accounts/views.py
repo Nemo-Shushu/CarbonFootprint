@@ -112,19 +112,43 @@ class SendEmailConfirmationTokenAPIView(APIView):
     ]
 
     def post(self, request, format=None):
-        if isinstance(request.data, dict):
-            email = request.data.get("email")
-        else:
-            email = request.data
+        email = request.data.get("email")
+        code = get_random_string(length=6)
+        
+        try:
+            user = User.objects.get(email=email)
+            print(user)
+        except User.DoesNotExist:
+            EmailVerification.objects.update_or_create(
+            email=email, defaults={"verification_code": code})
+            send_verification_email(email, code)
+            return Response(
+                {"message": "Verification code sent."}, status=status.HTTP_200_OK
+            )
+        return Response(
+                {"error": "A user with this email exists in the database."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+    
+class SendForgetPasswordConfirmationTokenAPIView(APIView):
+    permission_classes = [
+        AllowAny,
+    ]
+
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        print(email)
         if not email:
             return Response(
                 {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
             )
-        count = EmailVerification.objects.filter(email=email).count()
-        if count > 1:
+        try:
+            user = User.objects.get(email=email)
+            print(user)
+        except User.DoesNotExist:
             return Response(
-                {"error": "Email is not unique in the database."},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"error": "Email does not exist in the database."},
+                status=status.HTTP_404_NOT_FOUND,
             )
         code = get_random_string(length=6)
 
@@ -136,6 +160,7 @@ class SendEmailConfirmationTokenAPIView(APIView):
         return Response(
             {"message": "Verification code sent."}, status=status.HTTP_200_OK
         )
+
 
 
 class ConfirmEmailAPIView(APIView):
@@ -274,7 +299,9 @@ class CheckEmailAPIView(APIView):
 
     def post(self, request):
         current_email = request.data.get("email")
-
+        
+        
+        
         if not current_email:
             return Response(
                 {"error": "Email is required."},
