@@ -1,106 +1,13 @@
-import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Modal from "react-bootstrap/Modal";
+import { Link, useNavigate } from "react-router-dom";
 import "./static/sign-in.css";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-
-async function checkEmail(email) {
-  return fetch(backendUrl + "api/accounts/check-email/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Email Checked:", data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error Checking Email:", error);
-      throw error;
-    });
-}
-
-async function sendCode(email) {
-  return fetch(backendUrl + "api/accounts/send-email-confirmation-token/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Code sent:", data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error sending code:", error);
-      throw error;
-    });
-}
-
-async function verifyCode(email, code) {
-  return fetch(backendUrl + "api/accounts/confirm-email/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email: email, verification_code: code }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        return response.json().then((errorData) => {
-          throw errorData;
-        });
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Code verified:", data);
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error verifying code:", error);
-      throw error;
-    });
-}
 
 function SignInForm() {
   const [error, setError] = useState("");
@@ -111,9 +18,7 @@ function SignInForm() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [newPassword2, setNewPassword2] = useState("");
   const [showEmail, setShowEmail] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
-  const [verifiedMessage, setVerifiedMessage] = useState("");
   const [email, setEmail] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [code, setCode] = useState("");
@@ -121,8 +26,91 @@ function SignInForm() {
   const [verifyDisabled, setVerifyDisabled] = useState(true);
   const handlePasswordClose = () => setShowPasswordModal(false);
   const navigate = useNavigate();
-  const [timer, setTimer] = useState(0);
-  const [sendDisabled, setSendDisabled] = useState(false);
+  const [timer, setTimer] = useState(
+    localStorage.getItem("forgetpasswordtimer") > 0
+      ? localStorage.getItem("forgetpasswordtimer")
+      : "",
+  );
+  const [sendDisabled, setSendDisabled] = useState(true);
+
+  async function checkEmail(email) {
+    return fetch(backendUrl + "api/accounts/check-email/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Email Checked:", data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error Checking Email:", error);
+        throw error;
+      });
+  }
+
+  async function sendCode(email) {
+    return fetch(backendUrl + "api/accounts/forget-password/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            setModalError(errorData.error);
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Code sent:", data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error sending code:", error);
+        throw error;
+      });
+  }
+
+  async function verifyCode(email, code) {
+    return fetch(backendUrl + "api/accounts/confirm-email/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email, verification_code: code }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((errorData) => {
+            throw errorData;
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Code verified:", data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error verifying code:", error);
+        throw error;
+      });
+  }
 
   const handleEmail = (event) => {
     console.log("Email Entered:", event.target.value);
@@ -154,21 +142,32 @@ function SignInForm() {
   };
 
   const handleSend = () => {
+    if (timer > 0) {
+      setSendDisabled(true);
+    } else {
+      setSendDisabled(false);
+      setTimer(180);
+    }
+    setModalError("");
     if (email.trim() === "") {
-      alert("Please fill Email first");
+      setModalError("Please fill Email first");
+      setSendDisabled(false);
       return;
     }
     if (!email.toLowerCase().endsWith(".ac.uk")) {
-      alert("Email must belong to an educational institution (.ac.uk).");
+      setModalError(
+        "Email must belong to an educational institution (.ac.uk).",
+      );
+      setSendDisabled(false);
       return;
     }
     sendCode(email)
       .then(() => {
         setVerifyDisabled(false);
-        setTimer(180);
         setSendDisabled(true);
       })
       .catch((error) => {
+        setSendDisabled(false);
         console.error("Error sending code:", error);
       });
   };
@@ -179,6 +178,8 @@ function SignInForm() {
       intervalId = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime - 1;
+          console.log("set");
+          localStorage.setItem("forgetpasswordtimer", newTime);
           return newTime;
         });
       }, 1000);
@@ -199,29 +200,24 @@ function SignInForm() {
     verifyCode(email, code)
       .then(() => {
         setError("");
-        setIsVerified(true);
+        setModalError("");
         setVerificationError(false);
-        setVerifiedMessage("Your email is verified successfully.");
         setVerifyDisabled(true);
+        checkEmail(email)
+          .then(() => {
+            setShowEmail(false);
+            setShowPasswordModal(true);
+            setTimer(0);
+          })
+          .catch((error) => {
+            setModalError(error.error || "Error checking email.");
+          });
+        setModalError("");
+        setError("");
       })
       .catch((err) => {
         console.error("Error verifying code:", err);
         setVerificationError(true);
-      });
-  };
-
-  const handleNext = () => {
-    if (!isVerified) {
-      setModalError("Please verify your email before proceeding.");
-      return;
-    }
-    checkEmail(email)
-      .then(() => {
-        setShowEmail(false);
-        setShowPasswordModal(true);
-      })
-      .catch((error) => {
-        setModalError(error.error || "Error checking email.");
       });
   };
 
@@ -243,10 +239,10 @@ function SignInForm() {
 
   const handleSave = () => {
     if (newPassword !== newPassword2) {
-      alert("Passwords do not match!");
+      setModalError("Passwords do not match!");
       return;
     }
-    const csrfToken = getCookie("csrftoken");
+    const csrfToken = Cookies.get("csrftoken");
     fetch(backendUrl.concat("api/accounts/update-password/"), {
       method: "PATCH",
       credentials: "include",
@@ -302,6 +298,9 @@ function SignInForm() {
         setPassword("");
         setError("");
         navigate("/dashboard");
+        localStorage.setItem("timer", 0);
+        localStorage.setItem("registertimer", 0);
+        localStorage.setItem("forgetpasswordtimer", 0);
       })
       .catch(() => {
         setError("Wrong username or password");
@@ -321,11 +320,9 @@ function SignInForm() {
     setShowEmail(false);
     setCode("");
     setError("");
-    setVerificationError(false);
-    setVerifiedMessage("");
-    setSendDisabled(false);
+    setModalError("");
+    //setSendDisabled(false);
     setVerifyDisabled(false);
-    setIsVerified(false);
   };
 
   return (
@@ -403,32 +400,35 @@ function SignInForm() {
           show={showEmail}
           onHide={handleEmailClose}
           className="email-modal"
+          centered
         >
           <Modal.Header closeButton>
             <Modal.Title>Check Email</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon-email"></InputGroup.Text>
-              <Form.Control
-                name="email"
-                value={email}
-                onChange={handleEmail}
-                placeholder="Enter your email"
-                aria-label="email"
-                aria-describedby="basic-addon-email"
-              />
-              <Button
-                className="verify-button"
-                type="button"
-                onClick={handleSend}
-                disabled={sendDisabled}
-              >
-                {sendDisabled
-                  ? `Resend code in ${formatTime(timer)}`
-                  : "Send code"}
-              </Button>
-            </InputGroup>
+            <div style={{ width: "87%" }}>
+              <InputGroup style={{ marginLeft: "8.5%" }}>
+                <Form.Control
+                  name="email"
+                  value={email}
+                  onChange={handleEmail}
+                  placeholder="Enter your email"
+                  aria-label="email"
+                  aria-describedby="basic-addon-email"
+                />
+                <Button
+                  className="verify-button"
+                  type="button"
+                  onClick={handleSend}
+                  disabled={sendDisabled}
+                >
+                  {sendDisabled
+                    ? `Resend code in ${formatTime(timer)}`
+                    : "Send code"}
+                </Button>
+              </InputGroup>
+            </div>
+
             <div className="sign-in-form">
               <p>Please enter the code emailed to you below:</p>
               <InputGroup className="mb-3">
@@ -444,7 +444,6 @@ function SignInForm() {
                 <p className="warning">Your code is incorrect.</p>
               )}
               {modalError && <p className="warning">{modalError}</p>}
-              {verifiedMessage && <p className="success">{verifiedMessage}</p>}
               <div style={{ display: "flex", gap: "10px" }}>
                 <Button
                   className="verify-button"
@@ -453,13 +452,6 @@ function SignInForm() {
                   disabled={verifyDisabled}
                 >
                   Verify my Email
-                </Button>
-                <Button
-                  className="next-button"
-                  type="button"
-                  onClick={handleNext}
-                >
-                  Next
                 </Button>
               </div>
             </div>
@@ -476,9 +468,6 @@ function SignInForm() {
           </Modal.Header>
           <Modal.Body>
             <InputGroup className="mb-3 position-relative">
-              <InputGroup.Text id="basic-addon-password">
-                New Password
-              </InputGroup.Text>
               <Form.Control
                 name="newPassword"
                 type={showNewPassword ? "text" : "password"}
@@ -488,20 +477,19 @@ function SignInForm() {
                 aria-label="password"
                 aria-describedby="basic-addon-password"
               />
-              <Button
+              <button
                 type="button"
                 onClick={toggleShowNewPassword}
-                className="show-NewPassword"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showNewPassword ? "Hide" : "Show"}
-              </Button>
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
             </InputGroup>
 
             {/* Confirm Password Input */}
             <InputGroup className="mb-3 position-relative">
-              <InputGroup.Text id="basic-addon-password2">
-                Confirm Password
-              </InputGroup.Text>
               <Form.Control
                 name="newPassword2"
                 type={showNewPassword ? "text" : "password"}
@@ -511,19 +499,22 @@ function SignInForm() {
                 aria-label="password2"
                 aria-describedby="basic-addon-password2"
               />
-              <Button
+              <button
                 type="button"
                 onClick={toggleShowNewPassword}
-                className="show-password"
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y me-2"
               >
-                {showNewPassword ? "Hide" : "Show"}
-              </Button>
-              {modalError && <p className="warning">{modalError}</p>}
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
             </InputGroup>
+            {modalError && <p className="warning">{modalError}</p>}
           </Modal.Body>
           <Modal.Footer>
             <Button
               variant="primary"
+              className="verify-button"
               onClick={() => {
                 handleSave();
               }}

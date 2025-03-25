@@ -975,7 +975,7 @@ def update_intensity_view(request):
             else status.HTTP_400_BAD_REQUEST,
         )
 
-
+@api_view(["POST"])
 def update_carbon_impact(request):
     if not request.user.is_authenticated:
         return Response(

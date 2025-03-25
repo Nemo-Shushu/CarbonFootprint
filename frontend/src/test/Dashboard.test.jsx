@@ -103,7 +103,7 @@ describe("Dashboard Component", () => {
     expect(screen.getByText("Research Field")).toBeInTheDocument();
     expect(screen.getByText("Total Emissions")).toBeInTheDocument();
     expect(screen.getByText("AI")).toBeInTheDocument();
-    expect(screen.getByText("100")).toBeInTheDocument();
+    expect(screen.getByText("100 tCO²e")).toBeInTheDocument();
   });
 
   it("opens the modal when clicking a report row", async () => {

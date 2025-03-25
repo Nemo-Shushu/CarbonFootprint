@@ -11,6 +11,7 @@ from accounts.views import (
     UpdateUserEmailAPIView,
     UpdateUserPasswordAPIView,
     CheckEmailAPIView,
+    SendForgetPasswordConfirmationTokenAPIView,
     UserRetrieveView,
 )
 
@@ -34,6 +35,7 @@ urlpatterns = [
         "update-password/", UpdateUserPasswordAPIView.as_view(), name="update_password"
     ),
     path("check-email/", CheckEmailAPIView.as_view(), name="check_email"),
+    path("forget-password/", SendForgetPasswordConfirmationTokenAPIView.as_view(), name="forget-password"),
     path('user/id/<int:pk>/', UserRetrieveView.as_view(), name='get-user-by-id'),
     path('user/username/<str:username>/', UserRetrieveView.as_view(), name='get-user-by-username'),
 ]

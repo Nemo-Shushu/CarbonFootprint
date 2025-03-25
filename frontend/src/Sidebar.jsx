@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "./useAuth";
+import Cookies from "js-cookie";
 import PropTypes from "prop-types";
-import "./scss/custom.scss";
-import "./static/RequestAdmin.css";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Cookies from "js-cookie";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./scss/custom.scss";
+import "./static/RequestAdmin.css";
+import { useAuth } from "./useAuth";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -143,6 +143,9 @@ function Sidebar({ onAdminStatusChange, onResearcherStatusChange }) {
       .then(isResponseOk)
       .then((data) => {
         console.log(data);
+        localStorage.setItem("timer", 0);
+        localStorage.setItem("registertimer", 0);
+        localStorage.setItem("forgetpasswordtimer", 0);
         navigate("/sign-in");
       })
       .catch((err) => {
