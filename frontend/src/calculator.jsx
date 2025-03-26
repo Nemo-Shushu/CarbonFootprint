@@ -335,7 +335,8 @@ function Calculator() {
             <div className="row mb-2">
               <div className="col-sm-4">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Number of FTE staff on project</strong>
+                  <strong>Number of FTE staff on project </strong>
+                  <span className="text-danger">*</span>
                 </label>
                 <input
                   type="number"
@@ -353,7 +354,8 @@ function Calculator() {
 
               <div className="col-sm-5">
                 <label htmlFor="firstName" className="form-label">
-                  <strong>Total number of FTE research group members</strong>
+                  <strong>Total number of FTE research group members </strong>
+                  <span className="text-danger">*</span>
                 </label>
                 <input
                   type="number"

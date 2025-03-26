@@ -740,10 +740,10 @@ COPY public.accounts_benchmarkdata (id, consumption_type, category, amount, unit
 57	travel	land-national-rail	1.00	km	2025	DEFRA 2025 Report	0.035000	\N
 58	travel	land-international-rail	1.00	km	2025	DEFRA 2025 Report	0.004000	\N
 59	travel	land-light-rail-tram	1.00	km	2025	DEFRA 2025 Report	0.029000	\N
-60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
-61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.421000	0
-62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.421000	0
-63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.421000	0
+60	water	Physical Sciences Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.149000	0.272000
+61	water	Medical/Life Sciences Laboratory	1.40	m³/m²	2024	Estimate based on usage	0.149000	0.272000
+62	water	Engineering Laboratory	1.70	m³/m²	2024	Estimate based on usage	0.149000	0.272000
+63	water	Office/Admin Space	1.00	m³/m²	2024	Estimate based on usage	0.149000	0.272000
 64	electricity	Academic Laboratory	207.99	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 65	electricity	Academic Office	108.47	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
 66	electricity	Admin Office	115.17	kWh/m²	2024	Source: Gov Energy Report	0.212000	0.0190
@@ -804,6 +804,144 @@ Climate Change Studies
 Renewable Energy Systems
 Water Resource Management
 Carbon Footprint Analysis
+Theatre Film & TV Studies
+Music
+History of Art
+School of CCA Admin
+English Language
+English Literature
+Scottish Literature
+Theology and Religious Studies
+Critical Studies Administration
+Archaeology
+Arts & Media Informatics (HATII)
+Celtic and Gaelic
+Classics
+History
+Philosophy
+School of Humanities Admin
+French
+German
+Italian
+Hispanic Studies
+Slavonic Studies
+Language Centre
+School of ML&C Administration
+Arts College Senior Management
+Arts College IT Services
+Arts College Graduate School
+Arts College Other Services
+Arts College - Arts Lab
+Life Sciences UG School
+Undergraduate Medical School
+Dental School
+Nursing and Health Care School
+School of Medicine Admin
+Surgery
+Forensic Medicine
+Anaesthesia
+Human Nutrition
+Child Health
+Surgical Paediatrics (part of Child Health)
+Dermatology
+Medical Genetics
+Reproductive & Maternal Medicine RI
+Vets Undergraduate School
+Cochno Farm Administration
+Institute of BAHCM
+BICR
+Pathology
+Experimental Therapeutics
+Translational Research Centre (Wolfson Wohl Cancer Research Centre)
+Paul O'Gorman Leukemia Research Centre
+RI Cancer Sciences Admin
+ICAMS
+III - Immunology, Inflammation & Immunity
+III - Centre for Virus Research
+Molecular Cellular & Systems Biology
+Neurosciences & Clin Psychology
+RI Neurosci & Psychology Admin
+INP - Stroke & Brain Imaging (Wellcome Surgical Inst & MRI)
+General Practice
+Mental Health and Wellbeing
+Public Health
+Robertson Centre
+MRC Public Health-Berkeley Square
+MVLS College Senior Management
+MVLS Academic & Student Admin
+MVLS College Continuing Personal Development and Graphics
+MVLS College Graduate School
+MVLS College Other
+MVLS College Facilities
+MVLS College Polyomics
+Chemistry
+Computing Science
+Eng Biomedical Engineering
+GES
+Maths and Stats
+Physics & Astronomy
+Psychology
+S&E College Senior Management
+S&E College Business Development (Quantic)
+Accounting and Finance
+Economics
+Management
+Education
+Interdisciplinary Studies
+Law
+Central & East European Studies
+Economic and Social History
+Politics
+Sociology
+Social Work
+Urban Studies
+SS College Senior Management
+Human Resources
+Finance Office
+IT Services
+Data Protection & FOI Office
+Student Lifecycle
+Archive Services
+Library
+Photographic Unit
+Research Strategy & Innovation Office
+Sensors - Innovo Building
+Court Office
+Planning Office
+Principal's Office
+Office of VPs
+US-Human Resources
+US-Finance
+Student Services Enquiry Team
+Careers Service
+Counselling & Psychological Services
+Disability Service
+Interfaith Chaplaincy
+Learning & Teaching Centre (LEADS)
+Registry
+Senate Office/Academic Collaborations Office
+Museum & Art Gallery
+External Relations & Recruitment
+Development & Alumni
+Communications Office
+Centre for Open Studies-Short Courses
+Residential Services
+Conference and Events (Hospitality)
+Sport
+Print Unit
+Gift Shop
+Estates & Buildings
+Centrally Timetabled Rooms
+Cleaning Services
+Security & Janitorial Services
+Transport Services
+Health Safety & Wellbeing
+Occupational Health
+Radiation Protection Service
+Safety & Environmental Protection Services
+Biological Services
+World Changing Glasgow Transformation Team
+Incubator Space/Leases
 \.
 
 
@@ -884,11 +1022,11 @@ University of Wales	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	
 University of Warwick	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 University of Westminster	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 University of Winchester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-University of Wolverhampton	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-University of Worcester	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
-University of York	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+University of Wolverhampton	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
+University of Worcester	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
+University of York	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
 University of Glasgow	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
-Aberystwyth University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+Aberystwyth University	445473.00	1447054.00	59822627.00	2377808.00	91996054.00	137.5385	211.8509	123.00	1.118199	155.00	1.366780	247.387180	207.985014	170.847500	108.465303	180.414960	115.174497	181.000000	186.000000	125.000000	97.000000	132.000000	103.000000
 \.
 
 
@@ -897,16 +1035,31 @@ Aberystwyth University	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	
 --
 
 COPY public.accounts_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email, institute_id, research_field_id, is_admin, is_researcher, is_verified) FROM stdin;
-9	pbkdf2_sha256$600000$0AGHjweRIxtdVfALahvKH0$6X1oYP4JGNWGwKHnH/n1zZCZbsPTqQg1c5h6B8B2qFo=	\N	f	test	test	test	f	t	2025-02-12 12:21:26.422376+00	wdas2@sada.ac.uk	University of Glasgow	Environmental Science	f	f	f
-12	pbkdf2_sha256$600000$Osa2Su6I6w1zysAaZHOai3$q+x8d8jDWxxlEw0C9gkcqvbFeP4NoSPKfZyHCZCnHFM=	\N	f	test12	test	test	f	t	2025-02-12 12:51:26.108744+00	wdas2@sad.ac.uk	University of Glasgow	Renewable Energy Systems	f	f	f
-11	pbkdf2_sha256$600000$MaXJxFVVVkk3YtwyZWrfDh$tcuA/VYp3irPj0HaVphCdimaqpqK84sCxeYYSFZPUHk=	\N	f	sdadsa	test	test	f	t	2025-02-12 12:28:29.757371+00	asd2@sada.ac.uk	University of Glasgow	Environmental Science	f	f	f
-1	pbkdf2_sha256$600000$5RpJg3Rtza9i9zBSW6MjvW$NQswlVRTAU0QOxTQbgOO6XPUiuPJni3T82d0b56+6g8=	2025-02-19 14:22:08.94305+00	f	pratmaty	Pratt	Redman	f	t	2025-01-29 22:07:45.478265+00	adsfdsa@stu.gla.ac.uk	University of Glasgow	Climate Change Studies	f	f	f
-3	pbkdf2_sha256$600000$pxLj6CB0T917wZVnmBAEdF$v71C1PI3Wbr6HDqujC8xgJbm3et3ZSziPQoc91DcsMk=	2025-01-29 22:11:11.996557+00	f	cipher	Cipher	Reed	f	t	2025-01-29 22:10:37.997918+00	yiuweahk@op.ac.uk	University of Glasgow	Renewable Energy Systems	f	f	f
-4	pbkdf2_sha256$600000$jOzbmyDh9nvIiuLYUl35an$1jKlyUXnWmURcgVAxRZqDFTTbJawlMA3koc4xLmLbl0=	\N	f	beetroot	Betty	Foster	f	t	2025-01-29 22:11:45.93357+00	asdfasdv@stu.ga.ac.uk	University of Glasgow	Renewable Energy Systems	f	f	f
-2	pbkdf2_sha256$600000$At4EMRpzz5FqTOleXbGk1l$Qz/UGzq7gjcrHrqB6OZYeaEkKS5RBCoiVPOBzQrjgR8=	2025-03-08 16:34:45.678501+00	f	carbonfoot	Carbonfoot	Test	f	t	2025-01-29 22:09:16.992218+00	asdfasd2@ed.ac.uk	Brunel University London	Climate Change Studies	f	f	f
-13	pbkdf2_sha256$600000$TQFsmbxx6aM6NQbfXSdO5F$H6y2aS9fHGYItWj4vtT7enp5EGGc6G9YkmdWDQmCWCw=	\N	f	randomname	Random	Name	f	t	2025-03-08 17:01:25.074396+00	asdfjaksldfj@gla.ac.uk	Anglia Ruskin University	Sustainable Engineering	f	f	f
+9	pbkdf2_sha256$600000$0AGHjweRIxtdVfALahvKH0$6X1oYP4JGNWGwKHnH/n1zZCZbsPTqQg1c5h6B8B2qFo=	\N	f	test	test	test	f	t	2025-02-12 12:21:26.422376+00	wdas2@sada.ac.uk	University of Glasgow	Carbon Footprint Analysis	f	f	f
+12	pbkdf2_sha256$600000$Osa2Su6I6w1zysAaZHOai3$q+x8d8jDWxxlEw0C9gkcqvbFeP4NoSPKfZyHCZCnHFM=	\N	f	test12	test	test	f	t	2025-02-12 12:51:26.108744+00	wdas2@sad.ac.uk	University of Glasgow	Renewable Energy Systems	t	f	f
+11	pbkdf2_sha256$600000$MaXJxFVVVkk3YtwyZWrfDh$tcuA/VYp3irPj0HaVphCdimaqpqK84sCxeYYSFZPUHk=	\N	f	sdadsa	test	test	f	t	2025-02-12 12:28:29.757371+00	asd2@sada.ac.uk	University of Glasgow	Sustainable Engineering	f	f	f
+1	pbkdf2_sha256$600000$5RpJg3Rtza9i9zBSW6MjvW$NQswlVRTAU0QOxTQbgOO6XPUiuPJni3T82d0b56+6g8=	2025-02-19 14:22:08.94305+00	f	pratmaty	Pratt	Redman	f	t	2025-01-29 22:07:45.478265+00	adsfdsa@stu.gla.ac.uk	University of York	Carbon Footprint Analysis	f	f	f
+3	pbkdf2_sha256$600000$pxLj6CB0T917wZVnmBAEdF$v71C1PI3Wbr6HDqujC8xgJbm3et3ZSziPQoc91DcsMk=	2025-01-29 22:11:11.996557+00	f	cipher	Cipher	Reed	f	t	2025-01-29 22:10:37.997918+00	yiuweahk@op.ac.uk	University of York	Renewable Energy Systems	f	f	f
+4	pbkdf2_sha256$600000$jOzbmyDh9nvIiuLYUl35an$1jKlyUXnWmURcgVAxRZqDFTTbJawlMA3koc4xLmLbl0=	\N	f	beetroot	Betty	Foster	f	t	2025-01-29 22:11:45.93357+00	asdfasdv@stu.ga.ac.uk	University of York	Renewable Energy Systems	f	f	f
+2	pbkdf2_sha256$600000$At4EMRpzz5FqTOleXbGk1l$Qz/UGzq7gjcrHrqB6OZYeaEkKS5RBCoiVPOBzQrjgR8=	2025-03-08 16:34:45.678501+00	f	carbonfoot	Carbonfoot	Test	f	t	2025-01-29 22:09:16.992218+00	asdfasd2@ed.ac.uk	University of Worcester	Carbon Footprint Analysis	t	f	f
 \.
 
+--
+-- Data for Name: calculate_result; Type: TABLE DATA; Schema: public; Owner: carbon_foot
+--
+
+COPY public.calculate_result (id, user_id, total_electricity_emissions, total_gas_emissions, total_water_emissions, total_travel_emissions, total_waste_emissions, total_procurement_emissions, total_carbon_emissions, report_data) FROM stdin;
+1	1	101.20	56.40	30.10	78.00	15.60	39.90	321.20	{"utilities": {"FTE-staff": "8", "FTE-members": "25", "Academic Laboratory": "120", "Academic Office": "90", "Admin Office": "250", "Office/Admin Space": "130", "Medical/Life Sciences Laboratory": "180", "Engineering Laboratory": "310", "Physical Sciences Laboratory": "220"}, "travel": {"air-eco-short-UK": "12", "air-business-short-UK": "8", "air-eco-long-UK": "5", "air-business-long-UK": "6", "land-car": "22", "land-local-bus": "15"}, "waste": {"mixed-recycle": "1.5", "general-waste": "2.8", "clinical-waste": "1.2", "chemical-waste": "0.6", "bio-waste": "0.9"}, "procurement": {"CA": 120, "WB": 220, "PA": 65, "AF": 140, "TA": 110, "AB": 3, "C": 90}}
+2	9	94.50	60.00	25.30	68.00	10.70	45.10	303.60	{"utilities": {"FTE-staff": "5", "FTE-members": "10", "Academic Laboratory": "90", "Academic Office": "70", "Admin Office": "160", "Office/Admin Space": "100", "Medical/Life Sciences Laboratory": "200", "Engineering Laboratory": "270", "Physical Sciences Laboratory": "180"}, "travel": {"air-eco-short-UK": "9", "air-business-short-UK": "4", "air-eco-long-UK": "8", "air-business-long-UK": "7", "land-car": "14", "land-local-bus": "20"}, "waste": {"mixed-recycle": "1.0", "general-waste": "2.1", "clinical-waste": "1.0", "chemical-waste": "0.4", "bio-waste": "0.6"}, "procurement": {"CA": 80, "WB": 190, "PA": 45, "AF": 100, "TA": 90, "AB": 1, "C": 110}}
+3	12	105.70	72.30	32.40	82.20	12.80	50.00	355.40	{"utilities": {"FTE-staff": "12", "FTE-members": "16", "Academic Laboratory": "100", "Academic Office": "85", "Admin Office": "230", "Office/Admin Space": "160", "Medical/Life Sciences Laboratory": "210", "Engineering Laboratory": "290", "Physical Sciences Laboratory": "310"}, "travel": {"air-eco-short-UK": "15", "air-business-short-UK": "6", "air-eco-long-UK": "9", "air-business-long-UK": "7", "land-car": "24", "land-local-bus": "16"}, "waste": {"mixed-recycle": "2.2", "general-waste": "3.1", "clinical-waste": "1.3", "chemical-waste": "0.7", "bio-waste": "0.8"}, "procurement": {"CA": 100, "WB": 250, "PA": 55, "AF": 130, "TA": 105, "AB": 2, "C": 95}}
+4	11	76.30	44.20	29.00	54.00	8.90	33.00	245.40	{"utilities": {"FTE-staff": "6", "FTE-members": "12", "Academic Laboratory": "70", "Academic Office": "65", "Admin Office": "110", "Office/Admin Space": "90", "Medical/Life Sciences Laboratory": "150", "Engineering Laboratory": "200", "Physical Sciences Laboratory": "190"}, "travel": {"air-eco-short-UK": "6", "air-business-short-UK": "3", "air-eco-long-UK": "4", "air-business-long-UK": "5", "land-car": "13", "land-local-bus": "12"}, "waste": {"mixed-recycle": "0.9", "general-waste": "1.5", "clinical-waste": "0.7", "chemical-waste": "0.3", "bio-waste": "0.4"}, "procurement": {"CA": 60, "WB": 130, "PA": 35, "AF": 70, "TA": 85, "AB": 2, "C": 70}}
+5	13	88.10	55.60	27.80	60.00	9.50	40.40	281.50	{"utilities": {"FTE-staff": "4", "FTE-members": "15", "Academic Laboratory": "75", "Academic Office": "85", "Admin Office": "180", "Office/Admin Space": "100", "Medical/Life Sciences Laboratory": "160", "Engineering Laboratory": "230", "Physical Sciences Laboratory": "240"}, "travel": {"air-eco-short-UK": "7", "air-business-short-UK": "6", "air-eco-long-UK": "6", "air-business-long-UK": "6", "land-car": "18", "land-local-bus": "14"}, "waste": {"mixed-recycle": "1.4", "general-waste": "2.6", "clinical-waste": "0.9", "chemical-waste": "0.5", "bio-waste": "0.7"}, "procurement": {"CA": 90, "WB": 200, "PA": 60, "AF": 120, "TA": 100, "AB": 1, "C": 85}}
+6	4	92.20	63.70	31.00	70.00	11.00	48.00	315.90	{"utilities": {"FTE-staff": "11", "FTE-members": "18", "Academic Laboratory": "110", "Academic Office": "95", "Admin Office": "200", "Office/Admin Space": "140", "Medical/Life Sciences Laboratory": "190", "Engineering Laboratory": "270", "Physical Sciences Laboratory": "280"}, "travel": {"air-eco-short-UK": "10", "air-business-short-UK": "5", "air-eco-long-UK": "7", "air-business-long-UK": "9", "land-car": "19", "land-local-bus": "17"}, "waste": {"mixed-recycle": "1.3", "general-waste": "2.7", "clinical-waste": "1.1", "chemical-waste": "0.5", "bio-waste": "0.9"}, "procurement": {"CA": 110, "WB": 240, "PA": 70, "AF": 115, "TA": 95, "AB": 2, "C": 88}}
+7	2	85.10	49.20	28.90	59.50	10.40	36.70	269.80	{"utilities": {"FTE-staff": "7", "FTE-members": "14", "Academic Laboratory": "105", "Academic Office": "88", "Admin Office": "190", "Office/Admin Space": "115", "Medical/Life Sciences Laboratory": "175", "Engineering Laboratory": "260", "Physical Sciences Laboratory": "205"}, "travel": {"air-eco-short-UK": "6", "air-business-short-UK": "4", "air-eco-long-UK": "5", "air-business-long-UK": "6", "land-car": "17", "land-local-bus": "13"}, "waste": {"mixed-recycle": "1.1", "general-waste": "2.2", "clinical-waste": "0.8", "chemical-waste": "0.4", "bio-waste": "0.6"}, "procurement": {"CA": 75, "WB": 180, "PA": 50, "AF": 100, "TA": 85, "AB": 1, "C": 80}}
+8	13	99.30	61.50	30.40	73.80	12.10	46.90	323.00	{"utilities": {"FTE-staff": "9", "FTE-members": "19", "Academic Laboratory": "115", "Academic Office": "102", "Admin Office": "210", "Office/Admin Space": "125", "Medical/Life Sciences Laboratory": "185", "Engineering Laboratory": "285", "Physical Sciences Laboratory": "275"}, "travel": {"air-eco-short-UK": "11", "air-business-short-UK": "7", "air-eco-long-UK": "6", "air-business-long-UK": "7", "land-car": "20", "land-local-bus": "18"}, "waste": {"mixed-recycle": "1.6", "general-waste": "2.9", "clinical-waste": "1.2", "chemical-waste": "0.6", "bio-waste": "0.8"}, "procurement": {"CA": 95, "WB": 210, "PA": 60, "AF": 125, "TA": 92, "AB": 2, "C": 93}}
+9	1	83.70	53.30	26.80	65.20	9.80	38.50	277.30	{"utilities": {"FTE-staff": "6", "FTE-members": "13", "Academic Laboratory": "85", "Academic Office": "78", "Admin Office": "170", "Office/Admin Space": "108", "Medical/Life Sciences Laboratory": "160", "Engineering Laboratory": "240", "Physical Sciences Laboratory": "195"}, "travel": {"air-eco-short-UK": "8", "air-business-short-UK": "4", "air-eco-long-UK": "5", "air-business-long-UK": "5", "land-car": "15", "land-local-bus": "11"}, "waste": {"mixed-recycle": "1.0", "general-waste": "2.4", "clinical-waste": "0.9", "chemical-waste": "0.5", "bio-waste": "0.7"}, "procurement": {"CA": 85, "WB": 170, "PA": 48, "AF": 90, "TA": 88, "AB": 2, "C": 78}}
+10	4	97.60	66.80	29.70	76.40	11.70	44.30	326.60	{"utilities": {"FTE-staff": "10", "FTE-members": "20", "Academic Laboratory": "125", "Academic Office": "110", "Admin Office": "220", "Office/Admin Space": "135", "Medical/Life Sciences Laboratory": "195", "Engineering Laboratory": "295", "Physical Sciences Laboratory": "265"}, "travel": {"air-eco-short-UK": "13", "air-business-short-UK": "6", "air-eco-long-UK": "7", "air-business-long-UK": "8", "land-car": "21", "land-local-bus": "19"}, "waste": {"mixed-recycle": "1.7", "general-waste": "3.0", "clinical-waste": "1.4", "chemical-waste": "0.7", "bio-waste": "0.9"}, "procurement": {"CA": 105, "WB": 230, "PA": 62, "AF": 135, "TA": 98, "AB": 3, "C": 97}}
+\.
 
 --
 -- Data for Name: accounts_user_groups; Type: TABLE DATA; Schema: public; Owner: carbon_foot

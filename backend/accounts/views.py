@@ -320,7 +320,7 @@ class CheckEmailAPIView(APIView):
                 {"error": "User with the provided email does not exist."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        
+
 
 # Retrieve a user by ID or username
 class UserRetrieveView(generics.RetrieveAPIView):
@@ -339,7 +339,9 @@ class UserRetrieveView(generics.RetrieveAPIView):
             user = User.objects.filter(username=username).first()
 
         if not user:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)

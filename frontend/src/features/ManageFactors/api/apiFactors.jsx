@@ -1,7 +1,6 @@
 import "../assets/ManageFactors.css";
 import Cookies from "js-cookie";
 
-const csrftoken = Cookies.get("csrftoken");
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export async function getIntensityFactors(setFactors) {
@@ -52,7 +51,7 @@ export async function handleBulkUpdateSubmissionAPI(event, updatedFactors) {
     credentials: "include",
     headers: {
       "content-type": "application/json",
-      "X-CSRFToken": csrftoken,
+      "X-CSRFToken": Cookies.get("csrftoken"),
     },
     body: JSON.stringify(updatedFactors),
   })
@@ -78,7 +77,7 @@ export async function handleBulkUpdateProcurementSubmissionAPI(event, items) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken,
+        "X-CSRFToken": Cookies.get("csrftoken"),
       },
       credentials: "include",
       body: JSON.stringify(items),

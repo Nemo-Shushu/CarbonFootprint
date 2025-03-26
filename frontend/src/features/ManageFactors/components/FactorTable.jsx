@@ -35,12 +35,19 @@ function FactorTable({ tableName, conversionFactors }) {
     const valueA = a[sortField];
     const valueB = b[sortField];
 
-    if (typeof valueA === "string") {
+    const isNumericField = ["intensity", "transmission_distribution"].includes(
+      sortField,
+    );
+    const valA = isNumericField ? parseFloat(valueA) || 0 : valueA;
+    const valB = isNumericField ? parseFloat(valueB) || 0 : valueB;
+
+    if (typeof valA === "string" && typeof valB === "string") {
       return sortOrder === "asc"
-        ? valueA.localeCompare(valueB)
-        : valueB.localeCompare(valueA);
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
     }
-    return sortOrder === "asc" ? valueA - valueB : valueB - valueA;
+
+    return sortOrder === "asc" ? valA - valB : valB - valA;
   });
 
   function toggleEditMode() {
@@ -53,7 +60,7 @@ function FactorTable({ tableName, conversionFactors }) {
   }
 
   function handleInputChange(id, field, value) {
-    if (field === "intensity") {
+    if (field === "intensity" || field === "transmission_distribution") {
       // Allow only numbers and one decimal point
       if (value !== "" && !/^-?\d*\.?\d*$/.test(value)) {
         return; // Reject non-numeric input
@@ -87,7 +94,11 @@ function FactorTable({ tableName, conversionFactors }) {
     if (!originalFactor) return true; // New factor
 
     // Convert to same type before comparison (both as numbers)
-    return Number(editedFactor.intensity) !== Number(originalFactor.intensity);
+    return (
+      Number(editedFactor.intensity) !== Number(originalFactor.intensity) ||
+      Number(editedFactor.transmission_distribution) !==
+        Number(originalFactor.transmission_distribution)
+    );
   }
 
   async function handleBulkSave(event) {
@@ -102,6 +113,9 @@ function FactorTable({ tableName, conversionFactors }) {
       .map((factor) => ({
         ...factor,
         intensity: Number(factor.intensity),
+        transmission_distribution: factor.transmission_distribution
+          ? Number(factor.transmission_distribution)
+          : null,
       }));
 
     if (changedFactors.length === 0) {
@@ -158,22 +172,28 @@ function FactorTable({ tableName, conversionFactors }) {
       <table className="table table-hover">
         <thead>
           <tr className="align-middle text-start">
-            {["category", "consumption_type", "intensity", "unit"].map(
-              (field) => (
-                <th
-                  key={field}
-                  scope="col"
-                  onClick={() => {
-                    setSortField(field);
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {field.replace("_", " ")}{" "}
-                  {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-                </th>
-              ),
-            )}
+            {[
+              "category",
+              "consumption_type",
+              "intensity",
+              "transmission_distribution",
+              "unit",
+            ].map((field) => (
+              <th
+                key={field}
+                scope="col"
+                onClick={() => {
+                  setSortField(field);
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                {field === "transmission_distribution"
+                  ? "Transmission & Distribution"
+                  : field.replace("_", " ")}{" "}
+                {sortField === field ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="table-group-divider">
@@ -207,6 +227,34 @@ function FactorTable({ tableName, conversionFactors }) {
                   </>
                 ) : (
                   factor.intensity
+                )}
+              </td>
+              <td>
+                {editing &&
+                ["gas", "water", "electricity"].includes(
+                  factor.consumption_type,
+                ) ? (
+                  <>
+                    <input
+                      type="text"
+                      className={`form-control ${errors[factor.id] ? "is-invalid" : ""}`}
+                      value={factor.transmission_distribution || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          factor.id,
+                          "transmission_distribution",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    {errors[factor.id] && (
+                      <div className="invalid-feedback">
+                        {errors[factor.id]}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  factor.transmission_distribution || "-"
                 )}
               </td>
               <td>{factor.unit}</td>

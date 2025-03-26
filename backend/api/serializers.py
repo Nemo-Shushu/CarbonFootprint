@@ -24,10 +24,17 @@ class CalculationRecordSerializer(serializers.ModelSerializer):
 class GetIntensitySerializer(serializers.ModelSerializer):
     class Meta:
         model = BenchmarkData
-        fields = ("id", "category", "intensity", "consumption_type", "unit")
+        fields = (
+            "id",
+            "category",
+            "intensity",
+            "consumption_type",
+            "unit",
+            "transmission_distribution",
+        )
 
 
 class UpdateIntensitySerializer(serializers.ModelSerializer):
     class Meta:
         model = BenchmarkData
-        fields = ("id", "intensity")
+        fields = ("id", "intensity", "transmission_distribution")
