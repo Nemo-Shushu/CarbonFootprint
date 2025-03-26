@@ -8,7 +8,7 @@ function BenchmarkTable() {
   const [universities, setUniversities] = useState([]);
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [universityData, setUniversityData] = useState({
-    floor_area_gia: "",
+    floor_area: "",
     electricity_non_residential: "",
     electricity_residential: "",
     gas_non_residential: "",
@@ -96,7 +96,7 @@ function BenchmarkTable() {
       const uniData = universities[0].find((uni) => uni.name === uniName);
       if (uniData) {
         setUniversityData({
-          floor_area_gia: uniData.floor_area_gia || "",
+          floor_area: uniData.floor_area || "",
           electricity_non_residential:
             uniData.electricity_non_residential || "",
           electricity_residential: uniData.electricity_residential || "",
@@ -107,7 +107,7 @@ function BenchmarkTable() {
     } else {
       // Reset form if no university is selected
       setUniversityData({
-        floor_area_gia: "",
+        floor_area: "",
         electricity_non_residential: "",
         electricity_residential: "",
         gas_non_residential: "",
@@ -141,7 +141,7 @@ function BenchmarkTable() {
       const payload = [
         {
           name: selectedUniversity,
-          floor_area_gia: parseFloat(universityData.floor_area_gia) || null,
+          floor_area: parseFloat(universityData.floor_area) || null,
           electricity_non_residential:
             parseFloat(universityData.electricity_non_residential) || null,
           electricity_residential:
@@ -240,12 +240,12 @@ function BenchmarkTable() {
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <Form.Group>
-                      <Form.Label>Floor Area GIA (m²)</Form.Label>
+                      <Form.Label>Floor Area (m²)</Form.Label>
                       <Form.Control
                         type="number"
                         step="0.01"
-                        name="floor_area_gia"
-                        value={universityData.floor_area_gia}
+                        name="floor_area"
+                        value={universityData.floor_area}
                         onChange={handleInputChange}
                       />
                     </Form.Group>

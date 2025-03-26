@@ -636,9 +636,11 @@ class ReportcalculateView:
 
     def calculate_report_emissions(self, request):
         """Calculate total carbon emissions for electricity, gas, water, travel, and waste"""
-            # === 新增：用于移除空值（""）的函数 ===
+
+        # === 新增：用于移除空值（""）的函数 ===
         def remove_empty_values(data):
             return {k: v for k, v in data.items() if v != ""}
+
         utilities = remove_empty_values(request.get("utilities", {}))
         travel = remove_empty_values(request.get("travel", {}))
         waste = remove_empty_values(request.get("waste", {}))
@@ -918,7 +920,12 @@ def get_all_report_data(request):
 def update_intensity_view(request):
     if request.method == "GET":
         queryset = BenchmarkData.objects.values(
-            "id", "category", "intensity", "consumption_type", "unit"
+            "id",
+            "category",
+            "intensity",
+            "consumption_type",
+            "unit",
+            "transmission_distribution",
         ).order_by("category")
         serializer = GetIntensitySerializer(queryset, many=True)
         return Response(serializer.data)
@@ -948,6 +955,13 @@ def update_intensity_view(request):
                 )
                 continue
 
+            if benchmark_instance.consumption_type not in [
+                "gas",
+                "water",
+                "electricity",
+            ]:
+                item.pop("transmission_distribution", None)
+
             # Update the existing object
             serializer = UpdateIntensitySerializer(
                 benchmark_instance, data=item, partial=True
@@ -975,7 +989,9 @@ def update_intensity_view(request):
             else status.HTTP_400_BAD_REQUEST,
         )
 
+
 @api_view(["POST"])
+@permission_classes([IsAdminUser])
 def update_carbon_impact(request):
     if not request.user.is_authenticated:
         return Response(
@@ -1114,10 +1130,16 @@ def admin_request_list(request):
                 return JsonResponse({"error": "Unprivileged access"}, status=403)
 
             requests = AdminRequest.objects.select_related("user").values(
-                "user_id", "user__email", "user__username", "user__institute", "requested_role", "reason", "status"
+                "user_id",
+                "user__email",
+                "user__username",
+                "user__institute",
+                "requested_role",
+                "reason",
+                "status",
             )
 
-            request_list = list(requests)            
+            request_list = list(requests)
 
             return JsonResponse(request_list, safe=False, status=200)
 

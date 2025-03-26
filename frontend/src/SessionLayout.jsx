@@ -8,6 +8,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 function SessionLayout({ children }) {
   const [remainingTime, setRemainingTime] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const [deny, setDeny] = useState(
+    () => localStorage.getItem("deny") === "true",
+  );
+
   useEffect(() => {
     const fetchSessionExpiry = async () => {
       try {
@@ -37,12 +41,12 @@ function SessionLayout({ children }) {
   }, []);
 
   useEffect(() => {
-    if (remainingTime <= 60 * 5 && remainingTime > 0) {
+    if (remainingTime <= 60 * 10 && remainingTime > 0 && !deny) {
       if (!showPopup) {
         setShowPopup(true);
       }
     }
-  }, [remainingTime, showPopup]);
+  }, [remainingTime, showPopup, deny]);
 
   const handleExtendSession = async () => {
     try {
@@ -60,6 +64,12 @@ function SessionLayout({ children }) {
     } catch (error) {
       console.error("Error extending session:", error);
     }
+  };
+
+  const handleClose = () => {
+    setShowPopup(false);
+    setDeny(true);
+    localStorage.setItem("deny", "true");
   };
 
   const minutes = Math.floor(remainingTime / 60);
@@ -80,7 +90,7 @@ function SessionLayout({ children }) {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowPopup(false)}>
+          <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleExtendSession}>
