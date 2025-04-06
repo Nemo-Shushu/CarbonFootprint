@@ -12,6 +12,8 @@ accounts/__pycache__
 # React files
 frontend/dist
 node_modules/
+build/
 .vite/
 /package-lock.json
 /package.json
+npm-debug.log

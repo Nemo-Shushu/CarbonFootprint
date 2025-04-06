@@ -10,10 +10,13 @@ export default [
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {
-      ecmaVersion: 2020,
+      // ecmaVersion here is redundant because it's covered in parserOptions
       globals: {
         ...globals.browser,
-        global: "readonly",
+        ...globals.node, // <--- Add this line
+        // 'global' is part of globals.node, so you might not need it explicitly
+        // global: "readonly",
+        // Test globals (keep these if you use Vitest/Jest etc.)
         vi: "readonly",
         describe: "readonly",
         it: "readonly",
@@ -24,12 +27,12 @@ export default [
         afterAll: "readonly",
       },
       parserOptions: {
-        ecmaVersion: "latest",
-        ecmaFeatures: { jsx: true },
+        ecmaVersion: "latest", // Use 'latest' or a specific year like 2022
         sourceType: "module",
+        ecmaFeatures: { jsx: true },
       },
     },
-    settings: { react: { version: "18.3" } },
+    settings: { react: { version: "detect" } }, // 'detect' is usually preferred
     plugins: {
       react,
       "react-hooks": reactHooks,
@@ -38,14 +41,16 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
+      ...react.configs["jsx-runtime"].rules, // If using React 17+ new JSX transform
       ...reactHooks.configs.recommended.rules,
       "react/jsx-no-target-blank": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
       ],
+      // You might want to add prop-types validation if not using TypeScript
+      // "react/prop-types": "warn",
     },
   },
-  eslintPluginPrettierRecommended,
+  eslintPluginPrettierRecommended, // Ensures Prettier rules run last and override others
 ];

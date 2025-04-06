@@ -11,6 +11,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function SignInForm() {
   const [error, setError] = useState("");
+  const [csrf, setCsrf] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -112,6 +113,20 @@ function SignInForm() {
       });
   }
 
+  function getCSRF() {
+    fetch(backendUrl.concat("api/csrf/"), {
+      credentials: "include",
+    })
+      .then((res) => {
+        let csrfToken = res.headers.get("X-CSRFToken");
+        setCsrf(csrfToken);
+        console.log(csrfToken);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   const handleEmail = (event) => {
     console.log("Email Entered:", event.target.value);
     setEmail(event.target.value);
@@ -188,6 +203,10 @@ function SignInForm() {
     }
     return () => clearInterval(intervalId);
   }, [timer]);
+
+  useEffect(() => {
+    getCSRF();
+  }, []);
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -287,7 +306,7 @@ function SignInForm() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": Cookies.get("csrftoken"),
+        "X-CSRFToken": csrf,
       },
       credentials: "include",
       body: JSON.stringify({ username: username, password: password }),
