@@ -117,14 +117,14 @@ function SignInForm() {
     fetch(backendUrl.concat("api/csrf/"), {
       credentials: "include",
     })
-    .then((res) => {
-      let csrfToken = res.headers.get("X-CSRFToken");
-      setCsrf(csrfToken);
-      console.log(csrfToken);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        let csrfToken = res.headers.get("X-CSRFToken");
+        setCsrf(csrfToken);
+        console.log(csrfToken);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   const handleEmail = (event) => {
@@ -206,7 +206,7 @@ function SignInForm() {
 
   useEffect(() => {
     getCSRF();
-  }, [])
+  }, []);
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);

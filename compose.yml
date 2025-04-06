@@ -37,9 +37,11 @@ services:
       - /app/node_modules
       - ./frontend:/app
     ports:
-      - "3000:3000"
+      - "80:80"
     networks:
       - my-network
+    depends_on:
+      - web
 
 volumes:
   postgres_data:

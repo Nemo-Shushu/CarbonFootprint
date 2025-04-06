@@ -3,15 +3,16 @@ import react from "@vitejs/plugin-react";
 
 // Use Vite's loadEnv function to correctly load env variables based on mode
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, process.cwd(), "");
 
   // Convert port to number, provide default if not set
-  const port = parseInt(env.FRONTEND_PORT || '80', 10);
+  const port = parseInt(env.FRONTEND_PORT || "80", 10);
 
   // Use loaded variables
   const FRONTEND_PORT = port;
-  const FRONTEND_HOST = env.FRONTEND_HOST || 'localhost';
-  const FRONTEND_URL = env.FRONTEND_URL || `http://${FRONTEND_HOST}:${FRONTEND_PORT}`;
+  const FRONTEND_HOST = env.FRONTEND_HOST || "localhost";
+  const FRONTEND_URL =
+    env.FRONTEND_URL || `http://${FRONTEND_HOST}:${FRONTEND_PORT}`;
 
   return {
     base: "/",
