@@ -24,6 +24,10 @@ services:
       dockerfile: Dockerfile_prod
     environment:
       WATCHPACK_POLLING: "true"
+    depends_on:
+      - web
+    networks:
+      - my-network
     env_file:
       - ./.env.prod
     volumes:
